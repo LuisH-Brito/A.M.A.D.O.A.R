@@ -42,6 +42,7 @@ def inserir_bolsas_validadas(apps, schema_editor):
             'status': STATUS_VALIDADO,  # 🟢 Status 2 para aparecer no estoque
             'data_vencimento': vencimento_padrao,
             'validacao_at': hoje,
+            'arquivo_laudo': 'laudos_bolsas/2026/09/26/LAUDO_20260926_01.pdf'
         }
     )
 
@@ -57,6 +58,7 @@ def inserir_bolsas_validadas(apps, schema_editor):
             'status': STATUS_VALIDADO,
             'data_vencimento': vencimento_padrao,
             'validacao_at': hoje,
+            'arquivo_laudo': 'laudos_bolsas/2026/09/26/LAUDO_20260926_02.pdf'
         }
     )
 
