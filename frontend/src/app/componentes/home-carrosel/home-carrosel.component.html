@@ -1,0 +1,40 @@
+<div class="carousel-wrapper">
+  <div
+    class="slide-container"
+    *ngFor="let slide of slides; let i = index"
+    [class.active]="i === currentSlide"
+    [style.background-color]="slide.bgColor"
+    [style.color]="slide.textColor"
+  >
+    <div class="content-wrapper">
+      <div class="text-section">
+        <h2>{{ slide.title }}</h2>
+        <p>{{ slide.text }}</p>
+      </div>
+
+      <img
+        *ngIf="slide.layout === 'full-no-mask'"
+        class="img-full-no-mask"
+        [src]="slide.imgSrc"
+        [alt]="slide.title"
+      />
+      <img
+        *ngIf="slide.layout === 'no-full-no-mask'"
+        class="img-no-full-no-mask"
+        [src]="slide.imgSrc"
+        [alt]="slide.title"
+      />
+    </div>
+  </div>
+
+  <button class="nav-btn prev" (click)="prev()">❮</button>
+  <button class="nav-btn next" (click)="next()">❯</button>
+
+  <div class="indicators">
+    <span
+      *ngFor="let slide of slides; let i = index"
+      [class.active]="i === currentSlide"
+      (click)="goTo(i)"
+    ></span>
+  </div>
+</div>
