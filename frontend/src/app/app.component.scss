@@ -6,13 +6,14 @@
 
 main {
   flex: 1;
+  background-color: #f4f4f4;
 }
 
 .card-container {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #fff;
+  background: #f4f4f4;
   border-radius: 20px;
   padding: 40px;
   max-width: 1200px;
@@ -148,5 +149,93 @@ main {
 
   .card-right {
     padding-left: 0;
+  }
+}
+
+.faixa-triagem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #e8f5e9;
+  padding: 20px 30px;
+  margin: 40px auto;
+  min-height: 190px;
+  height: auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.centraliza-texto-e-botao {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-radius: 20px;
+  padding: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+}
+
+.faixa-texto {
+  flex: 3;
+
+  p {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #333;
+    margin: 0;
+  }
+}
+
+.faixa-botao {
+  flex: 1;
+  text-align: right;
+
+  .btn-triagem {
+    padding: 12px 25px;
+    background: #008f39;
+    color: #fff;
+    border: none;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition:
+      transform 0.2s,
+      background 0.3s;
+
+    &:hover {
+      transform: scale(1.05);
+      background: #006f2d;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .faixa-triagem {
+    flex-direction: column;
+    height: auto;
+    padding: 25px 15px;
+  }
+
+  .centraliza-texto-e-botao {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0;
+    margin: 0;
+    gap: 20px;
+  }
+
+  .faixa-texto {
+    width: 100%;
+  }
+
+  .faixa-botao {
+    width: 100%;
+    text-align: center;
+
+    .btn-triagem {
+      width: 100%;
+      max-width: 280px;
+    }
   }
 }
