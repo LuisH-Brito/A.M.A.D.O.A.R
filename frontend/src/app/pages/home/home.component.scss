@@ -1,0 +1,125 @@
+$green-brand: #1a5c31;
+$bg-light-green: #e9f4f0;
+$border-gray: #b5b5b5;
+$text-gray: #444;
+
+.page-wrapper {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 10px;
+  font-family: Arial, sans-serif;
+
+  .top-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1.5px solid #d0d0d0;
+    padding: 10px 0;
+    margin-bottom: 25px;
+
+    .menu-icon {
+      cursor: pointer;
+      span {
+        display: block;
+        width: 28px;
+        height: 3px;
+        background: $green-brand;
+        margin: 5px 0;
+      }
+    }
+
+    .main-title {
+      color: $green-brand;
+      font-weight: 900;
+      font-size: 28px;
+      letter-spacing: 2px;
+    }
+
+    .hemo-logo-top img {
+      height: 60px;
+    }
+  }
+
+  .card-hero {
+    background-color: $bg-light-green;
+    border: 1px solid $border-gray;
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    gap: 30px;
+    margin-bottom: 50px;
+
+    .text-content {
+      flex: 1;
+      h2 {
+        font-size: 20px;
+        margin-top: 0;
+        font-weight: bold;
+      }
+      p {
+        line-height: 1.4;
+        font-size: 18px;
+        color: #333;
+      }
+
+      .pagination {
+        margin-top: 25px;
+        display: flex;
+        gap: 8px;
+        .dot {
+          width: 12px;
+          height: 12px;
+          border-radius: 50%;
+          border: 1px solid #777;
+          &.active {
+            background: #777;
+          }
+        }
+      }
+    }
+
+    .image-frame {
+      background: #fff;
+      border: 1px solid $border-gray;
+      border-radius: 15px;
+      padding: 15px;
+      width: 320px;
+      img {
+        width: 100%;
+        height: auto;
+      }
+    }
+  }
+
+  .card-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 40px;
+    padding: 0 10px;
+
+    .image-box {
+      width: 300px;
+      img {
+        width: 100%;
+      }
+    }
+
+    .text-box {
+      flex: 1;
+      h3 {
+        font-size: 22px;
+        margin-top: 0;
+        font-weight: bold;
+      }
+      p {
+        line-height: 1.4;
+        font-size: 18px;
+        margin-bottom: 15px;
+      }
+      .creative-writing {
+        font-size: 18px;
+        line-height: 1.2;
+      }
+    }
+  }
+}

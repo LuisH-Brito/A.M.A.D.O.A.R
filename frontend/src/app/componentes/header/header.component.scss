@@ -1,0 +1,107 @@
+$verde: #008000;
+
+.navbar {
+  border-bottom: 2px solid $verde;
+
+  .navbar-brand {
+    font-weight: bold;
+    color: $verde;
+    font-size: 1.8rem;
+  }
+
+  .navbar-toggler {
+    border: none;
+
+    .navbar-toggler-icon {
+      color: $verde;
+      font-size: 24px;
+    }
+  }
+
+  .logo {
+    .logo-img {
+      height: 100px;
+    }
+
+    .logo-text {
+      color: $verde;
+      font-weight: bold;
+      margin-left: 8px;
+    }
+
+    img {
+      height: 70px;
+      width: auto;
+      object-fit: contain;
+    }
+  }
+}
+
+.btn-hamburger {
+  color: #000;
+  padding: 0.5rem;
+  border: none;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: $verde;
+  }
+
+  svg {
+    width: 24px;
+    height: 24px;
+  }
+}
+
+.mobile-menu {
+  position: fixed;
+  left: -250px;
+  top: 0;
+  height: 100vh;
+  width: 250px;
+  background-color: #fff;
+  border-right: 2px solid $verde;
+  display: flex;
+  flex-direction: column;
+  padding: 2rem 0;
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  transition: left 0.3s ease;
+  overflow-y: auto;
+
+  &.show {
+    left: 0;
+  }
+}
+
+.menu-item {
+  display: block;
+  padding: 0.75rem 1.5rem;
+  color: #000;
+  text-decoration: none;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+
+  &:hover {
+    background-color: #f8f9fa;
+    color: $verde;
+  }
+}
+
+.menu-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  transition: opacity 0.3s ease;
+
+  &.show {
+    display: block;
+  }
+}

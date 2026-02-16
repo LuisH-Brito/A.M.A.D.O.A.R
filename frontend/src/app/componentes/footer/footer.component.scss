@@ -1,0 +1,60 @@
+.footer {
+  background-color: #13512f;
+  color: #ffffff;
+  margin-top: auto;
+  border-top: 2px solid #008000;
+
+  .footer-section {
+    padding: 0.75rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  h5 {
+    font-weight: bold;
+    margin-bottom: 1rem;
+    color: #ffffff;
+    font-size: 1.1rem;
+    margin-left: 0.55rem;
+  }
+
+  ul li {
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    color: #ffffff;
+    i {
+      margin-right: 0.5rem;
+      color: #ffffff;
+    }
+    &:hover {
+      text-decoration: underline;
+      color: #008000;
+    }
+  }
+
+  p {
+    color: #ffffff;
+    margin: 0;
+    line-height: 1.6;
+  }
+}
+
+.btn-cadastro {
+  background-color: #13512f;
+  color: #ffffff;
+  border: 2px solid #13512f;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #ffffff;
+    color: #13512f;
+    border-color: #008000;
+  }
+
+  &:focus {
+    background-color: #008000;
+    color: #ffffff;
+    box-shadow: none;
+  }
+}
