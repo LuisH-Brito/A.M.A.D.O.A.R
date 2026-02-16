@@ -18,4 +18,15 @@ import { HomeCarroselComponent } from './componentes/home-carrosel/home-carrosel
 })
 export class AppComponent {
   title = 'frontend';
+  activeIndexes: number[] = [];
+  toggleAccordion(index: number) {
+    if (this.activeIndexes.includes(index)) {
+      this.activeIndexes = this.activeIndexes.filter((i) => i !== index);
+    } else {
+      this.activeIndexes.push(index);
+    }
+  }
+  isActive(index: number): boolean {
+    return this.activeIndexes.includes(index);
+  }
 }

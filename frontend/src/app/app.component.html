@@ -19,6 +19,41 @@
         <p>Ut cul... Ferramenta escrita criativa.</p>
       </div>
     </div>
+    <div class="accordion-card">
+      <h2>Quem pode doar?</h2>
+
+      <div class="accordion-section">
+        <div class="accordion-item" [class.active]="isActive(0)">
+          <button class="accordion-header" (click)="toggleAccordion(0)">
+            ✅ Condições básicas
+            <span class="arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <p>Texto explicando as condições básicas para doar sangue...</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" [class.active]="isActive(1)">
+          <button class="accordion-header" (click)="toggleAccordion(1)">
+            🕒 Impedimentos Temporários
+            <span class="arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <p>Texto explicando os impedimentos temporários...</p>
+          </div>
+        </div>
+
+        <div class="accordion-item" [class.active]="isActive(2)">
+          <button class="accordion-header" (click)="toggleAccordion(2)">
+            ❌ Impedimentos Definitivos
+            <span class="arrow">▼</span>
+          </button>
+          <div class="accordion-content">
+            <p>Texto explicando os impedimentos definitivos...</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </router-outlet>
 </main>
 
