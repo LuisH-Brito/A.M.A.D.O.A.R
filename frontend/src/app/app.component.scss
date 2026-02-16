@@ -7,3 +7,71 @@
 main {
   flex: 1;
 }
+
+.card-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #fff;
+  border-radius: 20px;
+  // box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  padding: 40px;
+  max-width: 1200px;
+  margin: 40px auto;
+}
+
+.card-left {
+  flex: 1;
+  text-align: center;
+
+  img {
+    max-width: 200px;
+    height: auto;
+    margin-bottom: 20px;
+  }
+
+  h2 {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #9f0000;
+  }
+}
+
+.card-right {
+  flex: 2;
+  padding-left: 40px;
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  p {
+    font-size: 1.3rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+    color: #555;
+  }
+}
+
+@media (max-width: 768px) {
+  .card-container {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px;
+  }
+
+  .card-left {
+    margin-bottom: 20px;
+
+    img {
+      max-width: 150px;
+    }
+  }
+
+  .card-right {
+    padding-left: 0;
+  }
+}
