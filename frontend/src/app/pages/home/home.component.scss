@@ -9,6 +9,45 @@ main {
   background-color: #f4f4f4;
 }
 
+.titulo-estoque {
+  text-align: center;
+  font-size: clamp(1.5rem, 5vw, 2.2rem);
+  font-weight: 800;
+  margin: 50px 10px 20px 10px;
+  color: #333;
+
+  span { color: #9f0000; }
+}
+.container-estoque {
+  background-color: #5B0E0E;
+  padding: 40px 20px;
+  border-radius: 20px;
+  max-width: 1200px;
+  width: 90%; 
+  margin: 0 auto 50px auto;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+}
+
+/* GRID ADAPTÁVEL */
+.grid-hemometros {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  justify-items: center;
+
+  /* Tablets */
+  @media (max-width: 992px) {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 30px 10px;
+  }
+
+  /* Celulares */
+  @media (max-width: 500px) {
+    grid-template-columns: 1fr; /* 1 coluna */
+    gap: 25px;
+  }
+}
+
 .card-container {
   display: flex;
   justify-content: space-between;

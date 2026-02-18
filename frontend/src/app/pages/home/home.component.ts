@@ -1,10 +1,11 @@
 import { Component } from '@angular/core';
 import { HomeCarroselComponent } from '../../componentes/home-carrosel/home-carrosel.component';
+import { HemometroComponent } from '../../componentes/hemometro/hemometro.component';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HomeCarroselComponent],
+  imports: [HomeCarroselComponent, HemometroComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })

@@ -1,0 +1,17 @@
+<div class="hemometro-card">
+  <div class="hemometro-wrapper">
+    <div class="barras-container">
+      @for (valorBase of [0, 16.6, 33.3, 50, 66.6, 83.3]; track $index) {
+        <div 
+          class="barra b{{$index}}" 
+          [style.background-color]="porcentagem > valorBase ? '#E5322E' : '#D9D9D9'">
+        </div>
+      }
+    </div>
+
+    <div class="info">
+      <span class="tipo">{{ tipo }}</span>
+      <span class="porcentagem">{{ porcentagem }}%</span>
+    </div>
+  </div>
+</div>

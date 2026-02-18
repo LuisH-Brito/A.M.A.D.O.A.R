@@ -16,6 +16,25 @@
       <p>Ut cul... Ferramenta escrita criativa.</p>
     </div>
   </div>
+  <h2 class="titulo-estoque">Nosso Estoque - <span>Hemômetro</span></h2>
+  <div class="container-estoque">
+  
+  <div class="grid-hemometros">
+    <!-- puxar dados do banco de sangue aqui -->
+    <app-hemometro tipo="A+" [porcentagem]="80"></app-hemometro> 
+    <app-hemometro tipo="B+" [porcentagem]="50"></app-hemometro>
+    <app-hemometro tipo="AB+" [porcentagem]="15"></app-hemometro>
+    <app-hemometro tipo="O+" [porcentagem]="9"></app-hemometro>
+  </div>
+
+  <div style="margin-top: 40px;"></div> <div class="grid-hemometros">
+        <!-- puxar dados do banco de sangue aqui -->
+    <app-hemometro tipo="A-" [porcentagem]="33"></app-hemometro>
+    <app-hemometro tipo="B-" [porcentagem]="16"></app-hemometro>
+    <app-hemometro tipo="AB-" [porcentagem]="66"></app-hemometro>
+    <app-hemometro tipo="O-" [porcentagem]="32"></app-hemometro>
+  </div>
+</div>
   <div class="accordion-card">
     <h2>Quem pode doar?</h2>
 

@@ -1,0 +1,54 @@
+.hemometro-card {
+  display: inline-block;
+  padding: 10px;
+  color: white;
+  font-family: sans-serif;
+
+  .hemometro-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+
+  .barras-container {
+    display: flex;
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 3px;
+    width: 60px;
+
+    .barra {
+      height: 12px;
+      transition: all 0.2s ease-in-out; 
+      border-radius: 2px;
+
+      &.b0 { width: 55px; } // Base
+      &.b1 { width: 65px; } 
+      &.b2 { width: 60px; }
+      &.b3 { width: 50px; }
+      &.b4 { width: 35px; }
+      &.b5 { width: 15px; } // Topo
+
+      &:hover {
+        transform: translateY(-3px); 
+        filter: brightness(1.2);
+        cursor: pointer;
+      }
+    }
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
+
+    .tipo {
+      font-size: 1.2rem;
+      font-weight: bold;
+    }
+
+    .porcentagem {
+      font-size: 1.2rem;
+    }
+  }
+}
