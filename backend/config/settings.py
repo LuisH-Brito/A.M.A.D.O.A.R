@@ -39,7 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
+    'usuarios',
     'doadores',
+    'medicos',
+    'enfermeiros',
+    'recepcionistas',
+    'administradores',
+    'exames_doador',
+    'triagem',
+    'processos_doacao',
+    'dados_clinicos',
+    'bolsas',
+    'core'
 ]
 
 CORS_ALLOWED_ORIGINS = [
@@ -118,7 +129,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'pt-br'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Rio_Branco'
 
 USE_I18N = True
 
@@ -134,3 +145,12 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# É o endereço público. Define o prefixo que aparecerá no navegador para acessar os arquivos
+MEDIA_URL = '/media/'
+
+# É o endereço físico. Define em qual pasta o Django deve realmente salvar os arquivos que os usuários enviarem.
+MEDIA_ROOT = BASE_DIR / 'media'
+
+# É a identidade do sistema. Avisa ao Django para ignorar o sistema de login padrão dele e usar a classe Usuario para gerenciar senhas, CPFs e acessos.
+AUTH_USER_MODEL = 'usuarios.Usuario'
