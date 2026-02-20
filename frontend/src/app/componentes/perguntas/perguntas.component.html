@@ -1,0 +1,20 @@
+<div class="pergunta-box">
+  <h3>{{ pergunta }}</h3>
+  <div class="botoes-container">
+    
+    <button 
+      class="btn-resposta" 
+      [class.selecionado-sim]="respostaSelecionada === 'Sim'"
+      (click)="responder('Sim')">
+      Sim
+    </button>
+    
+    <button 
+      class="btn-resposta" 
+      [class.selecionado-nao]="respostaSelecionada === 'Não'"
+      (click)="responder('Não')">
+      Não
+    </button>
+
+  </div>
+</div>
