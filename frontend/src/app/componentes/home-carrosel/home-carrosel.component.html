@@ -18,8 +18,10 @@
         [src]="slide.imgSrc"
         [alt]="slide.title"
       />
+      
+      <!-- USAR IMAGENS 512x512 -->
       <img
-        *ngIf="slide.layout === 'no-full-no-mask'"
+        *ngIf="slide.layout === 'no-full-no-mask'" 
         class="img-no-full-no-mask"
         [src]="slide.imgSrc"
         [alt]="slide.title"

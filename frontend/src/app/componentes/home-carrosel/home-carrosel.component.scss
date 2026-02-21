@@ -55,13 +55,15 @@
 
 .img-no-full-no-mask {
   position: absolute;
-  right: 40px;
+  right: 65px;
   top: 50%;
   transform: translateY(-50%);
   max-width: 420px;
-  width: 40%;
+  width: 28%;
   height: auto;
   object-fit: contain;
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 15px;
 }
 .img-full-no-mask {
   position: absolute;
