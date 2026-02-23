@@ -15,7 +15,7 @@ export class HomeCarroselComponent {
     {
       title: 'O que é o HEMOACRE?',
       text: 'O Ambiente de Apoio ao Doador Acreano é Lorem ipsum dolor sit amet...',
-      imgSrc: 'images/logo-hemoacre.png',
+      imgSrc: 'images/logo-hemoacre512-white-background.png',
       bgColor: '#E8F5E9',
       textColor: '#333333',
       layout: 'no-full-no-mask',

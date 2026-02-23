@@ -1,0 +1,71 @@
+.pergunta-box {
+  background-color: #E8E8E8; 
+  border-radius: 10px;
+  padding: 30px;
+  margin-bottom: 30px;
+  
+  border: 1px solid transparent; 
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 2px rgba(0, 0, 0, 0.10);
+
+  h3 {
+    font-size: 1.15rem; 
+    font-weight: 800; 
+    color: #000;
+    margin-top: 0; 
+    margin-bottom: 25px; 
+    text-align: left;
+    min-height: 50px;
+  }
+
+  .botoes-container {
+    display: flex; 
+    gap: 15px;
+
+    .btn-resposta {
+      flex: 1; 
+      padding: 15px 0; 
+      background-color: #ffffff;
+      
+      border: 1px solid #aca8a8; 
+      border-radius: 8px;
+      
+      font-size: 1rem; 
+      font-weight: 700;
+      color: #000;
+      cursor: pointer; 
+      transition: all 0.2s ease;
+
+      /* SOMBRA SUAVE NO BOTÃO */
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 1px 3px rgba(0, 0, 0, 0.1);
+
+      &:hover { 
+        background-color: #ffffff; 
+        border-color: #aca8a8;
+        transform: translateY(-2px); 
+        
+        /* Sombra deve aumentar ao passar o mouse??? */
+        box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05); 
+      }
+      
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        background-color: #f9f9f9;
+      }
+
+      &.selecionado-sim {
+        background-color: #2BC266; 
+        color: #ffffff;
+        border-color: #006f2d;
+        box-shadow: 0 6px 12px rgba(0, 143, 57, 0.3); 
+      }
+
+      &.selecionado-nao {
+        background-color: #FF5450; 
+        color: #ffffff;
+        border-color: #cc333f;
+        box-shadow: 0 6px 12px rgba(230, 57, 70, 0.3); 
+      }
+    }
+  }
+}

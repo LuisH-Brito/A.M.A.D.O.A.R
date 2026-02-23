@@ -1,0 +1,93 @@
+.pagina-questionario {
+  background-color: #f4f4f4; 
+  min-height: 100vh;
+  padding-top: 60px;
+}
+
+.triagem-card {
+  background-color: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 30px;
+  max-width: 1200px;
+  margin: 0 auto;
+  font-family: sans-serif;
+}
+
+.header-secao {
+  text-align: center;
+  margin-bottom: 25px;
+
+  .icone-circulo {
+    width: 60px;
+    height: 60px;
+    background-color: #FFE0E0;
+    color: #e63946;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 15px auto;
+  }
+
+  h2 { 
+    font-size: 1.4rem; 
+    font-weight: 800; 
+    color: #000; 
+    margin: 0 0 8px 0; }
+  .frase-motivacional { 
+    font-size: 1rem; 
+    color: #555; 
+    margin: 0; }
+}
+
+.footer-navegacao {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 0 10px;
+
+  .btn-seta {
+    background: none; 
+    border: none; 
+    cursor: pointer; 
+    color: #000;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    padding: 8px; border-radius: 50%; transition: background 0.2s;
+
+    &:hover:not(:disabled) { background-color: #f0f0f0; }
+    &:disabled { color: #ccc; cursor: not-allowed; }
+  }
+  
+
+  .contador { 
+    font-size: 0.95rem; 
+    font-weight: 600; 
+    color: #555;     
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%); 
+}
+  .btn-finalizar {
+        background-color: #009239; 
+        color: #ffffff;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-size: 0.95rem;
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.2s;
+
+        &:hover {
+        background-color: #009239; 
+        transform: translateY(-2px);
+        }
+
+        &:active {
+        transform: translateY(0);
+        }
+    }
+}
