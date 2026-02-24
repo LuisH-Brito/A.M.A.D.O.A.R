@@ -1,0 +1,25 @@
+# Autenticação e Segurança
+
+UserAdmin - É uma classe especial do Django feita exclusivamente para lidar com contas de acesso. Diferente do painel comum, ela entende que as senhas precisam ser ocultadas e criptografadas.
+
+UserCreationForm - É o formulário ""motor"" que pega a senha digitada em texto puro, aplica o algoritmo matemático de segurança (hash) e só então envia para o banco de dados.
+
+# Tabela Principal de Listagem
+list_display - Define exatamente quais colunas vão aparecer na tabela inicial quando você clica em um módulo (ex: exibir ID, Nome e CPF na mesma linha).
+
+list_filter - Cria um menu no lado direito da tela permitindo filtrar rapidamente milhares de registros com um clique (ex: filtrar apenas bolsas com status ""Vencida"").
+
+search_fields - Habilita a barra de pesquisa no topo da tela. Você dita ao banco de dados em quais colunas ele deve procurar o termo digitado.
+
+# Telas de Cadastro e Edição
+
+fieldsets - Organiza a página de edição em blocos visuais. Em vez de uma lista gigante de campos, você agrupa por seções com títulos (ex: Bloco ""Endereço"", Bloco ""Dados Clínicos"").
+
+add_fieldsets - Exclusivo para quem usa o UserAdmin. Define o visual da primeira tela de criação (a tela que aparece quando você clica em ""Adicionar"" um novo usuário).
+
+readonly_fields - Mostra a informação na tela, mas a bloqueia (fica cinza). O usuário pode ler, mas é impossível alterar e salvar. Ideal para dados de auditoria (como a data exata em que o registro foi criado).
+
+Inlines (TabularInline) - É o recurso de embutir uma tabela ""Filha"" dentro da página da tabela ""Pai"". Permite editar múltiplos registros de outra tabela sem precisar trocar de página."
+
+# Controle de Permissões
+has_delete_permission - É uma função de bloqueio. Se você configurar para ela retornar False, o Django arranca o botão vermelho de ""Deletar"" da tela, impedindo que qualquer usuário apague aquele registro do banco de dados.

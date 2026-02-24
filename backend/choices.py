@@ -1,10 +1,11 @@
 from django.db import models
 
 class StatusProcesso(models.IntegerChoices):
-    RECEPCAO = 1, 'Recepção'
-    TRIAGEM = 2, 'Triagem'
-    COLETA = 3, 'Coleta'
-    CONCLUIDO = 4, 'Concluído'
+    RECEPCAO = 1, 'Recepção' 
+    PRE_TRIAGEM = 2, 'Pré-Triagem'
+    TRIAGEM = 3, 'Triagem'
+    COLETA = 4, 'Coleta'
+    CONCLUIDO = 5, 'Concluído'
     CANCELADO = 0, 'Cancelado'
 
 class StatusClinico(models.IntegerChoices):
