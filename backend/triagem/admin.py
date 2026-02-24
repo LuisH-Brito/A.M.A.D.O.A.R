@@ -1,11 +1,16 @@
 from django.contrib import admin
-from .models import Questionario, Pergunta
+from .models import Questionario, Pergunta, Resposta
 
-# Define como as perguntas aparecerão dentro do questionário
-class PerguntaInline(admin.TabularInline):
-    model = Pergunta
+@admin.register(Pergunta)
+class PerguntaAdmin(admin.ModelAdmin):
+    list_display = ('id', 'texto', 'ativa')
+    list_editable = ('ativa',) 
+    search_fields = ('texto',)
+
+class RespostaInline(admin.TabularInline):
+    model = Resposta
     extra = 0  
-    fields = ('texto_pergunta', 'resposta_texto')
+    autocomplete_fields = ['pergunta'] 
 
 @admin.register(Questionario)
 class QuestionarioAdmin(admin.ModelAdmin):
@@ -14,15 +19,9 @@ class QuestionarioAdmin(admin.ModelAdmin):
     search_fields = ('doador__nome_completo', 'doador__cpf')
     readonly_fields = ('data_hora_submissao',)
     # Conecta as perguntas aqui
-    inlines = [PerguntaInline]
-    fieldsets = (('Vínculo do Doador', {'fields': ('doador',)}),
-                 ('Auditoria e Status', {'fields': ('validade', 'data_hora_submissao')}),)
+    inlines = [RespostaInline] 
     
-@admin.register(Pergunta)
-class PerguntaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'questionario', 'resumo_pergunta', 'resposta_texto')
-    search_fields = ('texto_pergunta', 'resposta_texto', 'questionario__doador__nome_completo')
-    # Corta o texto se a pergunta for muito longa para não quebrar a tabela
-    def resumo_pergunta(self, obj):
-        return obj.texto_pergunta[:50] + "..." if len(obj.texto_pergunta) > 50 else obj.texto_pergunta
-    resumo_pergunta.short_description = 'Pergunta'
+    fieldsets = (
+        ('Vínculo do Doador', {'fields': ('doador',)}),
+        ('Auditoria e Status', {'fields': ('validade', 'data_hora_submissao')}),
+    )
