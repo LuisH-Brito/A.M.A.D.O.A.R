@@ -1,23 +1,30 @@
-import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   showPassword = false;
+  mensagemSucesso: string | null = null;
+
+  constructor(private route: ActivatedRoute) {}
 
   togglePassword() {
     this.showPassword = !this.showPassword;
   }
 
-  entrar() {
-    alert('Login realizado!');
-  }
-  cadastrar() {
-    alert('Redirecionar para cadastro!');
+  ngOnInit() {
+    this.route.queryParams.subscribe((params) => {
+      if (params['cadastrado'] === 'true') {
+        this.mensagemSucesso =
+          'Cadastro realizado com sucesso! Faça seu login.';
+      }
+    });
   }
 }

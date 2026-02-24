@@ -11,11 +11,11 @@ class Doador(Usuario):
     tipo_sanguineo_declarado = models.CharField(max_length=2, choices=TipoSanguineo.choices, null=True, blank=True)
     fator_rh = models.CharField(max_length=1, choices=FatorRH.choices, null=True, blank=True)
     carteira_doador = models.ImageField(upload_to='carteiras/', null=True, blank=True)  # O ImageField garante que o arquivo é uma imagem real e gerencia o upload ( coisa de django )
+    telefone = models.CharField(max_length=20, null=True, blank=True)
     
     def __str__(self):
         return f"Doador: {self.nome_completo}"
 
-# após um Doador ser deletado, remove a imagem na pasta de media
 @receiver(post_delete, sender=Doador)
 def deletar_arquivo_carteira(sender, instance, **kwargs):
     if instance.carteira_doador:

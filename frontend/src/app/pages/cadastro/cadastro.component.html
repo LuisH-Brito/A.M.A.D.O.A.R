@@ -7,60 +7,162 @@
 
       <div class="grupo">
         <h4>Tipo Sanguíneo</h4>
-
         <div class="radio-grid">
-          <label><input type="radio" name="tipo" /> A+</label>
-          <label><input type="radio" name="tipo" /> A-</label>
-          <label><input type="radio" name="tipo" /> B+</label>
-          <label><input type="radio" name="tipo" /> B-</label>
-          <label><input type="radio" name="tipo" /> AB+</label>
-          <label><input type="radio" name="tipo" /> AB-</label>
-          <label><input type="radio" name="tipo" /> O+</label>
-          <label><input type="radio" name="tipo" /> O-</label>
-          <label><input type="radio" name="tipo" /> Não sei</label>
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="A+"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            A+</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="A-"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            A-</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="B+"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            B+</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="B-"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            B-</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="AB+"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            AB+</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="AB-"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            AB-</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="O+"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            O+</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="O-"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            O-</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="tipo"
+              value="Não sei"
+              [(ngModel)]="dados.tipoCompleto"
+            />
+            Não sei</label
+          >
         </div>
       </div>
 
       <div class="grupo">
         <h4>Sexo:</h4>
         <div class="radio-column">
-          <label><input type="radio" name="sexo" /> Masculino</label>
-          <label><input type="radio" name="sexo" /> Feminino</label>
+          <label
+            ><input
+              type="radio"
+              name="sexo"
+              value="Masculino"
+              [(ngModel)]="dados.sexo"
+            />
+            Masculino</label
+          >
+          <label
+            ><input
+              type="radio"
+              name="sexo"
+              value="Feminino"
+              [(ngModel)]="dados.sexo"
+            />
+            Feminino</label
+          >
         </div>
       </div>
     </div>
 
     <div class="cadastro-right">
-      <form>
+      <form (ngSubmit)="concluirCadastro()">
         <div class="form-group">
           <label>Nome Completo</label>
-          <input type="text" />
+          <input type="text" name="nome" [(ngModel)]="dados.nome_completo" />
         </div>
 
         <div class="form-group">
           <label>E-mail</label>
-          <input type="email" />
+          <input type="email" name="email" [(ngModel)]="dados.email" />
         </div>
 
         <div class="form-group">
           <label>CPF</label>
-          <input type="text" placeholder="Ex: 000.000.000-00" />
+          <input
+            type="text"
+            name="cpf"
+            [(ngModel)]="dados.cpf"
+            placeholder="Ex: 000.000.000-00"
+          />
         </div>
 
         <div class="form-group">
           <label>Endereço</label>
-          <input type="text" />
+          <input type="text" name="endereco" [(ngModel)]="dados.endereco" />
         </div>
 
         <div class="form-row">
           <div class="form-group">
             <label>Data de nascimento</label>
-            <input type="text" placeholder="Ex: DD/MM/AAAA" />
+            <input
+              type="date"
+              name="data"
+              [(ngModel)]="dados.data_nascimento"
+              placeholder="Ex: DD/MM/AAAA"
+            />
           </div>
 
           <div class="form-group">
             <label>Telefone</label>
-            <input type="text" placeholder="Ex: (DD) NNNNN-NNNN" />
+            <input
+              type="text"
+              name="telefone"
+              [(ngModel)]="dados.telefone"
+              placeholder="Ex: (DD) NNNNN-NNNN"
+            />
           </div>
         </div>
 
@@ -68,13 +170,19 @@
           <label>Senha</label>
           <input
             type="password"
-            placeholder="Dica: use letras maiúsculas, minúsculas e caracteres especiais"
+            name="senha"
+            [(ngModel)]="dados.senha"
+            placeholder="Dica: use letras..."
           />
         </div>
 
         <div class="form-group">
           <label>Confirmar senha</label>
-          <input type="password" />
+          <input
+            type="password"
+            name="confirmar"
+            [(ngModel)]="dados.confirmarSenha"
+          />
         </div>
 
         <div class="buttons">

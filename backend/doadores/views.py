@@ -1,6 +1,7 @@
-from rest_framework.decorators import api_view
-from rest_framework.response import Response
+from rest_framework import viewsets
+from .models import Doador
+from .serializers import DoadorSerializer
 
-@api_view(['GET'])
-def teste(request):
-    return Response({"status": "API funcionando"})
+class DoadorViewSet(viewsets.ModelViewSet):
+    queryset = Doador.objects.all()
+    serializer_class = DoadorSerializer
