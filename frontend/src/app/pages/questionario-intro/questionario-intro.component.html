@@ -21,10 +21,10 @@
         
         <div class="acoes-regras">
             <label class="checkbox-regras">
-                <input type="checkbox"/>Li e concordo com as regras do questionário
+                <input type="checkbox" [(ngModel)]="aceitoRegras" /> Li e concordo com as regras do questionário
             </label>
           
-            <button class="btn-iniciar">
+            <button class="btn-iniciar" [disabled]="!aceitoRegras" (click)="iniciar()">
                 Iniciar Questionário
             </button>
         </div>
