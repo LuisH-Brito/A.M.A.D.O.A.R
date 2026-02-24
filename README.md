@@ -9,6 +9,11 @@ pip install -r requirements.txt
 python manage.py migrate
 python manage.py runserver
 
+Comando para criar um superuser e acessar as coisa no http://127.0.0.1:8000/admin/
+
+    -> python manage.py createsuperuser
+    Ele vai pedir um nome, email e uma senha
+
 abra a pasta do FRONTEND
 npm install
 ng serve
