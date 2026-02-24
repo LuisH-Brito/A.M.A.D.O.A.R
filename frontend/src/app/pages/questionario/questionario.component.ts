@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { PerguntasComponent } from '../../componentes/perguntas/perguntas.component';
+import { QuestionarioService } from '../../services/questionario.service';
 
 @Component({
   selector: 'app-questionario',
@@ -9,15 +10,31 @@ import { PerguntasComponent } from '../../componentes/perguntas/perguntas.compon
   templateUrl: './questionario.component.html',
   styleUrl: './questionario.component.scss'
 })
-export class QuestionarioComponent {
+export class QuestionarioComponent implements OnInit {
   passoAtual: number = 1;
   fraseMotivacional: string = 'Falta pouco para você salvar vidas!';
+  carregando: boolean = true;
+  listaDePerguntas: { id: number, texto: string, resposta?: 'Sim' | 'Não' | null }[] = [];
+  router: any;
 
-  listaDePerguntas: { id: number, texto: string, resposta?: 'Sim' | 'Não' | null }[] = [
-    { id: 1, texto: 'Você está se sentindo bem de saúde hoje?', resposta: null },
-    { id: 2, texto: 'Você tem entre 16 e 69 anos?', resposta: null },
-    { id: 3, texto: 'Você pesa mais de 50kg?', resposta: null }
-  ];
+  constructor(private questionarioService: QuestionarioService) { }
+  ngOnInit() {
+    this.questionarioService.getPerguntas().subscribe({
+      next: (dadosDaApi) => {
+        this.listaDePerguntas = dadosDaApi.map(p => ({
+          id: p.id,
+          texto: p.texto,
+          resposta: null
+        }));
+        this.carregando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar as perguntas no backend:', erro);
+        alert('Erro ao carregar o questionário. Verifique se o backend está funcionando corretamente.');
+        this.carregando = false;
+      }
+    });
+  }
 
   get totalPassos(): number {
     return this.listaDePerguntas.length;
@@ -59,9 +76,18 @@ export class QuestionarioComponent {
       this.passoAtual = primeiraNaoRespondida + 1;
       alert(`Por favor, responda à pergunta ${this.passoAtual} antes de finalizar.`);
     } else {
-      // mudar dps para enviar para o banco de dados
-      console.log('ENVIAR PARA O BANCO DE DADOS:', this.listaDePerguntas);
-      alert('Questionário finalizado com sucesso! ');
+
+      this.questionarioService.salvarQuestionario(this.listaDePerguntas).subscribe({
+        next: (respostaBackend) => {
+          alert('Questionário finalizado e salvo com sucesso!');
+          console.log('Resposta:', respostaBackend);
+          this.router.navigate(['/home']);
+        },
+        error: (erro) => {
+          console.error('Erro ao salvar no banco:', erro);
+          alert('Ocorreu um erro ao enviar suas respostas.');
+        }
+      });
       
     }
   }

@@ -14,26 +14,37 @@
       <p class="frase-motivacional">{{ fraseMotivacional }}</p>
     </div>
 
-<app-perguntas
-      [pergunta]="perguntaAtual"
-      [respostaSalva]="respostaAtual" 
-      (aoResponder)="lidarComResposta($event)">
-    </app-perguntas>
+    <div *ngIf="carregando" class="mensagem-carregando">
+      Carregando perguntas do sistema...
+    </div>
 
-    <div class="footer-navegacao">
-      <button class="btn-seta" (click)="voltar()" [disabled]="passoAtual === 1">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
-      </button>
+    <ng-container *ngIf="!carregando && listaDePerguntas.length > 0">
       
-      <span class="contador">{{ passoAtual }}/{{ totalPassos }}</span>
-      
-      <button class="btn-seta" *ngIf="passoAtual < totalPassos" (click)="avancar()">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-      </button>
+      <app-perguntas
+        [pergunta]="perguntaAtual"
+        [respostaSalva]="respostaAtual" 
+        (aoResponder)="lidarComResposta($event)">
+      </app-perguntas>
 
-      <button class="btn-finalizar" *ngIf="passoAtual === totalPassos" (click)="finalizar()">
-        Finalizar Questionario
-      </button>
+      <div class="footer-navegacao">
+        <button class="btn-seta" (click)="voltar()" [disabled]="passoAtual === 1">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        
+        <span class="contador">{{ passoAtual }}/{{ totalPassos }}</span>
+        
+        <button class="btn-seta" *ngIf="passoAtual < totalPassos" (click)="avancar()">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+        </button>
+
+        <button class="btn-finalizar" *ngIf="passoAtual === totalPassos" (click)="finalizar()">
+          Finalizar Questionario
+        </button>
+      </div>
+    </ng-container>
+
+    <div *ngIf="!carregando && listaDePerguntas.length === 0" class="mensagem-erro">
+      Nenhuma pergunta encontrada no sistema.
     </div>
 
   </div>
