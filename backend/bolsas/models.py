@@ -1,5 +1,8 @@
 from django.db import models
 from choices import StatusBolsa
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
+import os
 
 class Bolsa(models.Model):
     processo = models.ForeignKey('processos_doacao.Processo_Doacao', on_delete=models.CASCADE, related_name='bolsas')
@@ -16,3 +19,10 @@ class Bolsa(models.Model):
 
     def __str__(self):
         return f"Bolsa {self.id} | Status: {self.get_status_display()}"
+    
+@receiver(post_delete, sender=Bolsa)
+def deletar_laudo_bolsa(sender, instance, **kwargs):
+    if instance.arquivo_laudo:
+        caminho_arquivo = instance.arquivo_laudo.path
+        if os.path.isfile(caminho_arquivo):
+            os.remove(caminho_arquivo)
