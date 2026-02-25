@@ -7,6 +7,7 @@ import { GestaoPessoalCrudComponent } from './pages/gestao-pessoal-crud/gestao-p
 import { QuestionarioComponent } from './pages/questionario/questionario.component';
 import { QuestionarioIntroComponent } from './pages/questionario-intro/questionario-intro.component';
 import { ListaProcessoDoacaoComponent } from './pages/lista-processo-doacao/lista-processo-doacao.component';
+import { ProcessoDoacaoComponent } from './pages/processo-doacao/processo-doacao.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -16,5 +17,6 @@ export const routes: Routes = [
   { path: 'gestao-crud', component: GestaoPessoalCrudComponent },
   { path: 'questionario', component: QuestionarioIntroComponent },
   { path: 'questionario_form', component: QuestionarioComponent },
+  { path: 'processo-doacao', component: ProcessoDoacaoComponent },
   { path: 'processo-doacao-andamento', component: ListaProcessoDoacaoComponent },
 ];
