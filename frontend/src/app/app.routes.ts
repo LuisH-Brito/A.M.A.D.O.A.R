@@ -16,5 +16,5 @@ export const routes: Routes = [
   { path: 'gestao-crud', component: GestaoPessoalCrudComponent },
   { path: 'questionario', component: QuestionarioIntroComponent },
   { path: 'questionario_form', component: QuestionarioComponent },
-  { path: 'processo-doacao', component: ListaProcessoDoacaoComponent },
+  { path: 'processo-doacao-andamento', component: ListaProcessoDoacaoComponent },
 ];

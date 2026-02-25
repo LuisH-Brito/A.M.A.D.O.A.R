@@ -1,1 +1,70 @@
-<p>lista-processo-doacao works!</p>
+<div class="pagina">
+    <div class="centralizando">
+        
+        <h2 class="titulo">Processos em Andamento</h2>
+        
+        <nav class="navegacao-abas" role="tablist" aria-label="Etapas de Doação">
+            <button 
+                role="tab"
+                [attr.aria-selected]="abaAtiva === 'pre-triagem'"
+                [class.ativo]="abaAtiva === 'pre-triagem'" 
+                (click)="selecionarAba('pre-triagem')">
+                Pré-Triagem
+            </button>
+            <button 
+                role="tab"
+                [attr.aria-selected]="abaAtiva === 'triagem'"
+                [class.ativo]="abaAtiva === 'triagem'" 
+                (click)="selecionarAba('triagem')">
+                Triagem
+            </button>
+            <button 
+                role="tab"
+                [attr.aria-selected]="abaAtiva === 'coleta'"
+                [class.ativo]="abaAtiva === 'coleta'" 
+                (click)="selecionarAba('coleta')">
+                Coleta
+            </button>
+        </nav>
+
+        <div class="lista-container">
+            <div class="lista-scroll">
+
+                @if (abaAtiva === 'pre-triagem') {
+                    <div class="usuario-card">
+                        <div class="info">
+                            Nome: Claudionor Alencar (Aguardando Pré-triagem)
+                        </div>
+                        <div class="acoes">
+                            <button class="btn-acao">Realizar Pré-triagem</button>
+                        </div>
+                    </div>
+                }
+
+                @if (abaAtiva === 'triagem') {
+                    <div class="usuario-card">
+                        <div class="info">
+                            Nome: Claudionor Alencar (Aguardando Triagem)
+                        </div>
+                        <div class="acoes">
+                            <button class="btn-acao">Realizar Triagem</button>
+                        </div>
+                    </div>
+                }
+
+                @if (abaAtiva === 'coleta') {
+                    <div class="usuario-card">
+                        <div class="info">
+                            Nome: Claudionor Alencar (Aguardando Coleta)
+                        </div>
+                        <div class="acoes">
+                            <button class="btn-acao">Realizar Coleta</button>
+                        </div>
+                    </div>
+                }
+
+            </div>
+        </div>
+        
+    </div>
+</div>
