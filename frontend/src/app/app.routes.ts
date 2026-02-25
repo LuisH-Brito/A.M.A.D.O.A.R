@@ -6,14 +6,15 @@ import { GestaoPessoalComponent } from './pages/gestao-pessoal/gestao-pessoal.co
 import { GestaoPessoalCrudComponent } from './pages/gestao-pessoal-crud/gestao-pessoal-crud.component';
 import { QuestionarioComponent } from './pages/questionario/questionario.component';
 import { QuestionarioIntroComponent } from './pages/questionario-intro/questionario-intro.component';
+import { ListaProcessoDoacaoComponent } from './pages/lista-processo-doacao/lista-processo-doacao.component';
 
-// isso aqui definie a home como pagina inicial galera
 export const routes: Routes = [
-  { path: '', component: HomeComponent },
+  { path: '', component: HomeComponent }, // Define Home como padrão
   { path: 'login', component: LoginComponent },
   { path: 'cadastro', component: CadastroComponent },
   { path: 'gestao-pessoal', component: GestaoPessoalComponent },
   { path: 'gestao-crud', component: GestaoPessoalCrudComponent },
   { path: 'questionario', component: QuestionarioIntroComponent },
   { path: 'questionario_form', component: QuestionarioComponent },
+  { path: 'processo-doacao', component: ListaProcessoDoacaoComponent },
 ];
