@@ -9,6 +9,7 @@ import { QuestionarioIntroComponent } from './pages/questionario-intro/questiona
 import { ListaProcessoDoacaoComponent } from './pages/lista-processo-doacao/lista-processo-doacao.component';
 import { ProcessoDoacaoComponent } from './pages/processo-doacao/processo-doacao.component';
 import { DoadorComponent } from './pages/doador/doador.component';
+import { CadastroFuncionarioComponent } from './pages/cadastro-funcionario/cadastro-funcionario.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -24,4 +25,5 @@ export const routes: Routes = [
     component: ListaProcessoDoacaoComponent,
   },
   { path: 'pagina-doador', component: DoadorComponent },
+  { path: 'cadastro-funcionario', component: CadastroFuncionarioComponent },
 ];

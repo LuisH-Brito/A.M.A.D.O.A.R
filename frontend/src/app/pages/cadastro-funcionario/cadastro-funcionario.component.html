@@ -1,0 +1,90 @@
+<div class="pagina-funcionario">
+  <div class="container">
+    <h2 class="titulo">Cadastro Funcionario</h2>
+
+    <form class="formulario">
+      <div class="linha">
+        <div class="campo grande">
+          <label>Nome Completo</label>
+          <input type="text" name="nome" />
+        </div>
+
+        <div class="campo pequeno">
+          <label>Cargo</label>
+          <select name="cargo">
+            <option value="">Selecione</option>
+            <option>Médico</option>
+            <option>Enfermeiro</option>
+            <option>Recepcionista</option>
+            <option>Biomédico</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label>E-mail</label>
+          <input type="email" name="email" />
+        </div>
+
+        <div class="campo">
+          <label>Telefone</label>
+          <input
+            type="text"
+            placeholder="Ex: (DD) NNNNN-NNNN"
+            name="telefone"
+          />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo pequeno">
+          <label>Data de nascimento</label>
+          <input
+            type="date"
+            placeholder="Ex: DD/MM/AAAA"
+            name="dataNascimento"
+          />
+        </div>
+
+        <div class="campo grande">
+          <label>CPF</label>
+          <input type="text" placeholder="Ex: 000.000.000-00" name="cpf" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label>Endereço</label>
+          <input type="text" name="endereco" />
+        </div>
+
+        <div class="campo">
+          <label>CRM/COREM</label>
+          <input type="text" name="registro" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label>Senha</label>
+          <input
+            type="password"
+            placeholder="Dica: use letras maiúsculas, minúsculas e caracteres especiais"
+            name="senha"
+          />
+        </div>
+
+        <div class="campo">
+          <label>Confirmar senha</label>
+          <input type="password" name="confirmarSenha" />
+        </div>
+      </div>
+
+      <div class="acoes">
+        <button type="button" class="btn-cancelar">Cancelar</button>
+        <button type="submit" class="btn-concluir">Concluir</button>
+      </div>
+    </form>
+  </div>
+</div>
