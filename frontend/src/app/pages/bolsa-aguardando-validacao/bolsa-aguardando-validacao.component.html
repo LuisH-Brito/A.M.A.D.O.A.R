@@ -1,0 +1,21 @@
+<div class="pagina">
+  <div class="centralizando">
+    <h2 class="titulo">Validação das bolsas</h2>
+
+    <div class="lista-container">
+      <div class="lista-scroll">
+        @for (bolsa of bolsas; track bolsa.id) {
+          <div class="usuario-card">
+            <div class="info">
+              ID: {{ bolsa.id }} &nbsp;&nbsp;&nbsp; Data da Coleta:
+              {{ bolsa.dataColeta }}
+            </div>
+            <div class="acoes">
+              <button class="btn-acao">Realizar Validação</button>
+            </div>
+          </div>
+        }
+      </div>
+    </div>
+  </div>
+</div>
