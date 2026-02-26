@@ -1,0 +1,63 @@
+<div class="pagina">
+  <div class="centralizando">
+    <h2 class="titulo">Validação Final e Estoque</h2>
+
+    <div class="card-validacao">
+      <div class="formulario-grid">
+        <div class="campo">
+          <label for="nome">Nome Completo</label>
+          <input
+            type="text"
+            id="nome"
+            name="nomeDoador"
+            placeholder="Digite o nome do doador"
+          />
+        </div>
+
+        <div class="campo">
+          <label for="cpf">CPF</label>
+          <input
+            type="text"
+            id="cpf"
+            name="cpfDoador"
+            placeholder="000.000.000-00"
+          />
+        </div>
+      </div>
+
+      <div class="conteudo-principal">
+        <div class="secao-sangue">
+          <label class="label-destaque">Tipo Sanguíneo</label>
+          <div class="grid-sangue">
+            @for (
+              tipo of ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
+              track tipo
+            ) {
+              <label class="radio-card">
+                <input type="radio" name="tipo-sangue" [value]="tipo" />
+                <span class="radio-label">{{ tipo }}</span>
+              </label>
+            }
+          </div>
+        </div>
+
+        <div class="secao-upload">
+          <label class="label-destaque">Documentação</label>
+          <div class="upload-container">
+            <i class="bi bi-cloud-arrow-up-fill"></i>
+            <p>Arraste ou clique para enviar</p>
+            <button class="btn-upload">Exame Laboratorial</button>
+            <input type="file" hidden #fileInput />
+          </div>
+        </div>
+      </div>
+
+      <div class="acoes-final">
+        <button class="btn-inapt" type="button">Marcar como Inapto</button>
+        <button class="btn-liberar" type="button">
+          Liberar para o Estoque
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

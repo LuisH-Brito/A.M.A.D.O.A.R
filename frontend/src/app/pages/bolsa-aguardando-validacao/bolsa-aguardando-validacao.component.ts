@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-bolsa-aguardando-validacao',
@@ -20,4 +21,9 @@ export class BolsaAguardandoValidacaoComponent {
     { id: 4, dataColeta: '09/12/2020', validada: true },
     { id: 4, dataColeta: '09/12/2020', validada: true },
   ];
+  constructor(private router: Router) {}
+
+  validarBolsa() {
+    this.router.navigate(['/validar-bolsa']);
+  }
 }
