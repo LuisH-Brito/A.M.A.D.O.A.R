@@ -1,0 +1,113 @@
+<div class="pagina-doador">
+  <div class="container">
+    <h2 class="titulo">Página do Doador</h2>
+
+    <div class="formulario">
+      <div class="linha">
+        <div class="campo grande">
+          <label>Nome completo</label>
+          <input type="text" [(ngModel)]="doador.nome" />
+        </div>
+
+        <div class="campo pequeno">
+          <label>Tipo Sanguíneo</label>
+          <input type="text" [(ngModel)]="doador.tipoSanguineo" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo estado">
+          <label>Estado</label>
+          <input type="text" [(ngModel)]="doador.estado" />
+        </div>
+
+        <div class="campo">
+          <label>Cidade</label>
+          <input type="text" [(ngModel)]="doador.cidade" />
+        </div>
+
+        <div class="campo grande">
+          <label>Rua</label>
+          <input type="text" [(ngModel)]="doador.rua" />
+        </div>
+
+        <div class="campo numero">
+          <label>Nº</label>
+          <input type="text" [(ngModel)]="doador.numero" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label>Telefone</label>
+          <input type="text" [(ngModel)]="doador.telefone" />
+        </div>
+
+        <div class="campo">
+          <label>Email</label>
+          <input type="email" [(ngModel)]="doador.email" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label>Data de Nascimento</label>
+          <input type="date" [(ngModel)]="doador.dataNascimento" />
+        </div>
+
+        <div class="campo pequeno">
+          <label>Sexo</label>
+          <select [(ngModel)]="doador.sexo">
+            <option value="Feminino">Feminino</option>
+            <option value="Masculino">Masculino</option>
+          </select>
+        </div>
+
+        <div class="campo grande">
+          <label>CPF</label>
+          <input type="text" [(ngModel)]="doador.cpf" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo">
+          <label>Última Doação</label>
+          <input type="date" [(ngModel)]="doador.ultimaDoacao" />
+        </div>
+
+        <div class="campo">
+          <label>Próxima Doação</label>
+          <input type="date" [(ngModel)]="doador.proximaDoacao" />
+        </div>
+      </div>
+    </div>
+
+    <div class="acoes-centrais">
+      <button class="btn-principal">Visualizar Carteira Digital</button>
+
+      <button class="btn-principal">Visualizar Questionário Online</button>
+    </div>
+
+    <div class="historico">
+      <div class="historico-topo">
+        <h3>Histórico de exames</h3>
+        <i class="bi bi-funnel"></i>
+      </div>
+
+      <div class="tabela-wrapper">
+        <div class="tabela-scroll">
+          <div class="linha-exame" *ngFor="let exame of exames">
+            <div class="nome-exame">
+              {{ exame.nome }}
+              <i class="bi bi-download"></i>
+            </div>
+
+            <div class="data-exame">
+              {{ exame.data }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

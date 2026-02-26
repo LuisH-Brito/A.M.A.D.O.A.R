@@ -8,6 +8,7 @@ import { QuestionarioComponent } from './pages/questionario/questionario.compone
 import { QuestionarioIntroComponent } from './pages/questionario-intro/questionario-intro.component';
 import { ListaProcessoDoacaoComponent } from './pages/lista-processo-doacao/lista-processo-doacao.component';
 import { ProcessoDoacaoComponent } from './pages/processo-doacao/processo-doacao.component';
+import { DoadorComponent } from './pages/doador/doador.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -18,5 +19,9 @@ export const routes: Routes = [
   { path: 'questionario', component: QuestionarioIntroComponent },
   { path: 'questionario_form', component: QuestionarioComponent },
   { path: 'processo-doacao', component: ProcessoDoacaoComponent },
-  { path: 'processo-doacao-andamento', component: ListaProcessoDoacaoComponent },
+  {
+    path: 'processo-doacao-andamento',
+    component: ListaProcessoDoacaoComponent,
+  },
+  { path: 'pagina-doador', component: DoadorComponent },
 ];
