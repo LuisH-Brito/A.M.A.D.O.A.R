@@ -11,4 +11,8 @@ export class ApiService {
   getDoadores() {
     return this.http.get(this.baseUrl + 'doadores/');
   }
+
+  getProcessos() {
+    return this.http.get(this.baseUrl + 'processos/');
+  }
 }

@@ -30,62 +30,29 @@
         <div class="lista-container">
             <div class="lista-scroll">
 
-                @if (abaAtiva === 'pre-triagem') {
-                    <div class="usuario-card">
-                        <div class="info">
-                            Nome: Claudionor Alencar
-                        </div>
-                        <div class="acoes">
-                            <button class="btn-acao">Realizar Pré-triagem</button>
-                        </div>
+                <ng-container *ngIf="abaAtiva === 'pre-triagem'">
+                    <div *ngFor="let p of preTriagem" class="usuario-card">
+                        <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
+                        <div class="acoes"><button class="btn-acao">Realizar Pré-triagem</button></div>
                     </div>
-                    <div class="usuario-card">
-                        <div class="info">
-                            Nome: Jean Gonzaga
-                        </div>
-                        <div class="acoes">
-                            <button class="btn-acao">Realizar Pré-triagem</button>
-                        </div>
-                    </div>
-                }
+                    <div *ngIf="preTriagem.length === 0">Nenhum processo em pré-triagem.</div>
+                </ng-container>
 
-                @if (abaAtiva === 'triagem') {
-                    <div class="usuario-card">
-                        <div class="info">
-                            Nome: Carlos Martins
-                        </div>
-                        <div class="acoes">
-                            <button class="btn-acao">Realizar Triagem</button>
-                        </div>
+                <ng-container *ngIf="abaAtiva === 'triagem'">
+                    <div *ngFor="let p of triagem" class="usuario-card">
+                        <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
+                        <div class="acoes"><button class="btn-acao">Realizar Triagem</button></div>
                     </div>
-                    <div class="usuario-card">
-                        <div class="info">
-                            Nome: Luiz Matos
-                        </div>
-                        <div class="acoes">
-                            <button class="btn-acao">Realizar Triagem</button>
-                        </div>
-                    </div>
-                }
+                    <div *ngIf="triagem.length === 0">Nenhum processo em triagem.</div>
+                </ng-container>
 
-                @if (abaAtiva === 'coleta') {
-                    <div class="usuario-card">
-                        <div class="info">
-                            Nome: Manoel Limeira
-                        </div>
-                        <div class="acoes">
-                            <button class="btn-acao">Realizar Coleta</button>
-                        </div>
+                <ng-container *ngIf="abaAtiva === 'coleta'">
+                    <div *ngFor="let p of coleta" class="usuario-card">
+                        <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
+                        <div class="acoes"><button class="btn-acao">Realizar Coleta</button></div>
                     </div>
-                    <div class="usuario-card">
-                        <div class="info">
-                            Nome: André Nasserala
-                        </div>
-                        <div class="acoes">
-                            <button class="btn-acao">Realizar Coleta</button>
-                        </div>
-                    </div>
-                }
+                    <div *ngIf="coleta.length === 0">Nenhum processo em coleta.</div>
+                </ng-container>
 
             </div>
         </div>
