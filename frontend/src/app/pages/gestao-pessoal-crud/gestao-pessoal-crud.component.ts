@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
 
 @Component({
   selector: 'app-gestao-pessoal-crud',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, PaginacaoComponent],
   templateUrl: './gestao-pessoal-crud.component.html',
   styleUrl: './gestao-pessoal-crud.component.scss',
 })
@@ -54,17 +55,16 @@ export class GestaoPessoalCrudComponent {
     return this.usuariosFiltrados.slice(inicio, fim);
   }
 
-  mudarPagina(numero: number) {
-    if (numero >= 1 && numero <= this.totalPaginas) {
-      this.paginaAtual = numero;
-    }
+  mudarPagina(novaPagina: number) {
+    this.paginaAtual = novaPagina;
   }
 
   excluir(id: number) {
     this.usuarios = this.usuarios.filter((u) => u.id !== id);
 
-    if (this.paginaAtual > this.totalPaginas) {
-      this.paginaAtual = this.totalPaginas || 1;
+    const maxPaginas = Math.ceil(this.usuariosFiltrados.length / this.itensPorPagina);
+    if (this.paginaAtual > maxPaginas && maxPaginas > 0) {
+      this.paginaAtual = maxPaginas;
     }
   }
 }
