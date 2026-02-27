@@ -1,0 +1,330 @@
+.estoque-page {
+    background-color: #f7f9f8;
+    padding: 40px 20px;
+    min-height: 100vh;
+}
+
+.centralizando {
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.header-simples {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+
+    h2 { font-size: 1.5rem; font-weight: 700; color: #333; margin: 0; }
+    .btn-icone {
+            background: none; border: none; cursor: pointer; color: #000;
+            display: flex; align-items: center; justify-content: center;
+            &:hover { opacity: 0.7; }
+  }
+}
+
+// CARDS SUPERIORES
+.kpi-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr); 
+        gap: 15px; 
+        width: 100%;
+        max-width: 480px; 
+        margin: 0 auto 20px auto;
+
+    .kpi-card {
+        width: 100%; 
+        height: 120px;
+        border-radius: 12px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+
+        .titulo { font-size: 1rem; font-weight: 600; 
+            text-align: center; 
+            line-height: 1.2; 
+            margin-bottom: 10px; 
+        }
+        .numero { font-size: 1.8rem; font-weight: 700; }
+
+        &.valida { background-color: #6bb044; }
+        &.vencendo { background-color: #ecc03f; }
+        &.vencida { background-color: #d13038; }
+    }
+}
+
+// TAGS AZUIS
+.tags-sangue {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); 
+    gap: 12px 15px; 
+    width: 100%;
+    max-width: 480px; 
+    margin: 0 auto 50px auto;
+
+    .tag-item {
+        background-color: #004b87;
+        color: white;
+        border-radius: 6px;
+        display: flex;
+        overflow: hidden;
+        font-weight: 600;
+        font-size: 0.85rem;
+        width: 100%; 
+
+        .tipo { padding: 4px 0; flex: 1; text-align: center; }
+        .contagem { background-color: rgba(0,0,0,0.2); padding: 4px 0; flex: 1; text-align: center; }
+    }
+}
+
+// CONTEÚDO PRINCIPAL
+.conteudo-principal {
+    display: block;   
+}
+
+.lista-area {
+    width: 100%;
+}
+
+.controles-topo {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+
+    .campo {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        label { font-weight: 600; color: #444; font-size: 0.95rem; margin-left: 5px;}
+        
+        input {
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background-color: #e5e5e5;
+        padding: 0 10px;
+        font-size: 0.95rem;
+        }
+    }
+  
+    .campo-busca { flex: 1; }
+
+    .custom-dropdown {
+        position: relative; 
+        min-width: 180px;
+
+    .btn-dropdown {
+        height: 38px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        background-color: #e5e5e5;
+        padding: 0 15px;
+        font-size: 0.95rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        color: #333;
+        font-weight: 600;
+
+        &:hover { background-color: #d5d5d5; }
+    }
+
+    .dropdown-menu-flutuante {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        margin-top: 5px;
+        width: 100%;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        z-index: 100; 
+
+        button {
+            width: 100%;
+            text-align: center;
+            padding: 12px 10px;
+            background: white;
+            border: none;
+            border-bottom: 1px solid #f0f0f0;
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: #444; 
+            cursor: pointer;
+            transition: 0.2s;
+
+            &:last-child { border-bottom: none; }
+            &:hover { background-color: #f9f9f9; }
+
+            &.ativo {
+            background-color: #f0f7f2; 
+            color: #1e7e34;            
+            border-left: 3px solid #1e7e34; 
+            }
+
+            &.mais-opcoes {
+            font-size: 1.2rem;
+            color: #999;
+            }
+        } 
+    }
+  }
+}
+
+.lista-bolsas-expandivel {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 100%;
+
+  .bolsa-card-ext {
+    background: #fff;
+    border-radius: 8px;
+    border: 2px solid #ccc;
+    overflow: hidden;
+    transition: all 0.2s ease;
+
+    &.vencida { border-color: #dc3545; }
+    &.vencendo { border-color: #ffc107; }
+    &.valida { border-color: #28a745; }
+
+    .bolsa-header {
+      display: flex;
+      align-items: center;
+      padding: 15px 20px;
+      cursor: pointer;
+      gap: 15px;
+
+      &:hover { background-color: #fafafa; }
+
+      .tipo-badge {
+        background-color: #C8282B; 
+        color: #fff;
+        width: 55px;
+        height: 55px;
+        border-radius: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.2rem;
+        
+        i { font-size: 1rem; margin-bottom: -4px; opacity: 0.9; }
+      }
+
+      .bolsa-info-main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+
+        .bolsa-title-row {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          .bolsa-id { font-weight: 800; font-size: 1.15rem; color: #222; }
+          .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fff;
+
+            &.vencida { background-color: #dc3545; }
+            &.vencendo { background-color: #ffc107; color: #333; }
+            &.valida { background-color: #28a745; }
+          }
+        }
+
+        .doador-nome { color: #555; font-size: 1rem; }
+
+        .vencimento-text {
+          font-size: 0.9rem;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 6px;
+          margin-top: 2px;
+          
+          &.vencida { color: #dc3545; }
+          &.vencendo { color: #d39e00; } 
+          &.valida { color: #28a745; }
+        }
+      }
+
+      .bolsa-action-icon {
+        color: #888;
+        font-size: 1.3rem;
+      }
+    }
+
+    .bolsa-body {
+      padding: 0 20px 20px 20px;
+      border-top: 1px solid #f0f0f0;
+
+      .info-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 15px;
+        margin-top: 20px;
+
+        .info-box {
+          border: 1px solid #eee;
+          border-radius: 10px;
+          padding: 15px;
+          display: flex;
+          flex-direction: column;
+          background-color: #fff;
+
+          .info-label { color: #888; font-size: 0.85rem; margin-bottom: 5px; display: flex; align-items: center; gap: 6px;}
+          .info-value { font-weight: 700; color: #222; font-size: 1.05rem; }
+          .info-sub { color: #888; font-size: 0.9rem; margin-top: 2px;}
+        }
+      }
+
+        .botoes-acao {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+
+            button {
+                flex: 1;
+                padding: 12px;
+                border-radius: 8px;
+                font-weight: 700;
+                font-size: 1rem;
+                cursor: pointer;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s;
+
+                &.btn-usar {
+                    background-color: #2563eb; 
+                    color: #fff;
+                    border: none;
+                    box-shadow: 0 4px 6px rgba(37, 99, 235, 0.2);
+                    &:hover { background-color: #1d4ed8; transform: translateY(-2px); }
+                }
+
+                &.btn-descartar {
+                        background-color: #fff;
+                        color: #dc3545;
+                        border: 1px solid #dc3545;
+                        &:hover { background-color: #fff5f5; }
+                }
+            }
+      }
+    }
+  }
+}

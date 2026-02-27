@@ -1,0 +1,108 @@
+<div class="estoque-page">
+  <div class="centralizando">
+    
+    <div class="header-simples">
+        <button class="btn-icone" (click)="voltar()">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        </button>
+        <h2>Estoque de Bolsa</h2>
+        <div style="width: 24px;"></div>
+    </div>
+
+    <div class="kpi-container">
+        <div class="kpi-card valida">
+            <span class="titulo">
+                Bolsas<br>validas</span><span class="numero">{{ resumoGeral.validas }}
+            </span>
+        </div>
+      <div class="kpi-card vencendo">
+        <span class="titulo">
+            Bolsas<br>vencendo</span><span class="numero">{{ resumoGeral.vencendo }}
+            </span>
+        </div>
+      <div class="kpi-card vencida"><span class="titulo">Bolsas<br>vencidas</span><span class="numero">{{ resumoGeral.vencidas }}</span></div>
+    </div>
+
+    <div class="tags-sangue">
+      <div class="tag-item" *ngFor="let item of tiposSanguineos">
+        <span class="tipo">{{ item.tipo }}</span><span class="contagem">{{ item.contagem }}</span>
+      </div>
+    </div>
+
+    <div class="conteudo-principal">
+
+      <div class="lista-area">
+        
+        <div class="controles-topo">
+          <div class="campo custom-dropdown">
+            <label>Filtro</label>
+            <button class="btn-dropdown" (click)="toggleMenuFiltro()">
+              {{ abaAtiva }}
+              <i class="bi bi-chevron-down"></i>
+            </button>
+            
+            <div class="dropdown-menu-flutuante" *ngIf="menuFiltroAberto">
+              <button *ngFor="let aba of abasMenu" 
+                      [class.ativo]="abaAtiva === aba" 
+                      (click)="selecionarAba(aba)">
+                {{ aba }}
+              </button>
+              <button class="mais-opcoes">...</button>
+            </div>
+          </div>
+
+          <div class="campo campo-busca">
+            <label>Buscar</label>
+            <input type="text" placeholder="Nome/cpf" [(ngModel)]="busca">
+          </div>
+        </div>
+
+        <div class="lista-bolsas-expandivel">
+          
+          <div *ngIf="bolsasFiltradas.length === 0" style="text-align: center; padding: 40px; color: #777;">
+            Nenhuma bolsa encontrada para este filtro.
+          </div>
+
+          <div class="bolsa-card-ext" *ngFor="let bolsa of bolsasPaginadas" [ngClass]="bolsa.status">
+            <div class="bolsa-header" (click)="toggleExpand(bolsa)">
+               <div class="tipo-badge"><i class="bi bi-droplet"></i><span>{{ bolsa.tipo }}</span></div>
+               <div class="bolsa-info-main">
+                 <div class="bolsa-title-row"><span class="bolsa-id">{{ bolsa.id }}</span><span class="status-badge" [ngClass]="bolsa.status">{{ bolsa.status === 'vencida' ? 'Vencida' : (bolsa.status === 'vencendo' ? 'Vence em breve' : 'Válida') }}</span></div>
+                 <span class="doador-nome">{{ bolsa.doadorNome }}</span>
+                 <span class="vencimento-text" [ngClass]="bolsa.status"><i class="bi bi-calendar"></i> {{ bolsa.textoVencimento }}</span>
+               </div>
+               <div class="bolsa-action-icon"><i class="bi" [ngClass]="bolsa.expandido ? 'bi-chevron-up' : 'bi-chevron-down'"></i></div>
+            </div>
+
+            <div class="bolsa-body" *ngIf="bolsa.expandido">
+               <div class="info-grid">
+                    <div class="info-box"><span class="info-label"><i class="bi bi-person"></i> Doador</span><span class="info-value">{{ bolsa.doadorNome }}</span><span class="info-sub">{{ bolsa.doadorEmail }}</span></div>
+                    <div class="info-box"><span class="info-label"><i class="bi bi-heart"></i> Enfermeiro (Coleta)</span><span class="info-value">{{ bolsa.enfermeiro }}</span></div>
+                    <div class="info-box"><span class="info-label"><i class="bi bi-stethoscope"></i> Médico (Validação)</span><span class="info-value">{{ bolsa.medico }}</span></div>
+                    <div class="info-box"><span class="info-label"><i class="bi bi-clock"></i> Data/Hora Validação</span><span class="info-value">{{ bolsa.dataValidacao }}</span></div>
+               </div>
+               <div class="botoes-acao">
+                    <button class="btn-usar" (click)="registrarUso(bolsa)">
+                        <i class="bi bi-pen"></i> Registrar Uso
+                    </button>
+                 
+                    <button class="btn-descartar" (click)="descartarBolsa(bolsa)">
+                        <i class="bi bi-trash"></i> Descartar
+                    </button>
+               </div>
+            </div>
+          </div>
+
+        </div>
+
+        <app-paginacao 
+          [paginaAtual]="paginaAtual" 
+          [totalItens]="bolsasFiltradas.length" 
+          [itensPorPagina]="itensPorPagina" 
+          (mudancaPagina)="mudarPagina($event)">
+        </app-paginacao>
+
+      </div>
+    </div>
+  </div>
+</div>

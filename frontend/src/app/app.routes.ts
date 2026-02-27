@@ -12,6 +12,7 @@ import { DoadorComponent } from './pages/doador/doador.component';
 import { CadastroFuncionarioComponent } from './pages/cadastro-funcionario/cadastro-funcionario.component';
 import { BolsaAguardandoValidacaoComponent } from './pages/bolsa-aguardando-validacao/bolsa-aguardando-validacao.component';
 import { ValidacaoBolsaComponent } from './pages/validacao-bolsa/validacao-bolsa.component';
+import { EstoqueBolsasComponent } from './pages/estoque-bolsas/estoque-bolsas.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -33,4 +34,5 @@ export const routes: Routes = [
     component: BolsaAguardandoValidacaoComponent,
   },
   { path: 'validar-bolsa', component: ValidacaoBolsaComponent },
+  { path: 'estoque-bolsas', component: EstoqueBolsasComponent },
 ];
