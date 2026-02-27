@@ -1,0 +1,212 @@
+.form-coleta {
+  background: #f4f4f4;
+  padding: 40px;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 750px;
+  margin: 0 auto;
+  background: #ffffff;
+  padding: 35px 40px;
+  border-radius: 14px;
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+}
+
+.titulo {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 30px;
+}
+
+.formulario {
+  width: 100%;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+}
+
+.layout-duplo {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
+.grupo-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+select.select-borda {
+  background-color: #ffffff;
+  border: 1px solid #4a4a4a;
+  border-radius: 6px;
+  color: #333;
+  padding: 0 14px;
+  height: 44px;
+  cursor: pointer;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+select.select-borda:hover,
+select.select-borda:focus {
+  border-color: #12a150;
+  background-color: #ffffff;
+}
+
+select.select-borda option {
+  background-color: #ffffff;
+  color: #333;
+  padding: 10px;
+}
+
+select.select-borda option:checked,
+select.select-borda option:hover {
+  background-color: #e6f1e9 !important;
+  color: #111 !important;
+}
+.campo-puncao {
+  display: flex;
+  flex-direction: column;
+  margin-top: 15px;
+}
+
+.titulo-puncao {
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+.radios-container {
+  display: flex;
+  gap: 30px;
+}
+
+.radio-label {
+  display: flex;
+  align-items: center;
+  font-weight: 700;
+  color: #111;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.radio-label input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
+  accent-color: #111;
+  cursor: pointer;
+}
+.coluna-info {
+  width: 280px;
+  flex-shrink: 0;
+}
+
+.card-doador {
+  border: 1px solid #707070;
+  border-radius: 16px;
+  padding: 20px;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.icone-perfil {
+  width: 70px;
+  height: 70px;
+  border: 2px solid #6b213a;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.icone-perfil svg {
+  width: 40px;
+  height: 40px;
+}
+
+.info-texto {
+  width: 100%;
+  color: #4a4a4a;
+}
+
+.info-texto p {
+  margin: 6px 0;
+  font-size: 14px;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  color: #333;
+}
+
+input,
+select {
+  height: 44px;
+  border-radius: 12px;
+  border: none;
+  padding: 0 14px;
+  background-color: #e6f1e9;
+  font-size: 15px;
+}
+
+.acoes {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 40px;
+}
+
+.btn-cancelar,
+.btn-concluir {
+  min-width: 180px;
+  height: 44px;
+  border-radius: 25px;
+  border: none;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  color: #fff;
+}
+
+.btn-cancelar {
+  background: #c40000;
+  box-shadow: 0 4px 10px rgba(196, 0, 0, 0.4);
+}
+
+.btn-concluir {
+  background: #12a150;
+  box-shadow: 0 4px 10px rgba(18, 161, 80, 0.4);
+}
+
+.btn-coleta {
+  border-radius: 8px;
+  margin-right: 40px;
+}
+
+.btn-cancelar:hover,
+.btn-concluir:hover {
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .linha {
+    flex-direction: column;
+  }
+
+  .acoes {
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+  }
+}

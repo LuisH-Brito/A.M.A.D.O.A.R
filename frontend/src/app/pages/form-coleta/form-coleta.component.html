@@ -1,0 +1,57 @@
+<div class="form-coleta">
+  <div class="container">
+    <h2 class="titulo">Coleta</h2>
+
+    <form class="formulario">
+      <div class="layout-duplo">
+        <div class="grupo-inputs">
+          <div class="campo">
+            <select name="responsavel" class="select-borda">
+              <option value="">Selecionar Responsável pela coleta</option>
+              <option value="Macilon">Macilon</option>
+              <option value="Nasserala">Nasserala</option>
+              <option value="Luiz Matos">Luiz Matos</option>
+            </select>
+          </div>
+          <div class="campo-puncao">
+            <label class="titulo-puncao"
+              >Punção Venosa Realizada com Sucesso:</label
+            >
+            <div class="radios-container">
+              <label class="radio-label">
+                <input type="radio" name="puncao" value="sim" checked />
+                Sim
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="puncao" value="nao" />
+                Não
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div class="coluna-info">
+          <div class="card-doador">
+            <div class="icone-perfil">
+              <svg viewBox="0 0 24 24" fill="#6B213A">
+                <path
+                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                />
+              </svg>
+            </div>
+            <div class="info-texto">
+              <p>Nome: {{ doador.nome }}</p>
+              <p>Sexo: {{ doador.sexo }}</p>
+              <p>CPF: {{ doador.cpf }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="acoes">
+        <button type="submit" class="btn-concluir btn-coleta">
+          Finalizar Coleta
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

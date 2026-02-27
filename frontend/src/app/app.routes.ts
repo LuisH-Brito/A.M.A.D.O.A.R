@@ -13,6 +13,9 @@ import { CadastroFuncionarioComponent } from './pages/cadastro-funcionario/cadas
 import { BolsaAguardandoValidacaoComponent } from './pages/bolsa-aguardando-validacao/bolsa-aguardando-validacao.component';
 import { ValidacaoBolsaComponent } from './pages/validacao-bolsa/validacao-bolsa.component';
 import { EstoqueBolsasComponent } from './pages/estoque-bolsas/estoque-bolsas.component';
+import { FormPreTriagemComponent } from './pages/form-pre-triagem/form-pre-triagem.component';
+import { FormTriagemComponent } from './pages/form-triagem/form-triagem.component';
+import { FormColetaComponent } from './pages/form-coleta/form-coleta.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -23,6 +26,9 @@ export const routes: Routes = [
   { path: 'questionario', component: QuestionarioIntroComponent },
   { path: 'questionario_form', component: QuestionarioComponent },
   { path: 'processo-doacao', component: ProcessoDoacaoComponent },
+  { path: 'form-pre-triagem', component: FormPreTriagemComponent },
+  { path: 'form-triagem', component: FormTriagemComponent },
+  { path: 'form-coleta', component: FormColetaComponent },
   {
     path: 'processo-doacao-andamento',
     component: ListaProcessoDoacaoComponent,
