@@ -1,0 +1,57 @@
+<div class="form-pre-triagem">
+  <div class="container">
+    <h2 class="titulo">Pré-triagem</h2>
+
+    <form class="formulario">
+      <div class="layout-duplo">
+        <div class="grupo-inputs">
+          <div class="campo">
+            <label>Altura(m):</label>
+            <input
+              type="number"
+              step="0.01"
+              name="altura"
+              placeholder="Ex: 1.75"
+            />
+          </div>
+
+          <div class="campo">
+            <label>Peso(kg):</label>
+            <input
+              type="number"
+              step="0.1"
+              name="peso"
+              placeholder="Ex: 89.2"
+            />
+          </div>
+
+          <div class="campo">
+            <label>Teste de Hemoglobina :</label>
+            <input type="number" step="0.1" name="hemoglobina" placeholder="" />
+          </div>
+        </div>
+
+        <div class="coluna-info">
+          <div class="card-doador">
+            <div class="icone-perfil">
+              <svg viewBox="0 0 24 24" fill="#6B213A">
+                <path
+                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+                />
+              </svg>
+            </div>
+            <div class="info-texto">
+              <p>Nome: {{ doador.nome }}</p>
+              <p>Sexo: {{ doador.sexo }}</p>
+              <p>CPF: {{ doador.cpf }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="acoes">
+        <button type="button" class="btn-cancelar">Inapto</button>
+        <button type="submit" class="btn-concluir">Apto</button>
+      </div>
+    </form>
+  </div>
+</div>

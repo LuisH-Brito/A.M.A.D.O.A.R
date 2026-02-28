@@ -1,0 +1,48 @@
+<div class="form-triagem">
+  <div class="container">
+    <h2 class="titulo">Triagem</h2>
+
+    <form class="formulario">
+      <div class="linha">
+        <div class="campo grande">
+          <label>Nome Completo:</label>
+          <input type="text" name="nome" [(ngModel)]="doador.nome" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo pequeno">
+          <label>Data de nascimento:</label>
+          <input
+            type="date"
+            name="dataNascimento"
+            [(ngModel)]="doador.dataNascimento"
+          />
+        </div>
+
+        <div class="campo grande">
+          <label>CPF:</label>
+          <input type="text" name="cpf" [(ngModel)]="doador.cpf" />
+        </div>
+      </div>
+
+      <div class="linha">
+        <div class="campo pequeno">
+          <label>Pressão arterial:</label>
+          <input type="number" name="endereco" />
+        </div>
+
+        <div class="campo">
+          <button type="button" class="btn-questionario">
+            Abrir Questionário Online
+          </button>
+        </div>
+      </div>
+
+      <div class="acoes">
+        <button type="button" class="btn-cancelar">Inapto</button>
+        <button type="submit" class="btn-concluir">Apto</button>
+      </div>
+    </form>
+  </div>
+</div>
