@@ -13,6 +13,7 @@ import { CadastroFuncionarioComponent } from './pages/cadastro-funcionario/cadas
 import { BolsaAguardandoValidacaoComponent } from './pages/bolsa-aguardando-validacao/bolsa-aguardando-validacao.component';
 import { ValidacaoBolsaComponent } from './pages/validacao-bolsa/validacao-bolsa.component';
 import { EstoqueBolsasComponent } from './pages/estoque-bolsas/estoque-bolsas.component';
+import { ProcessoDoacaoIntroComponent } from './pages/processo-doacao-intro/processo-doacao-intro.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -23,6 +24,7 @@ export const routes: Routes = [
   { path: 'questionario', component: QuestionarioIntroComponent },
   { path: 'questionario_form', component: QuestionarioComponent },
   { path: 'processo-doacao', component: ProcessoDoacaoComponent },
+  { path: 'iniciar-doacao', component: ProcessoDoacaoIntroComponent },
   {
     path: 'processo-doacao-andamento',
     component: ListaProcessoDoacaoComponent,

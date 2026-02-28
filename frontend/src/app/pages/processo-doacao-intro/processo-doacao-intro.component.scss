@@ -1,0 +1,148 @@
+// Variáveis de Estilo
+$cor-fundo-externo: #d9d9d9;
+$cor-container: #e8e8e8;
+$cor-verde-input: #d1e7d8;
+$cor-verde-selecao: #c2e2cc;
+$cor-verde-botao: #2da45e;
+$cor-vinho-avatar: #702040;
+$borda-card: #b5b5b5;
+
+.pagina {
+  padding: 30px;
+  background-color: #f4f4f4;
+}
+
+.centralizando {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fff;
+  padding: 30px;
+  border-radius: 8px;
+}
+
+.titulo {
+  font-size: 28px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  color: #2a2a2a;
+  text-align: center;
+}
+
+.layout-grid {
+  display: flex;
+  /* Alterado para empilhar os blocos verticalmente e centralizá-los */
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+
+/* Seção de Busca (Esquerda) */
+.secao-busca {
+  /* centraliza horizontalmente e limita largura */
+  width: 290px;
+  max-width: 100%;
+  margin: 0 auto; /* alinha no eixo X */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  .campo-busca {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 8px;
+    width: 100%;
+
+    label {
+      font-size: 1.1rem;
+      margin-bottom: 8px;
+      color: #333;
+    }
+
+    input {
+      width: 100%; /* preenche a área centralizada */
+      height: 48px;
+      border: 1px solid #888;
+      border-radius: 8px;
+      padding: 0 15px;
+      font-size: 1.1rem;
+      outline: none;
+
+      &::placeholder { color: #888; }
+    }
+  }
+
+}
+
+// Card do Usuário (Direita)
+.perfil-container {
+  flex: 0 0 320px;
+
+  .usuario-card {
+    background-color: #fff;
+    border: 1.5px solid $borda-card;
+    border-radius: 45px;
+    padding: 35px 25px;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+
+    .avatar-wrapper {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 25px;
+
+      .avatar {
+        width: 115px;
+        height: 115px;
+        border: 4px solid $cor-vinho-avatar;
+        border-radius: 50%;
+        display: flex;
+        align-items: flex-end; // Posiciona o ícone na base do círculo
+        justify-content: center;
+        overflow: hidden;
+
+        i.bi-person-fill {
+          font-size: 100px;
+          color: $cor-vinho-avatar;
+          line-height: 0.9;
+        }
+      }
+    }
+
+    .info-doador {
+      p {
+        margin: 10px 0;
+        font-size: 1.05rem;
+        color: #444;
+        
+        strong { font-weight: 600; }
+      }
+    }
+  }
+}
+
+// Botão Iniciar
+.acoes {
+  display: flex;
+  justify-content: center; /* centraliza o botão abaixo do perfil-container */
+  margin-top: 20px;
+  width: 100%;
+}
+
+.acoes .btn-iniciar {
+  width: 290px; /* mesmo tamanho do perfil-container para alinhamento */
+  height: 52px;
+  background-color: $cor-verde-botao;
+  color: white;
+  border: none;
+  border-radius: 14px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  cursor: pointer;
+  box-shadow: 0 4px 10px rgba(45, 164, 94, 0.3);
+  transition: transform 0.2s, background 0.2s;
+
+  &:hover {
+    background-color: darken($cor-verde-botao, 5%);
+    transform: translateY(-2px);
+  }
+}
