@@ -1,3 +1,10 @@
-from django.shortcuts import render
+from rest_framework import viewsets
+from .models import  Enfermeiro
+from .serializers import  EnfermeiroSerializer
 
-# Create your views here.
+
+
+class EnfermeiroViewSet(viewsets.ModelViewSet):
+    queryset = Enfermeiro.objects.all()
+    serializer_class = EnfermeiroSerializer
+
