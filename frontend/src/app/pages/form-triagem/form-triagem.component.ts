@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router'; 
 
 @Component({
   selector: 'app-form-triagem',
@@ -12,9 +13,18 @@ import { FormsModule } from '@angular/forms';
 export class FormTriagemComponent {
   doador = {
     nome: 'Claudionor Alencar Gozado',
-
     dataNascimento: '',
-
-    cpf: '000.000.000-00',
+    cpf: 'teste',
   };
+
+  constructor(private router: Router) {} 
+
+  abrirQuestionarios() {
+    if (this.doador.cpf) {
+      const cpfLimpo = this.doador.cpf.trim().replace(/[.-]/g, ''); 
+      this.router.navigate(['/questionario-processo', cpfLimpo]);
+    } else {
+      alert('Por favor, informe o CPF do doador.');
+    }
+  }
 }

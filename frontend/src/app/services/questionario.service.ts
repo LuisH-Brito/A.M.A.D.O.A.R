@@ -16,4 +16,8 @@ export class QuestionarioService {
   salvarQuestionario(dados: any) {
     return this.http.post(this.apiUrl + 'questionarios/', dados);
   }
+
+  getQuestionariosPorCpf(cpf: string) {
+    return this.http.get<any[]>(`${this.apiUrl}listar-questionarios/?cpf=${cpf}`);
+  }
 }

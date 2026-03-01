@@ -1,0 +1,41 @@
+<div class="visualizacao-page">
+  
+  <div *ngIf="carregando" class="loading">Carregando questionário do doador...</div>
+  <div class="card-principal" *ngIf="!carregando" [class.editando]="modoEdicao">
+    
+    <div class="header-simples">
+      <button class="btn-icone" (click)="voltar()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <h2>Questionário</h2>
+      <div class="espacador-header"></div> 
+    </div>
+
+    <div class="pergunta-wrapper" *ngFor="let item of perguntas; let i = index">
+      <app-perguntas
+        [pergunta]="item.texto"
+        [respostaSalva]="item.resposta_dada"
+        (aoResponder)="responder(i, $event)">
+      </app-perguntas>
+
+      <div class="alerta-erro-box" *ngIf="respostaIncorreta(item.resposta_dada, item.resposta_esperada)">
+        <span class="esperada">(Esperado: {{ item.resposta_esperada }})</span>
+        <p class="motivo-falha">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ item.motivo_inaptidao }}
+        </p>
+      </div>
+    </div>
+
+    <div class="caixa-observacao"></div>
+
+    <div class="footer-botoes">
+      <button class="btn-acao btn-voltar" (click)="voltar()">Voltar</button>
+      <button class="btn-acao btn-editar" (click)="alternarEdicao()">
+        {{ modoEdicao ? 'Salvar' : 'Editar' }}
+      </button>
+    </div>
+  </div>
+</div>
