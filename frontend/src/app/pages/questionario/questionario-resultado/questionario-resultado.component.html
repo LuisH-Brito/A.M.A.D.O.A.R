@@ -1,0 +1,30 @@
+<div class="resultado-box apto" *ngIf="apto">
+  <div class="icone-resultado">
+    <i class="bi bi-check-circle"></i>
+  </div>
+  <h3>Parabéns! Você está apto para iniciar o processo de doação</h3>
+  
+  <ul class="avisos-lista">
+    <li><i class="bi bi-exclamation-circle"></i> O Questionário é apenas válido, após a verificação e aprovação do médico responsável pela etapa da triagem.</li>
+    <li><i class="bi bi-exclamation-circle"></i> O Questionário é apenas válido até o tempo de fechamento do hemoacre.</li>
+  </ul>
+
+  <button class="btn-resultado" (click)="clicouOk()">OK</button>
+</div>
+
+<div class="resultado-box inapto" *ngIf="!apto">
+  <div class="icone-resultado">
+    <i class="bi bi-x-circle"></i>
+  </div>
+  <h3>Infelizmente, você não está apto(a) agora</h3>
+  
+  <p class="subtitulo-inapto">Com base nas suas respostas, identificamos os seguintes impedimentos:</p>
+  
+  <ul class="avisos-lista motivos-lista">
+    <li *ngFor="let motivo of motivos">
+      <i class="bi bi-exclamation-circle"></i> {{ motivo }}
+    </li>
+  </ul>
+
+  <button class="btn-resultado" (click)="clicouOk()">OK</button>
+</div>
