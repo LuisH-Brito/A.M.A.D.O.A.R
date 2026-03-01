@@ -3,6 +3,8 @@ from django.db import models
 class Pergunta(models.Model):
     texto = models.TextField()
     ativa = models.BooleanField(default=True) # Para poder "desligar" perguntas antigas no futuro
+    resposta_esperada = models.CharField(max_length=3, choices=[('Sim', 'Sim'), ('Não', 'Não')], default='Sim') 
+    motivo_inaptidao = models.CharField(max_length=255, default='Não especificado')
 
     def __str__(self):
         return self.texto[:50]

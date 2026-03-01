@@ -3,9 +3,10 @@ from .models import Questionario, Pergunta, Resposta
 
 @admin.register(Pergunta)
 class PerguntaAdmin(admin.ModelAdmin):
-    list_display = ('id', 'texto', 'ativa')
+    list_display = ('id', 'texto', 'resposta_esperada', 'motivo_inaptidao', 'ativa')
     list_editable = ('ativa',) 
-    search_fields = ('texto',)
+    search_fields = ('texto', 'motivo_inaptidao')
+    list_filter = ('resposta_esperada', 'ativa')
 
 class RespostaInline(admin.TabularInline):
     model = Resposta
