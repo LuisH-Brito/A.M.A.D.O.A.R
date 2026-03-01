@@ -6,6 +6,7 @@ import {
   Validators,
 } from '@angular/forms';
 import { FuncionariosService } from '../../services/funcionarios.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-cadastro-funcionario',
@@ -20,6 +21,7 @@ export class CadastroFuncionarioComponent {
   constructor(
     private fb: FormBuilder,
     private funcionarioService: FuncionariosService,
+    private router: Router,
   ) {
     this.form = this.fb.group({
       nomeCompleto: ['', Validators.required],
@@ -48,8 +50,9 @@ export class CadastroFuncionarioComponent {
 
     this.funcionarioService.cadastrar(this.form.value).subscribe({
       next: () => {
-        alert('Funcionário cadastrado com sucesso!');
-        this.form.reset();
+        this.router.navigate(['/gestao-pessoal'], {
+          queryParams: { cadastrado: 'true' },
+        });
       },
       error: (err) => {
         console.error(err);

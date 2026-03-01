@@ -1,11 +1,13 @@
+<div *ngIf="mensagemSucesso" class="alert-success">
+  {{ mensagemSucesso }}
+</div>
 <div class="gestao-container">
   <h2 class="titulo">Gestão de Pessoal</h2>
-
   <div class="cards">
-    <a href="/cadastro-funcionario" class="card">
+    <a routerLink="/cadastro-funcionario" class="card">
       <h3>Cadastrar Funcionário</h3>
     </a>
-    <a href="/gestao-crud" class="card">
+    <a routerLink="/gestao-crud" class="card">
       <h3>Profissionais</h3>
     </a>
   </div>
