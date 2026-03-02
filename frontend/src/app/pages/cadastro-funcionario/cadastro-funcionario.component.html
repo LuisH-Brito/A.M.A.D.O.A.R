@@ -1,22 +1,21 @@
 <div class="pagina-funcionario">
   <div class="container">
-    <h2 class="titulo">Cadastro Funcionario</h2>
+    <h2 class="titulo">Cadastro Funcionário</h2>
 
-    <form class="formulario">
+    <form [formGroup]="form" (ngSubmit)="salvar()" class="formulario">
       <div class="linha">
         <div class="campo grande">
           <label>Nome Completo</label>
-          <input type="text" name="nome" />
+          <input type="text" formControlName="nomeCompleto" />
         </div>
 
         <div class="campo pequeno">
           <label>Cargo</label>
-          <select name="cargo">
+          <select formControlName="cargo">
             <option value="">Selecione</option>
-            <option>Médico</option>
-            <option>Enfermeiro</option>
-            <option>Recepcionista</option>
-            <option>Biomédico</option>
+            <option value="Médico">Médico</option>
+            <option value="Enfermeiro">Enfermeiro</option>
+            <option value="Recepcionista">Recepcionista</option>
           </select>
         </div>
       </div>
@@ -24,60 +23,48 @@
       <div class="linha">
         <div class="campo">
           <label>E-mail</label>
-          <input type="email" name="email" />
+          <input type="email" formControlName="email" />
         </div>
 
         <div class="campo">
           <label>Telefone</label>
-          <input
-            type="text"
-            placeholder="Ex: (DD) NNNNN-NNNN"
-            name="telefone"
-          />
+          <input type="text" formControlName="telefone" />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo pequeno">
           <label>Data de nascimento</label>
-          <input
-            type="date"
-            placeholder="Ex: DD/MM/AAAA"
-            name="dataNascimento"
-          />
+          <input type="date" formControlName="dataNascimento" />
         </div>
 
         <div class="campo grande">
           <label>CPF</label>
-          <input type="text" placeholder="Ex: 000.000.000-00" name="cpf" />
+          <input type="text" formControlName="cpf" />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>Endereço</label>
-          <input type="text" name="endereco" />
+          <input type="text" formControlName="endereco" />
         </div>
 
         <div class="campo">
-          <label>CRM/COREM</label>
-          <input type="text" name="registro" />
+          <label>CRM/COREN</label>
+          <input type="text" formControlName="registro" />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>Senha</label>
-          <input
-            type="password"
-            placeholder="Dica: use letras maiúsculas, minúsculas e caracteres especiais"
-            name="senha"
-          />
+          <input type="password" formControlName="senha" />
         </div>
 
         <div class="campo">
           <label>Confirmar senha</label>
-          <input type="password" name="confirmarSenha" />
+          <input type="password" formControlName="confirmarSenha" />
         </div>
       </div>
 
