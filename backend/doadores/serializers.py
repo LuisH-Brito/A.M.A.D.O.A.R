@@ -7,7 +7,7 @@ class DoadorSerializer(serializers.ModelSerializer):
     class Meta:
         model = Doador
         fields = [
-            'username', 'password', 'email', 'nome_completo', 
+            'password', 'email', 'nome_completo', 
             'cpf', 'endereco', 'data_nascimento', 'sexo', 
             'tipo_sanguineo_declarado', 'fator_rh', 'telefone'
         ]
@@ -15,8 +15,8 @@ class DoadorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         password = validated_data.pop('password')
         
-        if not validated_data.get('username'):
-            validated_data['username'] = validated_data.get('email')
+        if not validated_data.get('cpf'):
+            validated_data['cpf'] = validated_data.get('email')
             
         user = Doador.objects.create_user(**validated_data)
         

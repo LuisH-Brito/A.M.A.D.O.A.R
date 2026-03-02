@@ -7,7 +7,7 @@ def inserir_medicos(apps, schema_editor):
     Medico.objects.get_or_create(
         cpf="44444444444",
         defaults={
-            "username": "dr_luis",
+
             "nome_completo": " Luís Henrique",
             "email": "luis@hemoacre.com",
             "password": make_password("senha123"),
@@ -18,7 +18,7 @@ def inserir_medicos(apps, schema_editor):
     Medico.objects.get_or_create(
         cpf="55555555555",
         defaults={
-            "username": "dra_cleude",
+
             "nome_completo": "Claudia Ferreira",
             "email": "claude@hemoacre.com",
             "password": make_password("senha123"),

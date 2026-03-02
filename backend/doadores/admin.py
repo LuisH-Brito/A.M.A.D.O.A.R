@@ -6,20 +6,20 @@ from .models import Doador
 class DoadorForm(UserCreationForm):
     class Meta(UserCreationForm.Meta):
         model = Doador
-        fields = ('username', 'cpf', 'nome_completo')
+        fields = ('cpf', 'nome_completo')
 
 @admin.register(Doador)
 class DoadorAdmin(UserAdmin):
     add_form = DoadorForm
 
     list_display = ('id', 'nome_completo', 'cpf', 'sexo', 'tipo_sanguineo_declarado', 'fator_rh')
-    search_fields = ('cpf', 'nome_completo', 'email')
+    search_fields = ('cpf', 'nome_completo', 'email','telefone')
     list_filter = ('sexo', 'tipo_sanguineo_declarado', 'fator_rh')
-
+    ordering = ('cpf',)
     # Tela de edição
     fieldsets = UserAdmin.fieldsets + (
         ('Dados Pessoais', {
-            'fields': ('cpf', 'nome_completo', 'endereco', 'data_nascimento')
+            'fields': ('cpf', 'nome_completo', 'endereco', 'data_nascimento', 'telefone')
         }),
         ('Dados Clínicos e Documentos', {
             'fields': ('sexo', 'tipo_sanguineo_declarado', 'fator_rh', 'carteira_doador')
@@ -31,7 +31,7 @@ class DoadorAdmin(UserAdmin):
         ('Dados Obrigatórios e Clínicos', {
             'classes': ('wide',),
             'fields': (
-                'username', 'cpf', 'nome_completo', 'email', 'data_nascimento', 'endereco',
+                'cpf', 'nome_completo', 'email', 'telefone', 'data_nascimento', 'endereco',
                 'sexo', 'tipo_sanguineo_declarado', 'fator_rh', 
                 'password1', 'password2'
             ),

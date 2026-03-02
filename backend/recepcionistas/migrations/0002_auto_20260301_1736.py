@@ -7,7 +7,7 @@ def inserir_recepcionistas(apps, schema_editor):
     Recepcionista.objects.get_or_create(
         cpf="66666666666",
         defaults={
-            "username": "samuel_recep",
+
             "nome_completo": "Samuel Dias",
             "email": "samuel@hemoacre.com",
             "password": make_password("senha123")
@@ -17,7 +17,7 @@ def inserir_recepcionistas(apps, schema_editor):
     Recepcionista.objects.get_or_create(
         cpf="77777777777",
         defaults={
-            "username": "isac_recep",
+   
             "nome_completo": "Isac Costa",
             "email": "isac@hemoacre.com",
             "password": make_password("senha123")

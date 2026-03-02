@@ -8,7 +8,6 @@ def inserir_doadores(apps, schema_editor):
     Doador.objects.get_or_create(
         cpf="teste", 
         defaults={
-            "username": "doador_teste",
             "nome_completo": "Usuário Teste",
             "email": "teste@doador.com",
             "password": make_password("senha123"), # Senha: senha123
@@ -20,7 +19,6 @@ def inserir_doadores(apps, schema_editor):
     Doador.objects.get_or_create(
         cpf="11111111111",
         defaults={
-            "username": "Carlos_doador",
             "nome_completo": "Carlos Martins",
             "email": "carlos@doador.com",
             "password": make_password("senha123"),
@@ -31,7 +29,7 @@ def inserir_doadores(apps, schema_editor):
 
 class Migration(migrations.Migration):
     dependencies = [
-        ('doadores', '0002_doador_telefone'),
+        ('doadores', '0001_initial'),
     ]
     operations = [
         migrations.RunPython(inserir_doadores),

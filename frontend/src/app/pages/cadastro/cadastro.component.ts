@@ -37,7 +37,6 @@ export class CadastroComponent {
     }
 
     const doadorParaEnviar = {
-      username: this.dados.email,
       email: this.dados.email,
       password: this.dados.senha,
       nome_completo: this.dados.nome_completo,

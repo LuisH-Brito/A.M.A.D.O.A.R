@@ -7,11 +7,11 @@ from django.dispatch import receiver
 import os
 
 class Doador(Usuario):
-    sexo = models.CharField(max_length=1, choices=Sexo.choices, null=True, blank=True) 
+    sexo = models.CharField(max_length=1, choices=Sexo.choices) 
     tipo_sanguineo_declarado = models.CharField(max_length=2, choices=TipoSanguineo.choices, null=True, blank=True)
     fator_rh = models.CharField(max_length=1, choices=FatorRH.choices, null=True, blank=True)
     carteira_doador = models.ImageField(upload_to='carteiras/', null=True, blank=True)  # O ImageField garante que o arquivo é uma imagem real e gerencia o upload ( coisa de django )
-    telefone = models.CharField(max_length=20, null=True, blank=True)
+    telefone = models.CharField(max_length=20)
     
     def __str__(self):
         return f"Doador: {self.nome_completo}"
