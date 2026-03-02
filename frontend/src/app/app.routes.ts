@@ -18,6 +18,7 @@ import { FormPreTriagemComponent } from './pages/form-pre-triagem/form-pre-triag
 import { FormTriagemComponent } from './pages/form-triagem/form-triagem.component';
 import { FormColetaComponent } from './pages/form-coleta/form-coleta.component';
 import { QuestionarioProcessoComponent } from './pages/questionario-processo/questionario-processo.component';
+import { ProcessoDoacaoMedComponent } from './pages/processo-doacao-med/processo-doacao-med.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -27,7 +28,8 @@ export const routes: Routes = [
   { path: 'gestao-crud', component: GestaoPessoalCrudComponent },
   { path: 'questionario', component: QuestionarioIntroComponent },
   { path: 'questionario_form', component: QuestionarioComponent },
-  { path: 'processo-doacao', component: ProcessoDoacaoComponent },
+  { path: 'processo-doacao-REC', component: ProcessoDoacaoComponent },
+  { path: 'processo-doacao-MED', component: ProcessoDoacaoMedComponent },
   { path: 'iniciar-doacao', component: ProcessoDoacaoIntroComponent },
   { path: 'form-pre-triagem', component: FormPreTriagemComponent },
   { path: 'form-triagem', component: FormTriagemComponent },

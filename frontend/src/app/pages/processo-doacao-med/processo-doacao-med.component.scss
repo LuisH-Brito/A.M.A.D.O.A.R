@@ -1,0 +1,55 @@
+.processo-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  text-align: center;
+  background-color: #f4f4f4;
+
+  .titulo {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 30px;
+    color: #2a2a2a;
+  }
+
+  .cards {
+    display: flex;
+    gap: 80px;
+    padding-bottom: 130px;
+    padding-top: 99px;
+    text-decoration: none;
+
+    .card {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 200px;
+      width: 300px;
+      flex: 1;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+
+      &:hover {
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-5px);
+        background-color: #e8f5e9;
+      }
+
+      h3 {
+        margin: 0;
+        text-align: center;
+        font-size: 18px;
+        color: #333;
+        text-decoration: none;
+      }
+      a {
+        text-decoration: none;
+      }
+    }
+  }
+}
