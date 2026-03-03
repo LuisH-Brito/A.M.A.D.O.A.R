@@ -14,10 +14,21 @@ class AdministradorAdmin(UserAdmin):
     list_display = ('id', 'nome_completo', 'cpf', 'email', 'is_staff', 'is_superuser')
     search_fields = ('cpf', 'nome_completo')
     ordering = ('cpf',)
-    fieldsets = UserAdmin.fieldsets + (
-        ('Dados Pessoais', {'fields': ('cpf', 'nome_completo', 'endereco', 'data_nascimento')}),
+    fieldsets = (
+        ('Credenciais de Acesso', {
+            'fields': ('email', 'password')
+        }),
+        ('Dados Pessoais', {
+            'fields': ('cpf', 'nome_completo', 'endereco', 'data_nascimento')
+        }),
+        ('Permissões e Acesso', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+        }),
+        ('Histórico de Acesso', {
+            'fields': ('last_login', 'date_joined'),
+            'classes': ('collapse',)
+        }),
     )
-
     add_fieldsets = (
         ('Dados Obrigatórios', {
             'classes': ('wide',),

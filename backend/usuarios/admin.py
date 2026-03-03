@@ -20,7 +20,7 @@ class UsuarioAdmin(UserAdmin):
         (None, {'fields': ('cpf', 'password')}),
         ('Informações Pessoais', {'fields': ('nome_completo', 'email', 'endereco', 'data_nascimento')}),
         ('Permissões', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
-        ('Datas Importantes', {'fields': ('last_login', 'date_joined')}),
+        ('Histórico de Acesso', {'fields': ('last_login', 'date_joined')}),
     )
 
     add_fieldsets = (

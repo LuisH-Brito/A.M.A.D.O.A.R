@@ -14,9 +14,23 @@ class MedicoAdmin(UserAdmin):
     list_display = ('id', 'nome_completo', 'cpf', 'crm', 'is_staff')
     search_fields = ('cpf', 'nome_completo', 'crm')
     ordering = ('cpf',)
-    fieldsets = UserAdmin.fieldsets + (
-        ('Dados Pessoais', {'fields': ('cpf', 'nome_completo', 'endereco', 'data_nascimento')}),
-        ('Credenciais Médicas', {'fields': ('crm',)}),
+    fieldsets = (
+        ('Credenciais de Acesso', {
+            'fields': ('email', 'password')
+        }),
+        ('Dados Pessoais', {
+            'fields': ('cpf', 'nome_completo', 'endereco', 'data_nascimento')
+        }),
+        ('Credenciais', {
+            'fields': ('crm',)
+        }),
+        ('Controle de Acesso ao Sistema', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+        }),
+        ('Histórico de Acesso', {
+            'fields': ('last_login', 'date_joined'),
+            'classes': ('collapse',)
+        }),
     )
 
     add_fieldsets = (

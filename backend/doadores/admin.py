@@ -17,12 +17,23 @@ class DoadorAdmin(UserAdmin):
     list_filter = ('sexo', 'tipo_sanguineo_declarado', 'fator_rh')
     ordering = ('cpf',)
     # Tela de edição
-    fieldsets = UserAdmin.fieldsets + (
+    fieldsets = (
+        ('Credenciais de Acesso', {
+            'fields': ('email', 'password') 
+        }),
         ('Dados Pessoais', {
             'fields': ('cpf', 'nome_completo', 'endereco', 'data_nascimento', 'telefone')
         }),
         ('Dados Clínicos e Documentos', {
             'fields': ('sexo', 'tipo_sanguineo_declarado', 'fator_rh', 'carteira_doador')
+        }),
+        ('Permissões e Status', {
+            'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions'),
+            'classes': ('collapse',) 
+        }),
+        ('Histórico de Acesso', {
+            'fields': ('last_login', 'date_joined'),
+            'classes': ('collapse',)
         }),
     )
 
