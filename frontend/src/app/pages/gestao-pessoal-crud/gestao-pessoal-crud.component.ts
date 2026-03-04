@@ -2,6 +2,8 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
+import { FuncionariosService } from '../../services/funcionarios.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-gestao-pessoal-crud',
@@ -13,25 +15,60 @@ import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.compon
 export class GestaoPessoalCrudComponent {
   busca: string = '';
   filtroSelecionado: string = 'Todos';
-
   paginaAtual = 1;
   itensPorPagina = 3;
+  usuarios: any[] = [];
 
-  usuarios = [
-    { id: 1, nome: 'Carlos Martins', cargo: 'Médico', ativo: true },
-    { id: 2, nome: 'Jean', cargo: 'Recepcionista', ativo: false },
-    { id: 3, nome: 'Macilon', cargo: 'Médico', ativo: true },
-    { id: 4, nome: 'Ana Paula', cargo: 'Enfermeiro', ativo: false },
-    { id: 5, nome: 'Juliana Souza', cargo: 'Enfermeiro', ativo: false },
-    { id: 6, nome: 'Roberto Silva', cargo: 'Enfermeiro', ativo: false },
-    { id: 7, nome: 'Fernanda Costa', cargo: 'Recepcionista', ativo: true },
-  ];
+  constructor(
+    private funcionarioService: FuncionariosService,
+    private router: Router,
+  ) {}
+
+  ngOnInit() {
+    this.carregarDados();
+  }
+
+  navegarComDados(usuario: any, apenasVisualizar: boolean = false) {
+    this.router.navigate(['/cadastro-funcionario'], {
+      state: {
+        funcionario: usuario,
+        visualizar: apenasVisualizar,
+      },
+    });
+  }
+
+  carregarDados() {
+    this.funcionarioService.listarTodos().subscribe({
+      next: (dados) => {
+        this.usuarios = dados;
+      },
+      error: (err) => console.error('Erro ao buscar dados:', err),
+    });
+  }
+
+  excluir(id: number, cargo: string) {
+    if (confirm(`Deseja realmente excluir este ${cargo}?`)) {
+      this.funcionarioService.excluirFuncionario(id, cargo).subscribe({
+        next: () => {
+          this.usuarios = this.usuarios.filter((u) => u.id !== id);
+          this.verificarPaginacaoAposExclusao();
+        },
+        error: (err) => alert('Erro ao excluir no servidor.'),
+      });
+    }
+  }
+
+  irParaEditar(usuario: any) {
+    this.router.navigate(['/cadastro-funcionario'], {
+      state: { funcionario: usuario },
+    });
+  }
 
   get usuariosFiltrados() {
     return this.usuarios.filter((usuario) => {
-      const matchBusca = usuario.nome
-        .toLowerCase()
-        .includes(this.busca.toLowerCase());
+      const matchBusca =
+        (usuario.nome || '').toLowerCase().includes(this.busca.toLowerCase()) ||
+        (usuario.cpf || '').includes(this.busca);
 
       const matchFiltro =
         this.filtroSelecionado === 'Todos' ||
@@ -45,10 +82,6 @@ export class GestaoPessoalCrudComponent {
     return Math.ceil(this.usuariosFiltrados.length / this.itensPorPagina);
   }
 
-  get paginas() {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
-  }
-
   get usuariosPaginados() {
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
     const fim = inicio + this.itensPorPagina;
@@ -59,10 +92,10 @@ export class GestaoPessoalCrudComponent {
     this.paginaAtual = novaPagina;
   }
 
-  excluir(id: number) {
-    this.usuarios = this.usuarios.filter((u) => u.id !== id);
-
-    const maxPaginas = Math.ceil(this.usuariosFiltrados.length / this.itensPorPagina);
+  private verificarPaginacaoAposExclusao() {
+    const maxPaginas = Math.ceil(
+      this.usuariosFiltrados.length / this.itensPorPagina,
+    );
     if (this.paginaAtual > maxPaginas && maxPaginas > 0) {
       this.paginaAtual = maxPaginas;
     }

@@ -104,3 +104,19 @@ select {
     align-items: center;
   }
 }
+
+.btn-voltar {
+  padding: 10px 30px;
+  border-radius: 25px;
+  border: none;
+  background-color: #e9e9e9;
+  color: #333;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background 0.3s;
+
+  &:hover {
+    background-color: #5a6268;
+    color: white;
+  }
+}

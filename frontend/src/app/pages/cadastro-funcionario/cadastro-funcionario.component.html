@@ -1,7 +1,6 @@
 <div class="pagina-funcionario">
   <div class="container">
-    <h2 class="titulo">Cadastro Funcionário</h2>
-
+    <h2 class="titulo">{{ tituloPagina }}</h2>
     <form [formGroup]="form" (ngSubmit)="salvar()" class="formulario">
       <div class="linha">
         <div class="campo grande">
@@ -69,8 +68,18 @@
       </div>
 
       <div class="acoes">
-        <button type="button" class="btn-cancelar">Cancelar</button>
-        <button type="submit" class="btn-concluir">Concluir</button>
+        <ng-container *ngIf="!somenteVisualizar">
+          <button type="button" class="btn-cancelar" (click)="voltar()">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-concluir">Concluir</button>
+        </ng-container>
+
+        <ng-container *ngIf="somenteVisualizar">
+          <button type="button" class="btn-voltar" (click)="voltar()">
+            Voltar
+          </button>
+        </ng-container>
       </div>
     </form>
   </div>

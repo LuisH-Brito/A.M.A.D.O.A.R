@@ -25,15 +25,24 @@
           </div>
 
           <div class="acoes">
-            <button class="btn-acao btn-visualizar">
+            <button
+              class="btn-acao btn-visualizar"
+              (click)="navegarComDados(usuario, true)"
+            >
               <i class="bi bi-eye"></i>
             </button>
 
-            <button class="btn-acao btn-editar">
+            <button
+              class="btn-acao btn-editar"
+              (click)="navegarComDados(usuario, false)"
+            >
               <i class="bi bi-pencil"></i>
             </button>
 
-            <button class="btn-acao btn-excluir" (click)="excluir(usuario.id)">
+            <button
+              class="btn-acao btn-excluir"
+              (click)="excluir(usuario.id, usuario.cargo)"
+            >
               <i class="bi bi-trash"></i>
             </button>
           </div>
@@ -41,13 +50,12 @@
       </div>
     </div>
 
-    <app-paginacao 
-      [paginaAtual]="paginaAtual" 
-      [totalItens]="usuariosFiltrados.length" 
-      [itensPorPagina]="itensPorPagina" 
-      (mudancaPagina)="mudarPagina($event)">
+    <app-paginacao
+      [paginaAtual]="paginaAtual"
+      [totalItens]="usuariosFiltrados.length"
+      [itensPorPagina]="itensPorPagina"
+      (mudancaPagina)="mudarPagina($event)"
+    >
     </app-paginacao>
-
-
   </div>
 </div>

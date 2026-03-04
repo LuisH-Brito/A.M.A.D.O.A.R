@@ -50,9 +50,28 @@ INSTALLED_APPS = [
     'processos_doacao',
     'dados_clinicos',
     'bolsas',
-    'core'
+    'core',
+    'rest_framework_simplejwt'
 ]
 
+from datetime import timedelta
+
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Tempo que o token dura
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), # Tempo para renovar o acesso sem logar
+    'ROTATE_REFRESH_TOKENS': False,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,
+    'AUTH_HEADER_TYPES': ('Bearer',),
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:4200",
 ]

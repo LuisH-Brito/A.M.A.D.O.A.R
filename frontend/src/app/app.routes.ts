@@ -19,27 +19,113 @@ import { FormTriagemComponent } from './pages/form-triagem/form-triagem.componen
 import { FormColetaComponent } from './pages/form-coleta/form-coleta.component';
 import { QuestionarioProcessoComponent } from './pages/questionario-processo/questionario-processo.component';
 import { ProcessoDoacaoMedComponent } from './pages/processo-doacao-med/processo-doacao-med.component';
+import { authGuard } from './auth.guard';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
   { path: 'login', component: LoginComponent },
   { path: 'cadastro', component: CadastroComponent },
-  { path: 'gestao-pessoal', component: GestaoPessoalComponent },
-  { path: 'gestao-crud', component: GestaoPessoalCrudComponent },
-  { path: 'questionario', component: QuestionarioIntroComponent },
-  { path: 'questionario_form', component: QuestionarioComponent },
-  { path: 'processo-doacao-REC', component: ProcessoDoacaoComponent },
-  { path: 'processo-doacao-MED', component: ProcessoDoacaoMedComponent },
-  { path: 'iniciar-doacao', component: ProcessoDoacaoIntroComponent },
-  { path: 'form-pre-triagem', component: FormPreTriagemComponent },
+  {
+    path: 'gestao-pessoal',
+    component: GestaoPessoalComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['administrador'] },
+  },
+  {
+    path: 'gestao-crud',
+    component: GestaoPessoalCrudComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['administrador'] },
+  },
+  {
+    path: 'questionario',
+    component: QuestionarioIntroComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['doador', 'medico'] },
+  },
+  {
+    path: 'questionario_form',
+    component: QuestionarioComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['doador', 'medico'] },
+  },
+  {
+    path: 'processo-doacao-REC',
+    component: ProcessoDoacaoComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['recepcionista'] },
+  },
+  {
+    path: 'processo-doacao-MED',
+    component: ProcessoDoacaoMedComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['medico'] },
+  },
+  {
+    path: 'iniciar-doacao',
+    component: ProcessoDoacaoIntroComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['recepcionista'] },
+  },
+  {
+    path: 'form-pre-triagem',
+    component: FormPreTriagemComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['emfermeira', 'medico'] },
+  },
   { path: 'form-triagem', component: FormTriagemComponent },
-  { path: 'form-coleta', component: FormColetaComponent },
-  { path: 'processo-doacao-andamento', component: ListaProcessoDoacaoComponent},
-  { path: 'pagina-doador', component: DoadorComponent },
-  { path: 'cadastro-funcionario', component: CadastroFuncionarioComponent },
-  { path: 'aguardando-validacao-bolsa', component: BolsaAguardandoValidacaoComponent},
-  { path: 'validar-bolsa', component: ValidacaoBolsaComponent },
-  { path: 'estoque-bolsas', component: EstoqueBolsasComponent },
-  { path: 'questionario-processo', component: QuestionarioProcessoComponent },
-  { path: 'questionario-processo/:cpf', component: QuestionarioProcessoComponent },
+  {
+    path: 'form-coleta',
+    component: FormColetaComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['emfermeiro'] },
+  },
+  {
+    path: 'processo-doacao-andamento',
+    component: ListaProcessoDoacaoComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['emfermeiro', 'medico'] },
+  },
+  {
+    path: 'pagina-doador',
+    component: DoadorComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['doador'] },
+  },
+  {
+    path: 'cadastro-funcionario',
+    component: CadastroFuncionarioComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['administrador'] }, // Exemplo de dado para o guard usar
+  },
+  {
+    path: 'aguardando-validacao-bolsa',
+    component: BolsaAguardandoValidacaoComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['medico'] },
+  },
+  {
+    path: 'validar-bolsa',
+    component: ValidacaoBolsaComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['medico'] },
+  },
+  {
+    path: 'estoque-bolsas',
+    component: EstoqueBolsasComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['administrador'] },
+  },
+  {
+    path: 'questionario-processo',
+    component: QuestionarioProcessoComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['doador', 'medico'] },
+  },
+  {
+    path: 'questionario-processo/:cpf',
+    component: QuestionarioProcessoComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['doador', 'medico'] },
+  },
 ];

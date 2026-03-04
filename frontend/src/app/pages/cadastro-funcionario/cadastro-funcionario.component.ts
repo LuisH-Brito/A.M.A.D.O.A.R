@@ -2,21 +2,27 @@ import { Component } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-cadastro-funcionario',
   standalone: true,
-  imports: [ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule],
   templateUrl: './cadastro-funcionario.component.html',
   styleUrl: './cadastro-funcionario.component.scss',
 })
 export class CadastroFuncionarioComponent {
   form: FormGroup;
+  modoEdicao = false;
+  idFuncionario: number | null = null;
+  tituloPagina = 'Cadastro Funcionário';
+  somenteVisualizar: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -37,27 +43,72 @@ export class CadastroFuncionarioComponent {
     });
   }
 
+  ngOnInit() {
+    const estado = window.history.state;
+
+    console.log('Estado recebido:', estado);
+
+    if (estado && estado.funcionario) {
+      const f = estado.funcionario;
+      this.modoEdicao = true;
+      this.idFuncionario = f.id;
+
+      this.somenteVisualizar = !!estado.visualizar;
+
+      this.form.patchValue({
+        nomeCompleto: f.nome_completo,
+        cargo: f.cargo,
+        email: f.email,
+        telefone: f.telefone || '',
+        dataNascimento: f.data_nascimento,
+        cpf: f.cpf,
+        endereco: f.endereco || '',
+        registro: f.crm || f.coren || '',
+      });
+
+      if (this.somenteVisualizar) {
+        this.form.disable();
+      }
+
+      this.form.get('senha')?.clearValidators();
+      this.form.get('confirmarSenha')?.clearValidators();
+      this.form.get('senha')?.updateValueAndValidity();
+      this.form.get('confirmarSenha')?.updateValueAndValidity();
+    }
+  }
+
   salvar() {
-    if (this.form.invalid) {
+    if (this.form.invalid && !this.form.disabled) {
       alert('Preencha os campos obrigatórios');
       return;
     }
 
-    if (this.form.value.senha !== this.form.value.confirmarSenha) {
-      alert('As senhas não coincidem');
-      return;
-    }
+    const dados = this.form.getRawValue();
 
-    this.funcionarioService.cadastrar(this.form.value).subscribe({
-      next: () => {
-        this.router.navigate(['/gestao-pessoal'], {
-          queryParams: { cadastrado: 'true' },
-        });
-      },
-      error: (err) => {
-        console.error(err);
-        alert('Erro ao cadastrar funcionário');
-      },
-    });
+    if (this.modoEdicao && this.idFuncionario) {
+      if (!dados.senha || dados.senha.trim() === '') {
+        delete dados.senha;
+        delete dados.confirmarSenha;
+      } else if (dados.senha !== dados.confirmarSenha) {
+        alert('As senhas novas não coincidem!');
+        return;
+      }
+
+      this.funcionarioService.editar(this.idFuncionario, dados).subscribe({
+        next: () => {
+          alert('Dados atualizados com sucesso!');
+          this.router.navigate(['/gestao-pessoal']);
+        },
+        error: (err) => alert('Erro ao atualizar funcionário.'),
+      });
+    } else {
+      this.funcionarioService.cadastrar(dados).subscribe({
+        next: () => this.router.navigate(['/gestao-pessoal']),
+        error: () => alert('Erro ao cadastrar'),
+      });
+    }
+  }
+  voltar() {
+    this.router.navigate(['/gestao-crud']);
   }
 }
