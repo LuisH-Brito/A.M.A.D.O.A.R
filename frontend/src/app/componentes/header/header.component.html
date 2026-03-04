@@ -60,7 +60,7 @@
       >
 
       <a
-        *ngIf="temAcesso(['medico'])"
+        *ngIf="temAcesso(['medico', 'enfermeiro'])"
         routerLink="/processo-doacao-MED"
         class="menu-item"
         (click)="toggleMenu()"

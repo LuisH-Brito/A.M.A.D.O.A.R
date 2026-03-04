@@ -59,7 +59,7 @@ export const routes: Routes = [
     path: 'processo-doacao-MED',
     component: ProcessoDoacaoMedComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['medico'] },
+    data: { cargoPermitido: ['medico', 'enfermeiro'] },
   },
   {
     path: 'iniciar-doacao',
@@ -71,20 +71,25 @@ export const routes: Routes = [
     path: 'form-pre-triagem',
     component: FormPreTriagemComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['emfermeira', 'medico'] },
+    data: { cargoPermitido: ['enfermeiro', 'medico'] },
   },
-  { path: 'form-triagem', component: FormTriagemComponent },
+  {
+    path: 'form-triagem',
+    component: FormTriagemComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['medico'] },
+  },
   {
     path: 'form-coleta',
     component: FormColetaComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['emfermeiro'] },
+    data: { cargoPermitido: ['enfermeiro'] },
   },
   {
     path: 'processo-doacao-andamento',
     component: ListaProcessoDoacaoComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['emfermeiro', 'medico'] },
+    data: { cargoPermitido: ['enfermeiro', 'medico', 'recepcionista'] },
   },
   {
     path: 'pagina-doador',
