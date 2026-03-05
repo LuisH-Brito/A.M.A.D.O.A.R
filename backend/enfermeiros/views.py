@@ -15,6 +15,7 @@ class EnfermeiroViewSet(viewsets.ModelViewSet):
     Integra-se com o EnfermeiroSerializer para garantir o tratamento correto de senhas.
     """
     queryset = Enfermeiro.objects.all()
+    pagination_class = None
     serializer_class = EnfermeiroSerializer
     permission_classes = [IsAuthenticated & (EhEnfermeiro | EhAdministrador)]
     

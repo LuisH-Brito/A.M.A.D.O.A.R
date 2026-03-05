@@ -9,6 +9,7 @@ urlpatterns = [
     path('api/', include('doadores.urls')),
     path('api/', include('triagem.urls')),
     path('api/', include('processos_doacao.urls')),
+    path('api/', include('bolsas.urls')),
     path('api/medicos/', include('medicos.urls')),
     path('api/enfermeiros/', include('enfermeiros.urls')),
     path('api/recepcionistas/', include('recepcionistas.urls')),

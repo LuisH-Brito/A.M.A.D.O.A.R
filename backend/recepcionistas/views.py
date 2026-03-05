@@ -14,6 +14,7 @@ class RecepcionistaViewSet(viewsets.ModelViewSet):
     de funcionários da recepção.
     """
     queryset = Recepcionista.objects.all()
+    pagination_class = None
     serializer_class = RecepcionistaSerializer
     permission_classes = [EhRecepcionista | EhAdministrador]
     

@@ -13,6 +13,7 @@ class MedicoViewSet(viewsets.ModelViewSet):
     incluindo listagem, criação, visualização detalhada, atualização e exclusão.
     """
     queryset = Medico.objects.all()
+    pagination_class = None
     serializer_class = MedicoSerializer
     permission_classes = [EhMedico | EhAdministrador]
 

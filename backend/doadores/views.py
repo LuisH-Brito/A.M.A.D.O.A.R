@@ -15,6 +15,8 @@ class DoadorViewSet(viewsets.ModelViewSet):
     - OUTROS: Exige autenticação.
     """
     queryset = Doador.objects.all()
+    pagination_class = None
+
     serializer_class = DoadorSerializer 
 
     def get_permissions(self):

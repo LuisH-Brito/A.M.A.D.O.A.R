@@ -1,108 +1,173 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
+import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 
 @Component({
   selector: 'app-estoque-bolsas',
   standalone: true,
   imports: [CommonModule, FormsModule, PaginacaoComponent],
   templateUrl: './estoque-bolsas.component.html',
-  styleUrl: './estoque-bolsas.component.scss'
+  styleUrl: './estoque-bolsas.component.scss',
 })
-export class EstoqueBolsasComponent {
+export class EstoqueBolsasComponent implements OnInit {
   abaAtiva: string = 'Todos';
   busca: string = '';
-  filtroSelecionado: string = 'recente';
   menuFiltroAberto: boolean = false;
 
   paginaAtual: number = 1;
-  itensPorPagina: number = 10; // mudar a paginacao a vontade
+  itensPorPagina: number = 10;
+  totalItensBolsas: number = 0;
 
-  resumoGeral = { validas: 234, vencendo: 67, vencidas: 8 };
+  resumoGeral = { validas: 0, vencendo: 0, vencidas: 0 };
+  tiposSanguineos: any[] = [];
+  bolsasPaginadas: any[] = [];
 
-  tiposSanguineos = [
-    { tipo: 'A+', contagem: 67 }, { tipo: 'B+', contagem: 34 }, { tipo: 'AB+', contagem: 94 }, { tipo: 'O+', contagem: 69 },
-    { tipo: 'A-', contagem: 13 }, { tipo: 'B-', contagem: 22 }, { tipo: 'AB-', contagem: 21 }, { tipo: 'O-', contagem: 33 }
+  abasMenu = [
+    'Todos',
+    'Bolsa Validas',
+    'Bolsa Vencendo',
+    'Bolsa Vencidas',
+    'A-',
+    'A+',
+    'B-',
+    'B+',
+    'AB-',
+    'AB+',
+    'O-',
+    'O+',
   ];
 
-  abasMenu = ['Todos', 'Bolsa Validas', 'Bolsa Vencendo', 'Bolsa Vencidas', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'O-', 'O+'];
+  private delayBusca: any;
 
-  bolsas = [
-    { 
-      id: 'BOL-2024-004', tipo: 'AB+', status: 'vencida', doadorNome: 'Joana Alves', doadorEmail: 'joana@email.com',
-      textoVencimento: 'Vencida há 2 dias', enfermeiro: 'enf.ana@hemo.ac.gov.br', medico: 'dr.carla@hemo.ac.gov.br',
-      dataValidacao: '20/01/2026 às 10:00', expandido: false
-    },
-    { 
-      id: 'BOL-2024-003', tipo: 'B+', status: 'vencendo', doadorNome: 'Rafael Lima', doadorEmail: 'rafael@email.com',
-      textoVencimento: 'Vence em 3 dias (02/03)', enfermeiro: 'enf.ana@hemo.ac.gov.br', medico: 'dr.carla@hemo.ac.gov.br',
-      dataValidacao: '26/01/2026 às 11:00', expandido: false
-    },
-    { 
-      id: 'BOL-2024-008', tipo: 'A+', status: 'valida', doadorNome: 'Carlos Eduardo', doadorEmail: 'carlos@email.com',
-      textoVencimento: 'Válida até 15/04', enfermeiro: 'enf.pedro@hemo.ac.gov.br', medico: 'dr.marcos@hemo.ac.gov.br',
-      dataValidacao: '28/01/2026 às 09:30', expandido: false
-    }
-  ];
+  constructor(
+    private router: Router,
+    private EstoqueService: EstoqueBolsaService,
+  ) {}
 
-  constructor(private router: Router) {}
+  ngOnInit() {
+    this.carregarDashboard();
+    this.carregarBolsas();
+  }
 
-  get bolsasFiltradas() {
-    return this.bolsas.filter(bolsa => {
-      let matchAba = false;
-      if (this.abaAtiva === 'Todos') matchAba = true;
-      else if (this.abaAtiva === 'Bolsa Validas') matchAba = bolsa.status === 'valida';
-      else if (this.abaAtiva === 'Bolsa Vencendo') matchAba = bolsa.status === 'vencendo';
-      else if (this.abaAtiva === 'Bolsa Vencidas') matchAba = bolsa.status === 'vencida';
-      else matchAba = bolsa.tipo === this.abaAtiva;
-
-      const termoBusca = this.busca.toLowerCase();
-      const matchBusca = bolsa.id.toLowerCase().includes(termoBusca) || 
-                         bolsa.doadorNome.toLowerCase().includes(termoBusca);
-
-      return matchAba && matchBusca;
+  carregarDashboard() {
+    this.EstoqueService.obterDashboard().subscribe({
+      next: (dados) => {
+        this.resumoGeral = dados.resumoGeral;
+        this.tiposSanguineos = dados.tiposSanguineos;
+      },
+      error: (err) => console.error('Erro ao carregar KPIs:', err),
+    });
+  }
+  carregarBolsas() {
+    this.EstoqueService.listarBolsas(
+      this.paginaAtual,
+      this.abaAtiva,
+      this.busca,
+    ).subscribe({
+      next: (resposta) => {
+        this.totalItensBolsas = resposta.count;
+        this.bolsasPaginadas = resposta.results.map((b: any) => {
+          let dataVencFormatada = 'N/A';
+          if (b.data_vencimento) {
+            const [ano, mes, dia] = b.data_vencimento.split('-');
+            dataVencFormatada = `${dia}/${mes}/${ano}`;
+          }
+          let dataValFormatada = 'Não validada';
+          if (b.validacao_at) {
+            const dataObj = new Date(b.validacao_at);
+            dataValFormatada = dataObj
+              .toLocaleString('pt-BR', {
+                day: '2-digit',
+                month: '2-digit',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit',
+              })
+              .replace(',', ' às');
+          }
+          return {
+            idOriginal: b.id,
+            id: `BOL-${b.id}`,
+            tipo: `${b.tipo_sanguineo_detalhe.tipo}${b.tipo_sanguineo_detalhe.fator_rh}`,
+            status: b.estado_temporal,
+            doadorNome: b.doador_nome,
+            doadorEmail: b.doador_email || 'Não informado',
+            textoVencimento: `Vencimento: ${dataVencFormatada}`,
+            enfermeiro: b.enfermeiro_nome || 'N/A',
+            medico: b.medico_nome || 'Aguardando',
+            dataValidacao: dataValFormatada,
+            expandido: false,
+          };
+        });
+      },
+      error: (err) => console.error('Erro ao carregar estoque:', err),
     });
   }
 
-  get bolsasPaginadas() {
-    const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
-    const fim = inicio + this.itensPorPagina;
-    return this.bolsasFiltradas.slice(inicio, fim);
+  aoDigitarBusca() {
+    clearTimeout(this.delayBusca);
+    this.delayBusca = setTimeout(() => {
+      this.paginaAtual = 1;
+      this.carregarBolsas();
+    }, 500);
   }
 
   mudarPagina(novaPagina: number) {
     this.paginaAtual = novaPagina;
+    this.carregarBolsas();
   }
 
-  voltar() { this.router.navigate(['/']); }
-
-  toggleMenuFiltro() { this.menuFiltroAberto = !this.menuFiltroAberto; }
-
-  selecionarAba(aba: string) { 
-    this.abaAtiva = aba; 
-    this.menuFiltroAberto = false; 
-    this.paginaAtual = 1; 
+  selecionarAba(aba: string) {
+    this.abaAtiva = aba;
+    this.menuFiltroAberto = false;
+    this.paginaAtual = 1;
+    this.carregarBolsas();
   }
 
-  toggleExpand(bolsa: any) { bolsa.expandido = !bolsa.expandido; }
+  voltar() {
+    this.router.navigate(['/']);
+  }
+
+  toggleMenuFiltro() {
+    this.menuFiltroAberto = !this.menuFiltroAberto;
+  }
+
+  toggleExpand(bolsa: any) {
+    bolsa.expandido = !bolsa.expandido;
+  }
+
   registrarUso(bolsa: any) {
-    const confirmacao = confirm(`Tem certeza que deseja REGISTRAR O USO da bolsa ID: ${bolsa.id}?`);
-    
-    if (confirmacao) {
-      alert(`Uso da bolsa ${bolsa.id} registrado com sucesso!`);
-      this.bolsas = this.bolsas.filter(b => b.id !== bolsa.id);
+    if (
+      confirm(`Tem certeza que deseja REGISTRAR O USO da bolsa ${bolsa.id}?`)
+    ) {
+      this.EstoqueService.registrarUso(bolsa.idOriginal).subscribe({
+        next: (res) => {
+          alert(res.mensagem);
+          this.atualizarTudo();
+        },
+        error: (err) => alert(err.error?.erro || 'Erro ao registrar uso.'),
+      });
+    }
+  }
+  descartarBolsa(bolsa: any) {
+    if (
+      confirm(`ATENÇÃO! Tem certeza que deseja DESCARTAR a bolsa ${bolsa.id}?`)
+    ) {
+      this.EstoqueService.descartar(bolsa.idOriginal).subscribe({
+        next: (res) => {
+          alert(res.mensagem);
+          this.atualizarTudo();
+        },
+        error: (err) => alert(err.error?.erro || 'Erro ao descartar bolsa.'),
+      });
     }
   }
 
-  descartarBolsa(bolsa: any) {
-    const confirmacao = confirm(`ATENÇÃO! Tem certeza que deseja DESCARTAR a bolsa ID: ${bolsa.id}? Esta ação não pode ser desfeita.`);
-    
-    if (confirmacao) {
-      // Simulação - pensar se deve realmente excluir ou apenas marcar como descartada
-      alert(`Bolsa ${bolsa.id} descartada e removida do estoque.`);
-      this.bolsas = this.bolsas.filter(b => b.id !== bolsa.id);
-    }
+  private atualizarTudo() {
+    this.carregarBolsas();
+    this.carregarDashboard();
   }
 }
