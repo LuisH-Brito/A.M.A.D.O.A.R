@@ -30,6 +30,8 @@ export class EstoqueBolsasComponent implements OnInit {
     'Bolsa Validas',
     'Bolsa Vencendo',
     'Bolsa Vencidas',
+    'Utilizadas',
+    'Descartadas',
     'A-',
     'A+',
     'B-',
@@ -100,6 +102,7 @@ export class EstoqueBolsasComponent implements OnInit {
             medico: b.medico_nome || 'Aguardando',
             dataValidacao: dataValFormatada,
             expandido: false,
+            urlLaudo: b.arquivo_laudo,
           };
         });
       },

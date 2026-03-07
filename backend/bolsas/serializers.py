@@ -29,8 +29,12 @@ class BolsaSerializer(serializers.ModelSerializer):
         ]
     def get_estado_temporal(self, obj):
 
-        if obj.status != 2:
-            return "inapta" 
+        if obj.status == 3:
+            return "descartada"
+        if obj.status == 4:
+            return "utilizada"
+        if obj.status == 1:
+            return "aguardando"
             
         hoje = timezone.now().date()
         if obj.data_vencimento < hoje:
