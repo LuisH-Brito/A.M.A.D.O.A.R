@@ -99,11 +99,18 @@
                         ? "Vencida"
                         : bolsa.status === "vencendo"
                           ? "Vence em breve"
-                          : "Válida"
+                          : bolsa.status === "descartada"
+                            ? "Descartada"
+                            : bolsa.status === "utilizada"
+                              ? "Utilizada"
+                              : "Válida"
                     }}
                   </span>
                 </div>
                 <span class="doador-nome">{{ bolsa.doadorNome }}</span>
+                <a [href]="bolsa.urlLaudo" target="_blank" class="btn-laudo">
+                  <i class="bi bi-file-earmark-pdf"></i> Visualizar Laudo
+                </a>
                 <span class="vencimento-text" [ngClass]="bolsa.status">
                   <i class="bi bi-calendar"></i> {{ bolsa.textoVencimento }}
                 </span>
@@ -149,10 +156,25 @@
               </div>
 
               <div class="botoes-acao">
-                <button class="btn-usar" (click)="registrarUso(bolsa)">
+                <button
+                  class="btn-usar"
+                  (click)="registrarUso(bolsa)"
+                  [disabled]="
+                    bolsa.status === 'utilizada' ||
+                    bolsa.status === 'descartada' ||
+                    bolsa.status === 'vencida'
+                  "
+                >
                   <i class="bi bi-pen"></i> Registrar Uso
                 </button>
-                <button class="btn-descartar" (click)="descartarBolsa(bolsa)">
+                <button
+                  class="btn-descartar"
+                  (click)="descartarBolsa(bolsa)"
+                  [disabled]="
+                    bolsa.status === 'utilizada' ||
+                    bolsa.status === 'descartada'
+                  "
+                >
                   <i class="bi bi-trash"></i> Descartar
                 </button>
               </div>

@@ -35,6 +35,8 @@ class BolsaViewSet(viewsets.ModelViewSet):
         hoje = timezone.now().date()
         limite = hoje + datetime.timedelta(days=7)
         STATUS_VALIDADO = 2 
+        STATUS_INAPTO = 3
+        STATUS_UTILIZADO = 4
         # Traduz a lógica para SQL
         if aba == 'Bolsa Validas':
             qs = qs.filter(status=STATUS_VALIDADO, data_vencimento__gt=limite)
@@ -42,6 +44,10 @@ class BolsaViewSet(viewsets.ModelViewSet):
             qs = qs.filter(status=STATUS_VALIDADO, data_vencimento__gte=hoje, data_vencimento__lte=limite)
         elif aba == 'Bolsa Vencidas':
             qs = qs.filter(status=STATUS_VALIDADO, data_vencimento__lt=hoje)
+        elif aba == 'Utilizadas':
+            qs = qs.filter(status=STATUS_UTILIZADO)
+        elif aba == 'Descartadas':
+            qs = qs.filter(status=STATUS_INAPTO)
         else:
             # Tratamento para as abas de tipo sanguíneo (ex: 'A+', 'AB-')
             if len(aba) >= 2:

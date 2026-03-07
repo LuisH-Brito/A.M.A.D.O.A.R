@@ -76,6 +76,12 @@
     &.vencida {
       background-color: #d13038;
     }
+    &.utilizada {
+      background-color: #0d6efd;
+    }
+    &.descartada {
+      background-color: #6f42c1;
+    }
   }
 }
 
@@ -255,6 +261,12 @@
     &.valida {
       border-color: #28a745;
     }
+    &.utilizada {
+      border-color: #0d6efd;
+    }
+    &.descartada {
+      border-color: #6f42c1;
+    }
 
     .bolsa-header {
       display: flex;
@@ -320,6 +332,12 @@
             &.valida {
               background-color: #28a745;
             }
+            &.utilizada {
+              background-color: #0d6efd;
+            }
+            &.descartada {
+              background-color: #6f42c1;
+            }
           }
         }
 
@@ -328,6 +346,35 @@
           font-size: 1rem;
         }
 
+        .btn-laudo {
+          align-self: flex-start;
+          display: inline-flex;
+          align-items: center;
+          gap: 6px;
+          padding: 4px 10px;
+          background-color: #f8f9fa;
+          border: 1px solid #dee2e6;
+          border-radius: 6px;
+          color: #495057;
+          font-size: 0.8rem;
+          font-weight: 600;
+          text-decoration: none;
+          transition: all 0.2s;
+          margin-top: 2px;
+          margin-bottom: 2px;
+
+          i {
+            color: #dc3545;
+            font-size: 0.95rem;
+          }
+
+          &:hover {
+            background-color: #e9ecef;
+            border-color: #ced4da;
+            color: #212529;
+            transform: translateY(-1px);
+          }
+        }
         .vencimento-text {
           font-size: 0.9rem;
           font-weight: 600;
@@ -344,6 +391,12 @@
           }
           &.valida {
             color: #28a745;
+          }
+          &.utilizada {
+            color: #0d6efd;
+          }
+          &.descartada {
+            color: #6f42c1;
           }
         }
       }
@@ -410,6 +463,15 @@
           align-items: center;
           gap: 8px;
           transition: all 0.2s;
+
+          &:disabled {
+            background-color: #e9ecef !important;
+            color: #a0a5aa !important;
+            border: 1px solid #dee2e6 !important;
+            cursor: not-allowed !important;
+            box-shadow: none !important;
+            transform: none !important;
+          }
 
           &.btn-usar {
             background-color: #2563eb;
