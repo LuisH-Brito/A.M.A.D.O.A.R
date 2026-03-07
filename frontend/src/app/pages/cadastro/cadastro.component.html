@@ -7,112 +7,134 @@
 
       <div class="grupo">
         <h4>Tipo Sanguíneo</h4>
+
         <div class="radio-grid">
-          <label
-            ><input
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="A+"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            A+</label
-          >
-          <label
-            ><input
+            A+
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="A-"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            A-</label
-          >
-          <label
-            ><input
+            A-
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="B+"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            B+</label
-          >
-          <label
-            ><input
+            B+
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="B-"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            B-</label
-          >
-          <label
-            ><input
+            B-
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="AB+"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            AB+</label
-          >
-          <label
-            ><input
+            AB+
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="AB-"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            AB-</label
-          >
-          <label
-            ><input
+            AB-
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="O+"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            O+</label
-          >
-          <label
-            ><input
+            O+
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="O-"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            O-</label
-          >
-          <label
-            ><input
+            O-
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="tipo"
               value="Não sei"
               [(ngModel)]="dados.tipoCompleto"
+              [disabled]="modoEdicao"
             />
-            Não sei</label
-          >
+            Não sei
+          </label>
         </div>
       </div>
 
       <div class="grupo">
-        <h4>Sexo:</h4>
+        <h4>Sexo</h4>
+
         <div class="radio-column">
-          <label
-            ><input
+          <label>
+            <input
               type="radio"
               name="sexo"
               value="Masculino"
               [(ngModel)]="dados.sexo"
+              [disabled]="modoEdicao"
             />
-            Masculino</label
-          >
-          <label
-            ><input
+            Masculino
+          </label>
+
+          <label>
+            <input
               type="radio"
               name="sexo"
               value="Feminino"
               [(ngModel)]="dados.sexo"
+              [disabled]="modoEdicao"
             />
-            Feminino</label
-          >
+            Feminino
+          </label>
         </div>
       </div>
     </div>
@@ -135,7 +157,7 @@
             type="text"
             name="cpf"
             [(ngModel)]="dados.cpf"
-            placeholder="Ex: 000.000.000-00"
+            [disabled]="modoEdicao"
           />
         </div>
 
@@ -151,33 +173,33 @@
               type="date"
               name="data"
               [(ngModel)]="dados.data_nascimento"
-              placeholder="Ex: DD/MM/AAAA"
+              [readonly]="modoEdicao"
             />
           </div>
 
           <div class="form-group">
             <label>Telefone</label>
-            <input
-              type="text"
-              name="telefone"
-              [(ngModel)]="dados.telefone"
-              placeholder="Ex: (DD) NNNNN-NNNN"
-            />
+            <input type="text" name="telefone" [(ngModel)]="dados.telefone" />
           </div>
         </div>
 
         <div class="form-group">
-          <label>Senha</label>
-          <input
-            type="password"
-            name="senha"
-            [(ngModel)]="dados.senha"
-            placeholder="Dica: use letras..."
-          />
+          <label>
+            {{ modoEdicao ? "Nova senha" : "Senha" }}
+          </label>
+
+          <input type="password" name="senha" [(ngModel)]="dados.senha" />
+
+          <small *ngIf="modoEdicao">
+            Deixe em branco para manter a senha atual
+          </small>
         </div>
 
         <div class="form-group">
-          <label>Confirmar senha</label>
+          <label>
+            {{ modoEdicao ? "Confirmar nova senha" : "Confirmar senha" }}
+          </label>
+
           <input
             type="password"
             name="confirmar"
@@ -186,8 +208,13 @@
         </div>
 
         <div class="buttons">
-          <button type="button" class="btn-cancelar">Cancelar</button>
-          <button type="submit" class="btn-concluir">Concluir</button>
+          <button type="button" class="btn-cancelar" (click)="cancelar()">
+            Cancelar
+          </button>
+
+          <button type="submit" class="btn-concluir">
+            {{ modoEdicao ? "Salvar Alterações" : "Concluir" }}
+          </button>
         </div>
       </form>
     </div>

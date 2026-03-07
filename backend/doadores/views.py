@@ -5,7 +5,8 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework import viewsets, permissions
 from .serializers import DoadorSerializer
 from usuarios.permission import EhRecepcionista
-
+from rest_framework.response import Response
+from rest_framework.decorators import action
 
 class DoadorViewSet(viewsets.ModelViewSet):
     """
@@ -44,6 +45,25 @@ class DoadorViewSet(viewsets.ModelViewSet):
 
 
         return Doador.objects.filter(pk=user.pk)
+
+
+    @action(detail=False, methods=['get', 'patch'], permission_classes=[IsAuthenticated])
+    def me(self, request):
+
+        doador = Doador.objects.get(pk=request.user.pk)
+
+        if request.method == 'GET':
+            serializer = self.get_serializer(doador)
+            return Response(serializer.data)
+
+        if request.method == 'PATCH':
+            serializer = self.get_serializer(doador, data=request.data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+                return Response(serializer.data)
+
+            return Response(serializer.errors, status=400)
 
     def perform_create(self, serializer):
         """

@@ -3,6 +3,40 @@
   padding: 30px;
   min-height: 100vh;
 }
+.topo-pagina {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.titulo {
+  text-align: center;
+  font-weight: 600;
+}
+
+.editar-perfil {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  font-weight: 600;
+  color: #000000;
+
+  cursor: pointer;
+}
+
+.editar-perfil i {
+  font-size: 20px;
+  transition: transform 0.2s ease;
+}
+
+.editar-perfil:hover i {
+  transform: scale(1.15);
+}
 
 .container {
   max-width: 1200px;

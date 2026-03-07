@@ -10,7 +10,15 @@ export class DoadorService {
 
   constructor(private http: HttpClient) {}
 
+  obterDoador(): Observable<any> {
+    return this.http.get(`${this.apiUrl}me/`);
+  }
+
   cadastrar(dadosDoador: any): Observable<any> {
     return this.http.post(this.apiUrl, dadosDoador);
+  }
+
+  atualizarDoador(dados: any): Observable<any> {
+    return this.http.patch(`${this.apiUrl}me/`, dados);
   }
 }

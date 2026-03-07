@@ -1,22 +1,33 @@
 <div class="pagina-doador">
   <div class="container">
-    <h2 class="titulo">Página do Doador</h2>
+    <div class="topo-pagina">
+      <h2 class="titulo">Página do Doador</h2>
+
+      <div
+        class="editar-perfil"
+        routerLink="/cadastro"
+        [queryParams]="{ modo: 'editar' }"
+      >
+        <span>Editar perfil</span>
+        <i class="bi bi-pencil"></i>
+      </div>
+    </div>
 
     <div class="formulario">
       <div class="linha">
         <div class="campo grande">
           <label>Nome completo</label>
-          <input type="text" [(ngModel)]="doador.nome" />
+          <input type="text" [(ngModel)]="doador.nome" disabled />
         </div>
 
         <div class="campo pequeno">
           <label>Tipo Sanguíneo</label>
-          <input type="text" [(ngModel)]="doador.tipoSanguineo" />
+          <input type="text" [(ngModel)]="doador.tipoSanguineo" disabled />
         </div>
       </div>
 
       <div class="linha">
-        <div class="campo estado">
+        <!-- <div class="campo estado">
           <label>Estado</label>
           <input type="text" [(ngModel)]="doador.estado" />
         </div>
@@ -24,60 +35,60 @@
         <div class="campo">
           <label>Cidade</label>
           <input type="text" [(ngModel)]="doador.cidade" />
-        </div>
+        </div>  -->
 
         <div class="campo grande">
           <label>Rua</label>
-          <input type="text" [(ngModel)]="doador.rua" />
+          <input type="text" [(ngModel)]="doador.rua" disabled />
         </div>
-
+        <!-- 
         <div class="campo numero">
           <label>Nº</label>
           <input type="text" [(ngModel)]="doador.numero" />
-        </div>
+        </div> -->
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>Telefone</label>
-          <input type="text" [(ngModel)]="doador.telefone" />
+          <input type="text" [(ngModel)]="doador.telefone" disabled />
         </div>
 
         <div class="campo">
           <label>Email</label>
-          <input type="email" [(ngModel)]="doador.email" />
+          <input type="email" [(ngModel)]="doador.email" disabled />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>Data de Nascimento</label>
-          <input type="date" [(ngModel)]="doador.dataNascimento" />
+          <input type="date" [(ngModel)]="doador.dataNascimento" disabled />
         </div>
 
         <div class="campo pequeno">
           <label>Sexo</label>
-          <select [(ngModel)]="doador.sexo">
-            <option value="Feminino">Feminino</option>
-            <option value="Masculino">Masculino</option>
+          <select [(ngModel)]="doador.sexo" disabled>
+            <option value="F">Feminino</option>
+            <option value="M">Masculino</option>
           </select>
         </div>
 
         <div class="campo grande">
           <label>CPF</label>
-          <input type="text" [(ngModel)]="doador.cpf" />
+          <input type="text" [(ngModel)]="doador.cpf" disabled />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>Última Doação</label>
-          <input type="date" [(ngModel)]="doador.ultimaDoacao" />
+          <input type="date" [(ngModel)]="doador.ultimaDoacao" disabled />
         </div>
 
         <div class="campo">
           <label>Próxima Doação</label>
-          <input type="date" [(ngModel)]="doador.proximaDoacao" />
+          <input type="date" [(ngModel)]="doador.proximaDoacao" disabled />
         </div>
       </div>
     </div>
