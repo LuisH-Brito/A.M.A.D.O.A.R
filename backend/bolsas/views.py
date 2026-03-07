@@ -57,7 +57,7 @@ class BolsaViewSet(viewsets.ModelViewSet):
 
         return qs
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False, methods=['get'], permission_classes=[permissions.AllowAny], authentication_classes=[])
     def dashboard(self, request):
         """
         Endpoint otimizado para alimentar os KPIs do Frontend.

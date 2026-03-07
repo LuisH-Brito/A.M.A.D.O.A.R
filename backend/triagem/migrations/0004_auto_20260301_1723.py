@@ -71,7 +71,7 @@ def inserir_perguntas_iniciais(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('triagem', '0003_pergunta_motivo_inaptidao_pergunta_resposta_esperada'),
+        ('triagem', '0002_initial'),
     ]
 
     operations = [
