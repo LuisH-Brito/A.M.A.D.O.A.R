@@ -12,6 +12,10 @@
     <div class="info">
       <span class="tipo">{{ tipo }}</span>
       <span class="porcentagem">{{ porcentagem }}%</span>
+      
+      <span class="indicador-status" [style.color]="statusEstoque.cor">
+        {{ statusEstoque.texto }}
+      </span>
     </div>
   </div>
 </div>

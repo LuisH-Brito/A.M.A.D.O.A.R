@@ -1,16 +1,52 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { HomeCarroselComponent } from '../../componentes/home-carrosel/home-carrosel.component';
 import { HemometroComponent } from '../../componentes/hemometro/hemometro.component';
+import { EstoqueBolsaService } from '../../services/estoque-bolsa.service'; 
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [HomeCarroselComponent, HemometroComponent],
+  imports: [CommonModule, HomeCarroselComponent, HemometroComponent],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
-export class HomeComponent {
+export class HomeComponent implements OnInit {
   activeIndexes: number[] = [];
+  
+  niveisSanguineos: { [key: string]: number } = {
+    'A+': 0, 'A-': 0, 'B+': 0, 'B-': 0,
+    'AB+': 0, 'AB-': 0, 'O+': 0, 'O-': 0
+  };
+
+  // Atualizar aqui a quantidade considerada como 100% de estoque
+  capacidadeIdeal = 10; 
+
+  constructor(private estoqueBolsaService: EstoqueBolsaService) {}
+
+  ngOnInit() {
+    this.carregarEstoque();
+  }
+
+  carregarEstoque() {
+    this.estoqueBolsaService.obterDashboard().subscribe({
+      next: (dados) => {
+        if (dados && dados.tiposSanguineos) {
+          dados.tiposSanguineos.forEach((item: any) => {
+            // Regra de 3 básica para achar a porcentagem
+            let pct = (item.contagem / this.capacidadeIdeal) * 100;
+            
+            // Garante que a barra não passe de 100%
+            this.niveisSanguineos[item.tipo] = pct > 100 ? 100 : Math.round(pct);
+          });
+        }
+      },
+      error: (err) => {
+        console.error('Erro ao buscar o estoque para os hemômetros:', err);
+      }
+    });
+  }
+
   toggleAccordion(index: number) {
     if (this.activeIndexes.includes(index)) {
       this.activeIndexes = this.activeIndexes.filter((i) => i !== index);
@@ -18,6 +54,7 @@ export class HomeComponent {
       this.activeIndexes.push(index);
     }
   }
+
   isActive(index: number): boolean {
     return this.activeIndexes.includes(index);
   }
