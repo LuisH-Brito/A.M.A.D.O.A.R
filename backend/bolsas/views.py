@@ -1,4 +1,6 @@
 from rest_framework import viewsets, permissions, filters
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Bolsa
 from .serializers import BolsaSerializer
@@ -8,6 +10,23 @@ from django.db.models import Count, Q
 from django.utils import timezone
 import datetime
 from rest_framework import status
+from .services import notificar_estoque_critico
+
+
+class NotificacaoEstoqueView(APIView):
+   def post(self, request):
+        try:
+            notificar_estoque_critico()
+            return Response(
+                {"status": "Sucesso", "message": "Verificação de estoque concluída e e-mails disparados."},
+                status=status.HTTP_200_OK
+            )
+        except Exception as e:
+            return Response(
+                {"status": "Erro", "message": str(e)},
+                status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+    
 class BolsaViewSet(viewsets.ModelViewSet):
     """
     API endpoint para visualização e gestão do estoque de bolsas.
