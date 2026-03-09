@@ -89,10 +89,15 @@ export class QuestionarioProcessoComponent implements OnInit {
       return;
     }
 
-    const payload = this.perguntas.map(p => ({
+    const respostas = this.perguntas.map(p => ({
       id: p.id,
       resposta: p.resposta_dada
     }));
+
+    const payload = {
+      cpf: this.cpfDoador,
+      respostas
+    };
 
     this.questionarioService.salvarQuestionario(payload).subscribe({
       next: () => {

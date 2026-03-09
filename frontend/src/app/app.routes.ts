@@ -74,6 +74,12 @@ export const routes: Routes = [
     data: { cargoPermitido: ['enfermeiro', 'medico'] },
   },
   {
+    path: 'form-pre-triagem/:processoId',
+    component: FormPreTriagemComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['enfermeiro', 'medico'] },
+  },
+  {
     path: 'form-triagem',
     component: FormTriagemComponent,
     canActivate: [authGuard],

@@ -1,55 +1,158 @@
+from django.db.models import F, Value
+from django.db.models.functions import Replace
 from rest_framework import viewsets, status
-from rest_framework.views import APIView  
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.views import APIView
+
 from .models import Pergunta, Questionario, Resposta
 from .serializers import PerguntaSerializer
 from doadores.models import Doador
 
+
+def _somente_digitos(valor: str) -> str:
+    return ''.join(ch for ch in (valor or '') if ch.isdigit())
+
+
+def _buscar_doador_por_cpf_normalizado(cpf: str):
+    cpf_numerico = _somente_digitos(cpf)
+    if not cpf_numerico:
+        return None
+
+    return (
+        Doador.objects
+        .annotate(
+            cpf_numerico=Replace(
+                Replace(F('cpf'), Value('.'), Value('')),
+                Value('-'),
+                Value('')
+            )
+        )
+        .filter(cpf_numerico=cpf_numerico)
+        .first()
+    )
+
+
 class PerguntaViewSet(viewsets.ReadOnlyModelViewSet):
-    #get 
-    queryset = Pergunta.objects.filter(ativa=True).order_by('id') 
+    queryset = Pergunta.objects.filter(ativa=True).order_by('id')
     serializer_class = PerguntaSerializer
+    pagination_class = None
+
 
 class SalvarQuestionarioView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
-        dados = request.data 
+        payload = request.data
 
-        #como ainda nao tem um login funcional usaremos o primeiro usuario do banco para teste
-        doador_teste = Doador.objects.filter(cpf="teste").first()
-        if not doador_teste:
-            return Response({"erro": "Crie pelo menos um doador no Admin para testar!"}, status=status.HTTP_400_BAD_REQUEST)
+        # Aceita os dois formatos:
+        # antigo: [ {id, resposta}, ... ]
+        # novo: { cpf, respostas: [ {id, resposta}, ... ] }
+        if isinstance(payload, list):
+            respostas_payload = payload
+            cpf_payload = None
+        else:
+            respostas_payload = payload.get('respostas', [])
+            cpf_payload = payload.get('cpf')
 
-        questionario = Questionario.objects.create(doador=doador_teste)
+        if not respostas_payload:
+            return Response(
+                {"erro": "Lista de respostas vazia."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
-        for item in dados:
-            pergunta_id = item.get('id')
-            resposta_valor = item.get('resposta')
-
-            if resposta_valor: 
-                pergunta = Pergunta.objects.get(id=pergunta_id)
-                Resposta.objects.create(
-                    questionario=questionario,
-                    pergunta=pergunta,
-                    resposta_texto=resposta_valor
+        # Prioridade: CPF enviado no body
+        if cpf_payload:
+            doador = _buscar_doador_por_cpf_normalizado(cpf_payload)
+            if not doador:
+                return Response(
+                    {"erro": "Doador não encontrado para o CPF informado."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+        else:
+            # Fallback: usuário logado deve ser doador
+            doador = getattr(request.user, 'doador', None)
+            if not doador:
+                return Response(
+                    {"erro": "Informe o CPF do doador ou autentique como doador."},
+                    status=status.HTTP_400_BAD_REQUEST
                 )
 
-        return Response({"mensagem": "Questionário salvo com sucesso!"}, status=status.HTTP_201_CREATED)
-    
+        # Calcula validade com base na resposta esperada de cada pergunta
+        is_valido = True
+        perguntas_cache = {}
+
+        for item in respostas_payload:
+            pergunta_id = item.get('id')
+            resposta_valor = item.get('resposta')
+            if not pergunta_id or resposta_valor is None:
+                return Response(
+                    {"erro": "Cada item precisa de id e resposta."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            pergunta = perguntas_cache.get(pergunta_id)
+            if not pergunta:
+                try:
+                    pergunta = Pergunta.objects.get(id=pergunta_id, ativa=True)
+                    perguntas_cache[pergunta_id] = pergunta
+                except Pergunta.DoesNotExist:
+                    return Response(
+                        {"erro": f"Pergunta {pergunta_id} não encontrada/ativa."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
+
+            if resposta_valor != pergunta.resposta_esperada:
+                is_valido = False
+
+        questionario = Questionario.objects.create(
+            doador=doador,
+            validade=is_valido
+        )
+
+        for item in respostas_payload:
+            pergunta = perguntas_cache[item.get('id')]
+            Resposta.objects.create(
+                questionario=questionario,
+                pergunta=pergunta,
+                resposta_texto=item.get('resposta')
+            )
+
+        return Response(
+            {
+                "mensagem": "Questionário salvo com sucesso!",
+                "questionario_id": questionario.id,
+                "validade": questionario.validade
+            },
+            status=status.HTTP_201_CREATED
+        )
+
+
 class ListarQuestionariosView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request):
         cpf_buscado = request.query_params.get('cpf')
-        
         if not cpf_buscado:
-            return Response({"erro": "CPF não informado na URL"}, status=status.HTTP_400_BAD_REQUEST)
-            
-        questionarios = Questionario.objects.filter(doador__cpf=cpf_buscado).order_by('-data_hora_submissao')
-        
+            return Response(
+                {"erro": "CPF não informado na URL"},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        doador = _buscar_doador_por_cpf_normalizado(cpf_buscado)
+        if not doador:
+            return Response([], status=status.HTTP_200_OK)
+
+        questionarios = (
+            Questionario.objects
+            .filter(doador=doador)
+            .order_by('-data_hora_submissao')
+        )
+
         resultado_final = []
-        
         for q in questionarios:
-            respostas_db = Resposta.objects.filter(questionario=q)
+            respostas_db = Resposta.objects.filter(questionario=q).select_related('pergunta')
             lista_respostas = []
-            
             for r in respostas_db:
                 lista_respostas.append({
                     "pergunta_texto": r.pergunta.texto,
@@ -57,11 +160,12 @@ class ListarQuestionariosView(APIView):
                     "resposta_esperada": r.pergunta.resposta_esperada,
                     "motivo_inaptidao": r.pergunta.motivo_inaptidao
                 })
-                
+
             resultado_final.append({
                 "id": q.id,
+                "validade": q.validade,
                 "data_hora_submissao": q.data_hora_submissao,
                 "respostas": lista_respostas
             })
-            
+
         return Response(resultado_final, status=status.HTTP_200_OK)
