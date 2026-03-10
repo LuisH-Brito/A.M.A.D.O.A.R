@@ -30,4 +30,22 @@ export class ApiService {
   iniciarDoacao(cpf: string) {
     return this.http.post(`${this.baseUrl}processos/iniciar/`, { cpf });
   }
+
+  decidirTriagem(processoId: number, payload: { pressao_arterial: string; aprovado: boolean }) {
+    return this.http.post(`${this.baseUrl}processos/${processoId}/decidir-triagem/`, payload);
+  }
+
+  listarEnfermeiros() {
+    return this.http.get<any[]>(`${this.baseUrl}enfermeiros/`);
+  }
+
+  finalizarColeta(
+    processoId: number,
+    payload: { enfermeiro_id: number; puncao_sucesso: boolean },
+  ) {
+    return this.http.post(
+      `${this.baseUrl}processos/${processoId}/finalizar-coleta/`,
+      payload,
+    );
+  }
 }

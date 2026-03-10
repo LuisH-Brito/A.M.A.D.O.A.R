@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router'; 
+import { ActivatedRoute, Router } from '@angular/router';
+import { ApiService } from '../../services/api.service';
 
 @Component({
   selector: 'app-form-triagem',
@@ -10,21 +11,91 @@ import { Router } from '@angular/router';
   templateUrl: './form-triagem.component.html',
   styleUrl: './form-triagem.component.scss',
 })
-export class FormTriagemComponent {
-  doador = {
-    nome: 'Claudionor Alencar Gozado',
-    dataNascimento: '',
-    cpf: 'teste',
-  };
+export class FormTriagemComponent implements OnInit {
+  processoId!: number;
+  doador = { nome: '', dataNascimento: '', cpf: '' };
+  pressaoArterial = '';
+  questionarioVinculado = false;
 
-  constructor(private router: Router) {} 
+  constructor(
+    private route: ActivatedRoute,
+    private router: Router,
+    private api: ApiService
+  ) {}
 
-  abrirQuestionarios() {
-    if (this.doador.cpf) {
-      const cpfLimpo = this.doador.cpf.trim().replace(/[.-]/g, ''); 
-      this.router.navigate(['/questionario-processo', cpfLimpo]);
-    } else {
-      alert('Por favor, informe o CPF do doador.');
+  ngOnInit(): void {
+    const id = Number(this.route.snapshot.paramMap.get('processoId'));
+    if (!id) {
+      alert('Processo inválido.');
+      this.router.navigate(['/processo-doacao-andamento']);
+      return;
     }
+
+    this.processoId = id;
+
+    this.api.getProcessoById(this.processoId).subscribe({
+      next: (processo) => {
+        this.doador = {
+          nome: processo?.doador?.nome_completo || '',
+          dataNascimento: processo?.doador?.data_nascimento || '',
+          cpf: processo?.doador?.cpf || '',
+        };
+        this.questionarioVinculado = !!processo?.questionario;
+      },
+      error: () => {
+        alert('Não foi possível carregar a ficha de triagem.');
+        this.router.navigate(['/processo-doacao-andamento']);
+      },
+    });
+  }
+
+  abrirQuestionarios(): void {
+    if (!this.processoId) {
+      alert('Processo inválido.');
+      return;
+    }
+    this.router.navigate(['/questionario-processo/proc', this.processoId]);
+  }
+
+  private validarPressao(): boolean {
+    if (!this.pressaoArterial?.trim()) {
+      alert('Informe a pressão arterial.');
+      return false;
+    }
+    return true;
+  }
+
+  reprovar(): void {
+    if (!this.validarPressao()) return;
+
+    this.api.decidirTriagem(this.processoId, {
+      pressao_arterial: this.pressaoArterial.trim(),
+      aprovado: false,
+    }).subscribe({
+      next: () => {
+        alert('Triagem concluída: doador inapto. Processo encerrado.');
+        this.router.navigate(['/processo-doacao-andamento']);
+      },
+      error: (err) => {
+        alert(err?.error?.erro || 'Erro ao concluir triagem.');
+      },
+    });
+  }
+
+  aprovar(): void {
+    if (!this.validarPressao()) return;
+
+    this.api.decidirTriagem(this.processoId, {
+      pressao_arterial: this.pressaoArterial.trim(),
+      aprovado: true,
+    }).subscribe({
+      next: () => {
+        alert('Triagem concluída: doador apto.');
+        this.router.navigate(['/processo-doacao-andamento']);
+      },
+      error: (err) => {
+        alert(err?.error?.erro || 'Erro ao concluir triagem.');
+      },
+    });
   }
 }

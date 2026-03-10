@@ -30,6 +30,11 @@ export class EstoqueBolsaService {
     return this.http.get(`${this.endpoint}/`, { params });
   }
 
+  listarBolsasAguardando(): Observable<any> {
+    const params = new HttpParams().set('status', '1');
+    return this.http.get(`${this.endpoint}/`, { params });
+  }
+
   registrarUso(id: number): Observable<any> {
     return this.http.patch(`${this.endpoint}/${id}/registrar_uso/`, {});
   }

@@ -86,7 +86,19 @@ export const routes: Routes = [
     data: { cargoPermitido: ['medico'] },
   },
   {
+    path: 'form-triagem/:processoId',
+    component: FormTriagemComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['medico'] },
+  },
+  {
     path: 'form-coleta',
+    component: FormColetaComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['enfermeiro'] },
+  },
+  {
+    path: 'form-coleta/:processoId',
     component: FormColetaComponent,
     canActivate: [authGuard],
     data: { cargoPermitido: ['enfermeiro'] },
@@ -113,7 +125,7 @@ export const routes: Routes = [
     path: 'aguardando-validacao-bolsa',
     component: BolsaAguardandoValidacaoComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['medico'] },
+    data: { cargoPermitido: ['medico', 'enfermeiro'] },
   },
   {
     path: 'validar-bolsa',
@@ -132,6 +144,12 @@ export const routes: Routes = [
     component: QuestionarioProcessoComponent,
     canActivate: [authGuard],
     data: { cargoPermitido: ['doador', 'medico'] },
+  },
+  {
+    path: 'questionario-processo/proc/:processoId',
+    component: QuestionarioProcessoComponent,
+    canActivate: [authGuard],
+    data: { cargoPermitido: ['medico'] },
   },
   {
     path: 'questionario-processo/:cpf',

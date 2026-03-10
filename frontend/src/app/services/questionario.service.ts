@@ -20,4 +20,12 @@ export class QuestionarioService {
   getQuestionariosPorCpf(cpf: string) {
     return this.http.get<any[]>(`${this.apiUrl}listar-questionarios/?cpf=${cpf}`);
   }
+
+  getQuestionario(cpf: string) {
+    return this.http.get<any>(`${this.apiUrl}questionario/?cpf=${cpf}`);
+  }
+
+  getQuestionarioPorProcesso(processoId: number) {
+    return this.http.get<any>(`${this.apiUrl}processos/${processoId}/questionario/`);
+  }
 }

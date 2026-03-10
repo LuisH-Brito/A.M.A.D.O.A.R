@@ -19,16 +19,12 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   triagem: any[] = [];
   coleta: any[] = [];
   isRecepcionista = false;
-  isEnfermeiro = false;
-  isMedico = false;
   cargoUsuario = localStorage.getItem('cargo') || '';
 
   constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit(): void {
-    this.isRecepcionista = localStorage.getItem('cargo') === 'recepcionista';
-    this.isEnfermeiro = localStorage.getItem('cargo') === 'enfermeiro';
-    this.isMedico = localStorage.getItem('cargo') === 'medico';
+    this.isRecepcionista = this.cargoUsuario === 'recepcionista';
 
     this.api.getProcessos().subscribe(
       (res: any) => {
@@ -53,12 +49,18 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   }
 
   abrirPreTriagem(processoId: number): void {
-    if (this.isRecepcionista) return; // bloqueia ação para recepção
+    if (this.isRecepcionista) return;
     this.router.navigate(['/form-pre-triagem', processoId]);
   }
 
-  get podePreTriagem(): boolean {
-    return this.cargoUsuario === 'enfermeiro' || this.cargoUsuario === 'medico';
+  abrirTriagem(processoId: number): void {
+    if (!this.podeTriagem) return;
+    this.router.navigate(['/form-triagem', processoId]);
+  }
+
+  abrirColeta(processoId: number): void {
+    if (!this.podeColeta) return;
+    this.router.navigate(['/form-coleta', processoId]);
   }
 
   get podeTriagem(): boolean {

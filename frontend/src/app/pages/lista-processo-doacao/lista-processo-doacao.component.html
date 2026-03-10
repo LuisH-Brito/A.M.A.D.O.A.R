@@ -46,8 +46,13 @@
                 <ng-container *ngIf="abaAtiva === 'triagem'">
                     <div *ngFor="let p of triagem" class="usuario-card">
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
-                        <div class="acoes" *ngIf="isMedico">
-                            <button class="btn-acao">Realizar Triagem</button>
+
+                        <div class="acoes" *ngIf="podeTriagem">
+                          <button class="btn-acao" (click)="abrirTriagem(p.id)">Realizar Triagem</button>
+                        </div>
+
+                        <div class="acoes" *ngIf="!podeTriagem">
+                          <span></span>
                         </div>
                     </div>
                     <div *ngIf="triagem.length === 0">Nenhum processo em triagem.</div>
@@ -56,8 +61,11 @@
                 <ng-container *ngIf="abaAtiva === 'coleta'">
                     <div *ngFor="let p of coleta" class="usuario-card">
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
-                        <div class="acoes">
-                            <button class="btn-acao">Realizar Coleta</button>
+                        <div class="acoes" *ngIf="podeColeta">
+                            <button class="btn-acao" (click)="abrirColeta(p.id)">Realizar Coleta</button>
+                        </div>
+                        <div class="acoes" *ngIf="!podeColeta">
+                            <span></span>
                         </div>
                     </div>
                     <div *ngIf="coleta.length === 0">Nenhum processo em coleta.</div>
