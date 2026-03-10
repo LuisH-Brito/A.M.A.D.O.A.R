@@ -80,6 +80,10 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
         if not doador:
             return Response({'erro': 'Doador não encontrado.'}, status=status.HTTP_404_NOT_FOUND)
 
+        recepcionista = getattr(request.user, 'recepcionista', None)
+        if not recepcionista:
+            return Response({'erro': 'Usuário não é recepcionista.'}, status=status.HTTP_403_FORBIDDEN)
+
         questionario_valido = (
             Questionario.objects
             .filter(doador=doador, validade=True, processo__isnull=True)
@@ -87,22 +91,44 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
             .first()
         )
 
-        recepcionista = getattr(request.user, 'recepcionista', None)
-        if not recepcionista:
-            return Response({'erro': 'Usuário não é recepcionista.'}, status=status.HTTP_403_FORBIDDEN)
+        with transaction.atomic():
+            processo_ativo = (
+                Processo_Doacao.objects
+                .select_for_update()
+                .filter(doador=doador)
+                .exclude(status__in=[StatusProcesso.CONCLUIDO, StatusProcesso.CANCELADO])
+                .order_by('-data_inicio')
+                .first()
+            )
 
-        processo = Processo_Doacao.objects.create(
-            doador=doador,
-            recepcionista=recepcionista,
-            questionario=questionario_valido,
-            status=StatusProcesso.PRE_TRIAGEM
-        )
+            if processo_ativo:
+                return Response(
+                    {
+                        'erro': 'Este doador já possui um processo em andamento.',
+                        'processo_id': processo_ativo.id,
+                        'status': processo_ativo.status,
+                    },
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            processo = Processo_Doacao.objects.create(
+                doador=doador,
+                recepcionista=recepcionista,
+                questionario=questionario_valido,
+                status=StatusProcesso.PRE_TRIAGEM
+            )
 
         return Response(self.get_serializer(processo).data, status=status.HTTP_201_CREATED)
 
     @action(detail=True, methods=['post'], url_path='decidir-triagem')
     def decidir_triagem(self, request, pk=None):
         processo = self.get_object()
+
+        if processo.status != StatusProcesso.TRIAGEM:
+            return Response(
+                {'erro': 'Este processo não está na etapa de triagem.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
 
         pressao_arterial = (request.data.get('pressao_arterial') or '').strip()
         aprovado = request.data.get('aprovado')
