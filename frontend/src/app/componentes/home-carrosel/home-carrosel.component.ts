@@ -14,15 +14,15 @@ export class HomeCarroselComponent {
   slides = [
     {
       title: 'O que é o HEMOACRE?',
-      text: 'O Ambiente de Apoio ao Doador Acreano é Lorem ipsum dolor sit amet...',
+      text: 'O Centro de Hematologia e Hemoterapia do Acre é a instituição responsável por garantir o abastecimento de sangue para hospitais em todo o Acre. Por meio da solidariedade dos doadores, o hemocentro salva vidas todos os dias, conectando quem pode doar com quem precisa de transfusões para continuar lutando pela vida.',
       imgSrc: 'images/logo-hemoacre512-white-background.png',
       bgColor: '#E8F5E9',
       textColor: '#333333',
       layout: 'no-full-no-mask',
     },
     {
-      title: 'Relação com a HEMOACRE',
-      text: 'Texto sobre a relação com o Hemoacre e a importância da doação de sangue para salvar vidas.',
+      title: 'Impacto de uma doação',
+      text: 'Uma única bolsa de sangue pode ajudar até quatro pessoas diferentes. Por isso, cada doação é um gesto de solidariedade que faz uma grande diferença na vida de quem precisa.',
       imgSrc: 'images/mascote_hemoacre.jpg',
       bgColor: '#9F0000',
       textColor: '#FFFFFF',
@@ -30,7 +30,7 @@ export class HomeCarroselComponent {
     },
     {
       title: 'O que é o A.M.A.D.O.A.R.?',
-      text: 'Texto explicativo sobre o projeto Amadoar...',
+      text: 'A.M.A.D.O.A.R. é a plataforma que conecta doadores ao hemocentro de forma rápida e inteligente. Receba alertas quando seu tipo sanguíneo for necessário, acompanhe suas doações e faça parte de uma rede que salva vidas.',
       imgSrc: 'images/amadoar-logo2.jpg',
       bgColor: '#008F39',
       textColor: '#FFFFFF',
