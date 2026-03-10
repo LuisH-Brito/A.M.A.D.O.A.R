@@ -44,7 +44,7 @@
       >
 
       <a
-        *ngIf="temAcesso(['doador'])"
+        *ngIf="temAcesso(['doador', 'administrador'])"
         routerLink="/pagina-doador"
         class="menu-item"
         (click)="toggleMenu()"
@@ -52,7 +52,7 @@
       >
 
       <a
-        *ngIf="temAcesso(['recepcionista'])"
+        *ngIf="temAcesso(['recepcionista', 'administrador'])"
         routerLink="/processo-doacao-REC"
         class="menu-item"
         (click)="toggleMenu()"
@@ -60,7 +60,7 @@
       >
 
       <a
-        *ngIf="temAcesso(['medico', 'enfermeiro'])"
+        *ngIf="temAcesso(['medico', 'enfermeiro', 'administrador'])"
         routerLink="/processo-doacao-MED"
         class="menu-item"
         (click)="toggleMenu()"

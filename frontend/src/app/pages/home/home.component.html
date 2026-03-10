@@ -1,42 +1,71 @@
 <main>
   <app-home-carrosel></app-home-carrosel>
-  
+
   <div class="card-container">
     <div class="card-left">
-      <img src="images/doe-sangue-doe-vida512.png" alt="Doe Sangue, Doe Vida!" />
+      <img
+        src="images/doe-sangue-doe-vida512.png"
+        alt="Doe Sangue, Doe Vida!"
+      />
     </div>
 
     <div class="card-right">
       <h2>Por que doar sangue?</h2>
       <p>
-        O Ambiente de Apoio ao Doador Acreano é Lorem ipsum dolor sit amet. Quo
-        reiciendis numquam et consequatur nesciunt est temporibus recusandae ut
-        recusandae sint sed dolor sapiente! Id consequatur quidem non dolorem
-        dolores et molestiae quibusdam.
+        Doar sangue é doar esperança. Em algum hospital, neste exato momento,
+        alguém está lutando pela vida e depende da solidariedade de outra pessoa
+        para continuar vivendo. Uma bolsa de sangue pode ser a diferença entre a
+        vida e a morte para uma criança, uma mãe ou uma vítima de acidente. Ao
+        doar, você oferece mais do que sangue — você oferece tempo, esperança e
+        a chance de alguém voltar para casa e continuar sua história
       </p>
-      <p>Ut cul... Ferramenta escrita criativa.</p>
     </div>
   </div>
 
   <h2 id="secao-hemometro" class="titulo-estoque">Nosso Estoque - <span>Hemômetro</span></h2>
-  
+
   <div class="container-estoque">
     <div class="grid-hemometros">
-      <app-hemometro tipo="A+" [porcentagem]="niveisSanguineos['A+']"></app-hemometro> 
-      <app-hemometro tipo="B+" [porcentagem]="niveisSanguineos['B+']"></app-hemometro>
-      <app-hemometro tipo="AB+" [porcentagem]="niveisSanguineos['AB+']"></app-hemometro>
-      <app-hemometro tipo="O+" [porcentagem]="niveisSanguineos['O+']"></app-hemometro>
+      <app-hemometro
+        tipo="A+"
+        [porcentagem]="niveisSanguineos['A+']"
+      ></app-hemometro>
+      <app-hemometro
+        tipo="B+"
+        [porcentagem]="niveisSanguineos['B+']"
+      ></app-hemometro>
+      <app-hemometro
+        tipo="AB+"
+        [porcentagem]="niveisSanguineos['AB+']"
+      ></app-hemometro>
+      <app-hemometro
+        tipo="O+"
+        [porcentagem]="niveisSanguineos['O+']"
+      ></app-hemometro>
     </div>
 
-    <div style="margin-top: 40px;"></div> 
-    
+    <div style="margin-top: 40px"></div>
+
     <div class="grid-hemometros">
-      <app-hemometro tipo="A-" [porcentagem]="niveisSanguineos['A-']"></app-hemometro>
-      <app-hemometro tipo="B-" [porcentagem]="niveisSanguineos['B-']"></app-hemometro>
-      <app-hemometro tipo="AB-" [porcentagem]="niveisSanguineos['AB-']"></app-hemometro>
-      <app-hemometro tipo="O-" [porcentagem]="niveisSanguineos['O-']"></app-hemometro>
+      <app-hemometro
+        tipo="A-"
+        [porcentagem]="niveisSanguineos['A-']"
+      ></app-hemometro>
+      <app-hemometro
+        tipo="B-"
+        [porcentagem]="niveisSanguineos['B-']"
+      ></app-hemometro>
+      <app-hemometro
+        tipo="AB-"
+        [porcentagem]="niveisSanguineos['AB-']"
+      ></app-hemometro>
+      <app-hemometro
+        tipo="O-"
+        [porcentagem]="niveisSanguineos['O-']"
+      ></app-hemometro>
     </div>
-  </div> 
+  </div>
+  
   <div id="secao-condicoes" class="accordion-card">
     <h2>Quem pode doar?</h2>
 
@@ -47,7 +76,13 @@
           <span class="arrow">▼</span>
         </button>
         <div class="accordion-content">
-          <p>Texto explicando as condições básicas para doar sangue...</p>
+          <p>
+            Para doar sangue é necessário ter entre 16 e 69 anos, pesar mais de
+            50 kg e estar em boas condições de saúde. No dia da doação, é
+            importante estar bem alimentado, descansado e apresentar um
+            documento oficial com foto. Essas condições ajudam a garantir a
+            segurança tanto do doador quanto de quem irá receber o sangue.
+          </p>
         </div>
       </div>
 
@@ -57,7 +92,15 @@
           <span class="arrow">▼</span>
         </button>
         <div class="accordion-content">
-          <p>Texto explicando os impedimentos temporários...</p>
+          <p>
+            Alguns fatores podem impedir a doação de sangue temporariamente.
+            Situações como gripe, febre, gravidez, realização de tatuagem ou
+            piercing recente, consumo de bebidas alcoólicas nas últimas horas ou
+            cirurgias recentes podem exigir um período de espera antes da
+            doação. Esses impedimentos são temporários e, após o tempo
+            recomendado, a pessoa poderá doar normalmente caso esteja em boas
+            condições de saúde.
+          </p>
         </div>
       </div>
 
@@ -67,7 +110,15 @@
           <span class="arrow">▼</span>
         </button>
         <div class="accordion-content">
-          <p>Texto explicando os impedimentos definitivos...</p>
+          <p>
+            Existem condições que impedem a doação de sangue de forma
+            permanente, pois podem representar riscos à segurança de quem
+            receberá o sangue. Entre esses casos estão pessoas que tiveram
+            determinadas doenças infecciosas transmissíveis pelo sangue, como
+            HIV ou hepatites virais após determinada idade. Esses critérios
+            seguem normas de segurança sanitária e existem para garantir que o
+            sangue coletado seja seguro para os pacientes que irão recebê-lo.
+          </p>
         </div>
       </div>
     </div>
@@ -77,15 +128,16 @@
     <div class="centraliza-texto-e-botao">
       <div class="faixa-texto">
         <p>
-          Faz a tua triagem aí pô ao Doador Acreano é Lorem ipsum dolor sit
-          amet. Quo reiciendis numquam et consequatur nesciunt est temporibus
-          recusandae ut recusandae sint sed dolor sapiente! Id consequatur
-          quidem non dolorem dolores et molestiae quibusdam.
+          Grandes gestos começam com um pequeno passo. Faça sua triagem online
+          em poucos minutos e descubra se você pode ajudar a salvar vidas
+          através da doação de sangue.
         </p>
       </div>
 
       <div class="faixa-botao">
-        <button class="btn-triagem" (click)="irParaTriagem()">Triagem Online</button>      
+        <button class="btn-triagem" (click)="irParaTriagem()" routerLink="questionario">
+          Triagem Online
+        </button>      
       </div>
     </div>
   </div>
