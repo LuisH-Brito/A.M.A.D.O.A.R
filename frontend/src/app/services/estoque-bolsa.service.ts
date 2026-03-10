@@ -16,12 +16,17 @@ export class EstoqueBolsaService {
   listarBolsas(
     pagina: number,
     filtroAba: string,
+    tipoAtivo: string,
     busca: string,
   ): Observable<any> {
     let params = new HttpParams().set('page', pagina.toString());
 
     if (filtroAba && filtroAba !== 'Todos') {
       params = params.set('filtro_aba', filtroAba);
+    }
+
+    if (tipoAtivo && tipoAtivo !== 'Todos') {
+      params = params.set('filtro_tipo', tipoAtivo);
     }
 
     if (busca) {

@@ -14,6 +14,7 @@ import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 })
 export class EstoqueBolsasComponent implements OnInit {
   abaAtiva: string = 'Todos';
+  tipoAtivo: string = 'Todos';
   busca: string = '';
   menuFiltroAberto: boolean = false;
 
@@ -21,7 +22,14 @@ export class EstoqueBolsasComponent implements OnInit {
   itensPorPagina: number = 10;
   totalItensBolsas: number = 0;
 
-  resumoGeral = { validas: 0, vencendo: 0, vencidas: 0 };
+  resumoGeral = {
+    total: 0,
+    validas: 0,
+    vencendo: 0,
+    vencidas: 0,
+    utilizadas: 0,
+    descartadas: 0,
+  };
   tiposSanguineos: any[] = [];
   bolsasPaginadas: any[] = [];
 
@@ -32,16 +40,8 @@ export class EstoqueBolsasComponent implements OnInit {
     'Bolsa Vencidas',
     'Utilizadas',
     'Descartadas',
-    'A-',
-    'A+',
-    'B-',
-    'B+',
-    'AB-',
-    'AB+',
-    'O-',
-    'O+',
   ];
-
+  tiposMenu = ['Todos', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'O-', 'O+'];
   private delayBusca: any;
 
   constructor(
@@ -67,6 +67,7 @@ export class EstoqueBolsasComponent implements OnInit {
     this.EstoqueService.listarBolsas(
       this.paginaAtual,
       this.abaAtiva,
+      this.tipoAtivo,
       this.busca,
     ).subscribe({
       next: (resposta) => {
@@ -121,6 +122,7 @@ export class EstoqueBolsasComponent implements OnInit {
   mudarPagina(novaPagina: number) {
     this.paginaAtual = novaPagina;
     this.carregarBolsas();
+    window.scrollTo({ top: 1, behavior: 'smooth' });
   }
 
   selecionarAba(aba: string) {
@@ -130,6 +132,11 @@ export class EstoqueBolsasComponent implements OnInit {
     this.carregarBolsas();
   }
 
+  selecionarTipo(tipo: string) {
+    this.tipoAtivo = tipo;
+    this.paginaAtual = 1;
+    this.carregarBolsas();
+  }
   voltar() {
     this.router.navigate(['/']);
   }

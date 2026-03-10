@@ -48,9 +48,8 @@ class BolsaViewSet(viewsets.ModelViewSet):
         Intercepta a requisição para aplicar os filtros das 'Abas' do Frontend.
         """
         qs = super().get_queryset()
-        aba = self.request.query_params.get('filtro_aba', None)
-        if not aba or aba == 'Todos':
-            return qs
+        aba = self.request.query_params.get('filtro_aba', 'Todos')
+        tipo_sangue = self.request.query_params.get('filtro_tipo', 'Todos')
         hoje = timezone.now().date()
         limite = hoje + datetime.timedelta(days=7)
         STATUS_VALIDADO = 2 
@@ -67,11 +66,12 @@ class BolsaViewSet(viewsets.ModelViewSet):
             qs = qs.filter(status=STATUS_UTILIZADO)
         elif aba == 'Descartadas':
             qs = qs.filter(status=STATUS_INAPTO)
-        else:
-            # Tratamento para as abas de tipo sanguíneo (ex: 'A+', 'AB-')
-            if len(aba) >= 2:
-                tipo = aba[:-1]  
-                fator = aba[-1]
+        elif aba == 'Todos':
+            qs = qs.filter(status=STATUS_VALIDADO)
+        if tipo_sangue and tipo_sangue != 'Todos':
+            if len(tipo_sangue) >= 2:
+                tipo = tipo_sangue[:-1]  
+                fator = tipo_sangue[-1]
                 qs = qs.filter(tipo_sanguineo__tipo=tipo, tipo_sanguineo__fator_rh=fator)
 
         return qs
@@ -85,10 +85,15 @@ class BolsaViewSet(viewsets.ModelViewSet):
         hoje = timezone.now().date()
         limite_vencimento = hoje + datetime.timedelta(days=7)
         STATUS_VALIDADO = 2 
+        STATUS_INAPTO = 3
+        STATUS_UTILIZADO = 4
         agregacoes = Bolsa.objects.aggregate(
             validas=Count('id', filter=Q(status=STATUS_VALIDADO, data_vencimento__gte=hoje)),
             vencendo=Count('id', filter=Q(status=STATUS_VALIDADO, data_vencimento__gte=hoje, data_vencimento__lte=limite_vencimento)),
             vencidas=Count('id', filter=Q(status=STATUS_VALIDADO, data_vencimento__lt=hoje)),
+            utilizadas=Count('id', filter=Q(status=STATUS_UTILIZADO)), 
+            descartadas=Count('id', filter=Q(status=STATUS_INAPTO)),
+            total=Count('id', filter=Q(status=STATUS_VALIDADO))
         )
         tipos_sanguineos_db = Bolsa.objects.filter(
             status=STATUS_VALIDADO, 
@@ -112,9 +117,12 @@ class BolsaViewSet(viewsets.ModelViewSet):
         ]
         return Response({
             "resumoGeral": {
+                "total": agregacoes['total'],
                 "validas": agregacoes['validas'],
                 "vencendo": agregacoes['vencendo'],
-                "vencidas": agregacoes['vencidas']
+                "vencidas": agregacoes['vencidas'],
+                "utilizadas": agregacoes['utilizadas'],
+                "descartadas": agregacoes['descartadas']
             },
             "tiposSanguineos": tags_sangue
         })

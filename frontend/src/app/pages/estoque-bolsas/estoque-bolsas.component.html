@@ -31,6 +31,18 @@
         <span class="titulo">Bolsas<br />vencidas</span
         ><span class="numero">{{ resumoGeral.vencidas }}</span>
       </div>
+      <div class="kpi-card utilizada">
+        <span class="titulo">Bolsas<br />utilizadas</span
+        ><span class="numero">{{ resumoGeral.utilizadas }}</span>
+      </div>
+      <div class="kpi-card descartada">
+        <span class="titulo">Bolsas<br />descartadas</span
+        ><span class="numero">{{ resumoGeral.descartadas }}</span>
+      </div>
+      <div class="kpi-card total">
+        <span class="titulo">Bolsas<br />Total no Estoque</span
+        ><span class="numero">{{ resumoGeral.total }}</span>
+      </div>
     </div>
 
     <div class="tags-sangue">
@@ -42,33 +54,49 @@
 
     <div class="conteudo-principal">
       <div class="lista-area">
-        <div class="controles-topo">
-          <div class="campo custom-dropdown">
-            <label>Filtro</label>
-            <button class="btn-dropdown" (click)="toggleMenuFiltro()">
-              {{ abaAtiva }}
-              <i class="bi bi-chevron-down"></i>
-            </button>
-
-            <div class="dropdown-menu-flutuante" *ngIf="menuFiltroAberto">
-              <button
-                *ngFor="let aba of abasMenu"
-                [class.ativo]="abaAtiva === aba"
-                (click)="selecionarAba(aba)"
-              >
-                {{ aba }}
+        <div class="filtros-container">
+          <div class="controles-topo">
+            <div class="campo custom-dropdown">
+              <label>Status da Bolsa</label>
+              <button class="btn-dropdown" (click)="toggleMenuFiltro()">
+                {{ abaAtiva }}
+                <i class="bi bi-chevron-down"></i>
               </button>
+
+              <div class="dropdown-menu-flutuante" *ngIf="menuFiltroAberto">
+                <button
+                  *ngFor="let aba of abasMenu"
+                  [class.ativo]="abaAtiva === aba"
+                  (click)="selecionarAba(aba)"
+                >
+                  {{ aba }}
+                </button>
+              </div>
+            </div>
+
+            <div class="campo campo-busca">
+              <label>Buscar doador</label>
+              <input
+                type="text"
+                placeholder="Nome ou CPF"
+                [(ngModel)]="busca"
+                (ngModelChange)="aoDigitarBusca()"
+              />
             </div>
           </div>
 
-          <div class="campo campo-busca">
-            <label>Buscar</label>
-            <input
-              type="text"
-              placeholder="Nome/cpf"
-              [(ngModel)]="busca"
-              (ngModelChange)="aoDigitarBusca()"
-            />
+          <div class="chips-tipos-sanguineos">
+            <span class="label-chip">Tipo Sanguíneo:</span>
+            <div class="chips-lista">
+              <button
+                *ngFor="let tipo of tiposMenu"
+                class="chip-btn"
+                [class.ativo]="tipoAtivo === tipo"
+                (click)="selecionarTipo(tipo)"
+              >
+                {{ tipo }}
+              </button>
+            </div>
           </div>
         </div>
 
