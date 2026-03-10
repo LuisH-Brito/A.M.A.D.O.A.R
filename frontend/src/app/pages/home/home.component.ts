@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { HomeCarroselComponent } from '../../componentes/home-carrosel/home-carrosel.component';
 import { HemometroComponent } from '../../componentes/hemometro/hemometro.component';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service'; 
+import {  Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -22,7 +23,10 @@ export class HomeComponent implements OnInit {
   // Atualizar aqui a quantidade considerada como 100% de estoque
   capacidadeIdeal = 10; 
 
-  constructor(private estoqueBolsaService: EstoqueBolsaService) {}
+  constructor(
+    private estoqueBolsaService: EstoqueBolsaService,
+    private router: Router,
+  ) { }
 
   ngOnInit() {
     this.carregarEstoque();
@@ -57,5 +61,16 @@ export class HomeComponent implements OnInit {
 
   isActive(index: number): boolean {
     return this.activeIndexes.includes(index);
+  }
+
+  irParaTriagem() {
+    const token = localStorage.getItem('token');
+
+    if (token) {
+      this.router.navigate(['/questionario']);
+    } else {
+      alert('Para realizar a triagem online, é necessário iniciar sessão.');
+      this.router.navigate(['/login']);
+    }
   }
 }

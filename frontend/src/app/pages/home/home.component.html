@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <h2 class="titulo-estoque">Nosso Estoque - <span>Hemômetro</span></h2>
+  <h2 id="secao-hemometro" class="titulo-estoque">Nosso Estoque - <span>Hemômetro</span></h2>
   
   <div class="container-estoque">
     <div class="grid-hemometros">
@@ -36,7 +36,8 @@
       <app-hemometro tipo="AB-" [porcentagem]="niveisSanguineos['AB-']"></app-hemometro>
       <app-hemometro tipo="O-" [porcentagem]="niveisSanguineos['O-']"></app-hemometro>
     </div>
-  </div> <div class="accordion-card">
+  </div> 
+  <div id="secao-condicoes" class="accordion-card">
     <h2>Quem pode doar?</h2>
 
     <div class="accordion-section">
@@ -84,7 +85,7 @@
       </div>
 
       <div class="faixa-botao">
-        <button class="btn-triagem">Triagem Online</button>
+        <button class="btn-triagem" (click)="irParaTriagem()">Triagem Online</button>      
       </div>
     </div>
   </div>

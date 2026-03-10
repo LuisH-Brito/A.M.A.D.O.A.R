@@ -30,13 +30,13 @@
   </div>
 
   <div class="mobile-menu" [ngClass]="{ show: isMenuOpen }">
-    <a routerLink="/" class="menu-item" (click)="toggleMenu()">Início</a>
-    <a routerLink="/condicoes" class="menu-item" (click)="toggleMenu()"
-      >Condições para doar</a
-    >
-    <a routerLink="/hemometro" class="menu-item" (click)="toggleMenu()"
-      >Hemômetro</a
-    >
+  <a routerLink="/" class="menu-item" (click)="toggleMenu()">Início</a>
+  <a (click)="irParaSecao('secao-condicoes')" class="menu-item" style="cursor: pointer;">
+    Condições para doar
+  </a>
+  <a (click)="irParaSecao('secao-hemometro')" class="menu-item" style="cursor: pointer;">
+    Hemômetro
+  </a>
 
     <ng-container *ngIf="isLogado()">
       <a routerLink="/questionario" class="menu-item" (click)="toggleMenu()"
