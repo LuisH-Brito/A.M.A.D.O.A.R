@@ -7,6 +7,8 @@ from .serializers import DoadorSerializer
 from usuarios.permission import EhRecepcionista
 from rest_framework.response import Response
 from rest_framework.decorators import action
+from django.db.models import F, Value
+from django.db.models.functions import Replace
 
 class DoadorViewSet(viewsets.ModelViewSet):
     """
@@ -34,17 +36,26 @@ class DoadorViewSet(viewsets.ModelViewSet):
         Filtra os dados no banco de acordo com quem está logado.
         """
         user = self.request.user
-        if hasattr(user, 'administrador'):
-            return Doador.objects.all()
 
-        if user.is_superuser:
-            return Doador.objects.all()
+        if hasattr(user, 'administrador') or user.is_superuser or hasattr(user, 'recepcionista'):
+            queryset = Doador.objects.all()
+        else:
+            queryset = Doador.objects.filter(pk=user.pk)
 
-        if hasattr(user, 'recepcionista'):
-            return Doador.objects.all()
+        cpf = (self.request.query_params.get('cpf') or '').strip()
+        if cpf:
+            cpf_numerico = ''.join(ch for ch in cpf if ch.isdigit())
 
+            # Normaliza CPF salvo no banco para comparar só dígitos
+            queryset = queryset.annotate(
+                cpf_numerico=Replace(
+                    Replace(F('cpf'), Value('.'), Value('')),
+                    Value('-'),
+                    Value('')
+                )
+            ).filter(cpf_numerico=cpf_numerico)
 
-        return Doador.objects.filter(pk=user.pk)
+        return queryset
 
 
     @action(detail=False, methods=['get', 'patch'], permission_classes=[IsAuthenticated])

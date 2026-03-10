@@ -1,51 +1,44 @@
 <div class="form-triagem">
   <div class="container">
-    <h2 class="titulo">Triagem</h2>
+    <h2 class="titulo">Triagem Médica</h2>
 
-    <form class="formulario">
+    <form class="formulario" (ngSubmit)="$event.preventDefault()">
       <div class="linha">
         <div class="campo grande">
           <label>Nome Completo:</label>
-          <input type="text" name="nome" [(ngModel)]="doador.nome" />
+          <input type="text" [value]="doador.nome" disabled />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo pequeno">
           <label>Data de nascimento:</label>
-          <input
-            type="date"
-            name="dataNascimento"
-            [(ngModel)]="doador.dataNascimento"
-          />
+          <input type="date" [value]="doador.dataNascimento" disabled />
         </div>
 
         <div class="campo grande">
           <label>CPF:</label>
-          <input type="text" name="cpf" [(ngModel)]="doador.cpf" />
+          <input type="text" [value]="doador.cpf" disabled />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo pequeno">
           <label>Pressão arterial:</label>
-          <input type="text" name="pressao_arterial" />
+          <input type="text" name="pressao_arterial" [(ngModel)]="pressaoArterial" placeholder="Ex: 12x8" />
         </div>
 
         <div class="campo">
-          <button
-            type="button"
-            class="btn-questionario"
-            (click)="abrirQuestionarios()"
-          >
-            Abrir Questionário Online
+          <button type="button" class="btn-questionario" (click)="abrirQuestionarios()">
+            Revisar Questionário
           </button>
+          <small *ngIf="!questionarioVinculado">Este processo não possui questionário vinculado.</small>
         </div>
       </div>
 
       <div class="acoes">
-        <button type="button" class="btn-cancelar">Inapto</button>
-        <button type="submit" class="btn-concluir">Apto</button>
+        <button type="button" class="btn-cancelar" (click)="reprovar()">Inapto</button>
+        <button type="button" class="btn-concluir" (click)="aprovar()">Apto</button>
       </div>
     </form>
   </div>

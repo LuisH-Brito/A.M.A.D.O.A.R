@@ -2,28 +2,45 @@
   <div class="container">
     <h2 class="titulo">Coleta</h2>
 
-    <form class="formulario">
+    <form class="formulario" (ngSubmit)="finalizarColeta()">
       <div class="layout-duplo">
         <div class="grupo-inputs">
           <div class="campo">
-            <select name="responsavel" class="select-borda">
-              <option value="">Selecionar Responsável pela coleta</option>
-              <option value="Macilon">Macilon</option>
-              <option value="Nasserala">Nasserala</option>
-              <option value="Luiz Matos">Luiz Matos</option>
+            <select
+              name="responsavel"
+              class="select-borda"
+              [(ngModel)]="responsavelSelecionado"
+            >
+              <option [ngValue]="null">Selecionar Responsavel pela coleta</option>
+              <option
+                *ngFor="let responsavel of responsaveis"
+                [ngValue]="responsavel.id"
+              >
+                {{ responsavel.nome_completo }}
+              </option>
             </select>
           </div>
           <div class="campo-puncao">
             <label class="titulo-puncao"
-              >Punção Venosa Realizada com Sucesso:</label
+              >Puncao venosa realizada com sucesso:</label
             >
             <div class="radios-container">
               <label class="radio-label">
-                <input type="radio" name="puncao" value="sim" checked />
+                <input
+                  type="radio"
+                  name="puncao"
+                  value="true"
+                  [(ngModel)]="puncaoSucesso"
+                />
                 Sim
               </label>
               <label class="radio-label">
-                <input type="radio" name="puncao" value="nao" />
+                <input
+                  type="radio"
+                  name="puncao"
+                  value="false"
+                  [(ngModel)]="puncaoSucesso"
+                />
                 Não
               </label>
             </div>
@@ -48,7 +65,7 @@
         </div>
       </div>
       <div class="acoes">
-        <button type="submit" class="btn-concluir btn-coleta">
+        <button type="submit" class="btn-concluir btn-coleta" [disabled]="enviando">
           Finalizar Coleta
         </button>
       </div>

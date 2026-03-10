@@ -14,8 +14,9 @@ import { PerguntasComponent } from '../../componentes/perguntas/perguntas.compon
 export class QuestionarioProcessoComponent implements OnInit {
   carregando: boolean = true;
   cpfDoador: string | null = '';
+  processoId: number | null = null;
   perguntas: any[] = [];
-  modoEdicao: boolean = false; 
+  modoEdicao: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -24,6 +25,8 @@ export class QuestionarioProcessoComponent implements OnInit {
   ) {}
 
   ngOnInit() {
+    const processoIdParam = this.route.snapshot.paramMap.get('processoId');
+    this.processoId = processoIdParam ? Number(processoIdParam) : null;
     this.cpfDoador = this.route.snapshot.paramMap.get('cpf');
 
     this.questionarioService.getPerguntas().subscribe({
@@ -36,13 +39,30 @@ export class QuestionarioProcessoComponent implements OnInit {
           resposta_dada: null 
         }));
 
+        if (this.processoId) {
+          this.questionarioService.getQuestionarioPorProcesso(this.processoId).subscribe({
+            next: (q) => {
+              (q?.respostas || []).forEach((respBackend: any) => {
+                const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
+                if (perguntaEncontrada) {
+                  perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
+                }
+              });
+              this.carregando = false;
+            },
+            error: (erro) => {
+              console.error('Erro ao buscar questionário do processo:', erro);
+              this.carregando = false;
+            }
+          });
+          return;
+        }
+
         if (this.cpfDoador) {
           this.questionarioService.getQuestionariosPorCpf(this.cpfDoador).subscribe({
             next: (questionarios) => {
-              // Pega APENAS o último questionário (índice 0)
               if (questionarios.length > 0) {
-                const ultimoQuestionario = questionarios[0]; 
-                
+                const ultimoQuestionario = questionarios[0];
                 ultimoQuestionario.respostas.forEach((respBackend: any) => {
                   const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
                   if (perguntaEncontrada) {
@@ -57,6 +77,8 @@ export class QuestionarioProcessoComponent implements OnInit {
               this.carregando = false;
             }
           });
+        } else {
+          this.carregando = false;
         }
       }
     });
@@ -89,10 +111,15 @@ export class QuestionarioProcessoComponent implements OnInit {
       return;
     }
 
-    const payload = this.perguntas.map(p => ({
+    const respostas = this.perguntas.map(p => ({
       id: p.id,
       resposta: p.resposta_dada
     }));
+
+    const payload = {
+      cpf: this.cpfDoador,
+      respostas
+    };
 
     this.questionarioService.salvarQuestionario(payload).subscribe({
       next: () => {
@@ -107,6 +134,10 @@ export class QuestionarioProcessoComponent implements OnInit {
   }
 
   voltar() {
+    if (this.processoId) {
+      this.router.navigate(['/form-triagem', this.processoId]);
+      return;
+    }
     this.router.navigate(['/form-triagem']);
   }
 }
