@@ -28,8 +28,8 @@
           <div class="info-doador">
             <p><strong>Nome:</strong> {{ doadorEncontrado.nome_completo }}</p>
             <p>
-              <strong>Tipo Sanguineo:</strong>
-              {{ (doadorEncontrado.tipo_sanguineo_declarado || '') + (doadorEncontrado.fator_rh || '') }}
+              <strong>Sexo:</strong>
+              {{ doadorEncontrado.sexo === 'M' ? 'Masculino' : doadorEncontrado.sexo === 'F' ? 'Feminino' : 'Não informado' }}
             </p>
             <p><strong>Status:</strong> Tempo de doação apto</p>
           </div>
