@@ -39,47 +39,54 @@ export class QuestionarioProcessoComponent implements OnInit {
           resposta_dada: null 
         }));
 
-        if (this.processoId) {
-          this.questionarioService.getQuestionarioPorProcesso(this.processoId).subscribe({
-            next: (q) => {
-              (q?.respostas || []).forEach((respBackend: any) => {
-                const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
-                if (perguntaEncontrada) {
-                  perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
-                }
-              });
-              this.carregando = false;
-            },
-            error: (erro) => {
-              console.error('Erro ao buscar questionário do processo:', erro);
-              this.carregando = false;
-            }
-          });
-          return;
-        }
-
+        //  buscar por CPF 
         if (this.cpfDoador) {
-          this.questionarioService.getQuestionariosPorCpf(this.cpfDoador).subscribe({
-            next: (questionarios) => {
-              if (questionarios.length > 0) {
-                const ultimoQuestionario = questionarios[0];
-                ultimoQuestionario.respostas.forEach((respBackend: any) => {
-                  const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
-                  if (perguntaEncontrada) {
-                    perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
-                  }
-                });
-              }
-              this.carregando = false;
-            },
-            error: (erro) => {
-              console.error('Erro ao buscar o histórico:', erro);
-              this.carregando = false;
-            }
-          });
+          this.carregarUltimoQuestionarioPorCpf();
+        } else if (this.processoId) {
+          this.carregarQuestionarioPorProcesso();
         } else {
           this.carregando = false;
         }
+      }
+    });
+  }
+
+  carregarUltimoQuestionarioPorCpf() {
+    this.questionarioService.getQuestionariosPorCpf(this.cpfDoador!).subscribe({
+      next: (questionarios) => {
+        if (questionarios && questionarios.length > 0) {
+          // O backend (views.py) já manda ordenado pelo mais recente
+          const ultimoQuestionario = questionarios[0];
+          ultimoQuestionario.respostas.forEach((respBackend: any) => {
+            const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
+            if (perguntaEncontrada) {
+              perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
+            }
+          });
+        }
+        this.carregando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar o histórico pelo CPF:', erro);
+        this.carregando = false;
+      }
+    });
+  }
+
+  carregarQuestionarioPorProcesso() {
+    this.questionarioService.getQuestionarioPorProcesso(this.processoId!).subscribe({
+      next: (q) => {
+        (q?.respostas || []).forEach((respBackend: any) => {
+          const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
+          if (perguntaEncontrada) {
+            perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
+          }
+        });
+        this.carregando = false;
+      },
+      error: (erro) => {
+        console.error('Erro ao buscar questionário do processo:', erro);
+        this.carregando = false;
       }
     });
   }
@@ -94,10 +101,8 @@ export class QuestionarioProcessoComponent implements OnInit {
     return respostaDada !== null && respostaDada !== respostaEsperada;
   }
 
-  // Alterna entre Editar e Salvar
   alternarEdicao() {
     if (this.modoEdicao) {
-      // Se estava editando, clica para Salvar no banco
       this.salvarQuestionarioEditado();
     } else {
       this.modoEdicao = true;
@@ -105,6 +110,11 @@ export class QuestionarioProcessoComponent implements OnInit {
   }
 
   salvarQuestionarioEditado() {
+    if (!this.cpfDoador) {
+      alert('O sistema precisa do CPF para salvar as respostas.');
+      return;
+    }
+
     const temPerguntaVazia = this.perguntas.some(p => p.resposta_dada === null);
     if (temPerguntaVazia) {
       alert('Preencha todas as perguntas antes de salvar.');
@@ -128,7 +138,7 @@ export class QuestionarioProcessoComponent implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao salvar questionário:', erro);
-        alert('Erro ao salvar as respostas.');
+        alert('Erro ao salvar as respostas. Verifique o console.');
       }
     });
   }

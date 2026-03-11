@@ -152,8 +152,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
   },
-  {
-    path: 'questionario-processo/proc/:processoId',
+{
+    path: 'questionario-processo/proc/:processoId/:cpf', // <-- Tem que ter o /:cpf no final
     component: QuestionarioProcessoComponent,
     canActivate: [authGuard],
     data: { cargoPermitido: ['medico'] },
