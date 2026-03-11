@@ -46,6 +46,8 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
         data = super().validate(attrs)
         
         user = self.user
+
+        data['usuario_id'] = user.id
         
         if hasattr(user, 'enfermeiro'):
             data['tipo'] = 'enfermeiro'
