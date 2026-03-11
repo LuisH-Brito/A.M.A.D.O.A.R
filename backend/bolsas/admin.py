@@ -5,6 +5,7 @@ from .models import Bolsa
 class BolsaAdmin(admin.ModelAdmin):
     list_display = ('id', 'tipo_sanguineo', 'status', 'data_vencimento', 'doador')
     list_filter = ('status', 'tipo_sanguineo', 'data_vencimento')
+    readonly_fields = ('data_vencimento', 'validacao_at', 'enfermeiro_coleta')
     search_fields = ('id', 'doador__cpf', 'doador__nome_completo', 'enfermeiro_coleta__nome_completo')
     fieldsets = (('Rastreabilidade da Coleta', {
                     'fields': ('processo', 'doador', 'tipo_sanguineo')}),

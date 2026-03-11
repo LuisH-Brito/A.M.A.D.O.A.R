@@ -48,14 +48,19 @@ class BolsaViewSet(viewsets.ModelViewSet):
         Intercepta a requisição para aplicar os filtros das 'Abas' do Frontend.
         """
         qs = super().get_queryset()
+        if self.kwargs.get('pk'):
+            return qs
         aba = self.request.query_params.get('filtro_aba', 'Todos')
         tipo_sangue = self.request.query_params.get('filtro_tipo', 'Todos')
         hoje = timezone.now().date()
         limite = hoje + datetime.timedelta(days=7)
+        STATUS_AGUARDANDO = 1 
         STATUS_VALIDADO = 2 
         STATUS_INAPTO = 3
         STATUS_UTILIZADO = 4
         # Traduz a lógica para SQL
+        if aba == 'Aguardando':
+            qs = qs.filter(status=STATUS_AGUARDANDO).order_by('processo__data_inicio')
         if aba == 'Bolsa Validas':
             qs = qs.filter(status=STATUS_VALIDADO, data_vencimento__gt=limite)
         elif aba == 'Bolsa Vencendo':
@@ -127,21 +132,36 @@ class BolsaViewSet(viewsets.ModelViewSet):
             "tiposSanguineos": tags_sangue
         })
     
-    @action(detail=True, methods=['patch'])
+    @action(detail=True, methods=['patch', 'post'])
     def descartar(self, request, pk=None):
-        """
-        Endpoint customizado para registrar o descarte de uma bolsa.
-        Altera o status para 3 (INAPTO).
-        """
         bolsa = self.get_object()
         STATUS_INAPTO = 3
+
+        tipo_id = request.data.get('tipo_sanguineo') or request.POST.get('tipo_sanguineo')
+        medico_id = request.data.get('medico_validacao') or request.POST.get('medico_validacao')
+        arquivo = request.FILES.get('arquivo_laudo')
+
+        if tipo_id:
+            bolsa.tipo_sanguineo_id = tipo_id
+        if medico_id:
+            bolsa.medico_validacao_id = medico_id
+        if arquivo:
+            bolsa.arquivo_laudo = arquivo
+
+        if not bolsa.tipo_sanguineo_id or not bolsa.arquivo_laudo or not bolsa.medico_validacao_id:
+            return Response(
+                {"erro": "Não é possível descartar sem laudo, tipo sanguíneo e médico responsável."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         bolsa.status = STATUS_INAPTO
-        bolsa.save(update_fields=['status']) 
+        bolsa.save() 
+        
         return Response(
-            {"mensagem": f"Bolsa {bolsa.id} marcada como INAPTA e removida do estoque viável."},
+            {"mensagem": f"Bolsa {bolsa.id} descartada com sucesso."},
             status=status.HTTP_200_OK
         )
-
+    
     @action(detail=True, methods=['patch'])
     def registrar_uso(self, request, pk=None):
         """
@@ -160,5 +180,45 @@ class BolsaViewSet(viewsets.ModelViewSet):
         bolsa.save(update_fields=['status'])
         return Response(
             {"mensagem": f"Uso clínico da bolsa {bolsa.id} registrado com sucesso."},
+            status=status.HTTP_200_OK
+        )
+    
+    @action(detail=True, methods=['patch'])
+    def validar(self, request, pk=None):
+        """
+        Endpoint customizado para o Médico validar a bolsa.
+        Recebe os arquivos e altera o status. A matemática de datas é delegada ao models.py.
+        """
+        bolsa = self.get_object()
+        STATUS_AGUARDANDO = 1
+        STATUS_VALIDADO = 2
+
+     
+        if bolsa.status != STATUS_AGUARDANDO:
+            return Response(
+                {"erro": f"Esta bolsa já foi processada. Status atual: {bolsa.get_status_display()}"}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        tipo_sanguineo_id = request.data.get('tipo_sanguineo')
+        arquivo_laudo = request.FILES.get('arquivo_laudo')
+        medico_id = request.data.get('medico_validacao')
+
+        if not tipo_sanguineo_id or not arquivo_laudo or not medico_id:
+            return Response(
+                {"erro": "Tipo sanguíneo, laudo laboratorial e identificação do médico são obrigatórios para validação."}, 
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        bolsa.tipo_sanguineo_id = tipo_sanguineo_id
+        bolsa.arquivo_laudo = arquivo_laudo
+        bolsa.medico_validacao_id = medico_id
+        bolsa.status = STATUS_VALIDADO
+        
+    
+        bolsa.save()
+
+        return Response(
+            {"mensagem": f"Bolsa {bolsa.id} validada com sucesso!."},
             status=status.HTTP_200_OK
         )

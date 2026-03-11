@@ -1,13 +1,10 @@
 from rest_framework import serializers
+from core.serializers import TipoSanguineoSerializer
 from .models import Bolsa
-from core.models import Tipo_Sanguineo
 import datetime
 from django.utils import timezone
 
-class TipoSanguineoSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Tipo_Sanguineo
-        fields = ['id', 'tipo', 'fator_rh']
+
 
 class BolsaSerializer(serializers.ModelSerializer):
     status_display = serializers.CharField(source='get_status_display', read_only=True)
