@@ -144,7 +144,7 @@ export const routes: Routes = [
     path: 'estoque-bolsas',
     component: EstoqueBolsasComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['administrador'] },
+    data: { cargoPermitido: ['administrador', 'medico', 'enfermeiro'] },
   },
   {
     path: 'questionario-processo',
