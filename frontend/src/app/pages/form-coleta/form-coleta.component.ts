@@ -80,8 +80,10 @@ export class FormColetaComponent implements OnInit {
         next: (res: any) => {
           this.enviando = false;
           if (res?.bolsa_criada) {
-            alert('Coleta finalizada com sucesso. Bolsa enviada para validacao.');
-            this.router.navigate(['/aguardando-validacao-bolsa']);
+            alert(
+              'Coleta finalizada com sucesso. Bolsa enviada para validacao.',
+            );
+            this.router.navigate(['/processo-doacao-andamento']);
             return;
           }
 

@@ -7,6 +7,8 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db.models import F, Value
 from django.db.models.functions import Replace
+from dados_clinicos.models import EnfermeiroDados 
+from choices import Papel
 
 from usuarios.permission import EhRecepcionista, EhMedico, EhEnfermeiro
 from doadores.models import Doador
@@ -202,24 +204,21 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        tipo = processo.doador.tipo_sanguineo_declarado
-        fator = processo.doador.fator_rh
-        tipo_sanguineo = Tipo_Sanguineo.objects.filter(tipo=tipo, fator_rh=fator).first()
-
-        if not tipo_sanguineo:
-            return Response(
-                {'erro': 'Nao foi possivel identificar o tipo sanguineo do doador para gerar a bolsa.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
+     
         with transaction.atomic():
             bolsa = Bolsa.objects.create(
                 processo=processo,
                 doador=processo.doador,
-                tipo_sanguineo=tipo_sanguineo,
+                tipo_sanguineo=None, 
                 enfermeiro_coleta=enfermeiro,
-                status=StatusBolsa.AGUARDANDO,
-                data_vencimento=timezone.now().date() + timedelta(days=35),
+                status=StatusBolsa.AGUARDANDO
+            )
+            dados_clinicos = processo.dados_clinicos
+            
+            EnfermeiroDados.objects.create(
+                enfermeiro=enfermeiro,
+                dados=dados_clinicos,
+                papel=Papel.RESPONSAVEL_COLETA
             )
 
             processo.status = StatusProcesso.CONCLUIDO
