@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework import viewsets, permissions
+from .models import Tipo_Sanguineo
+from bolsas.serializers import TipoSanguineoSerializer 
 
-# Create your views here.
+class TipoSanguineoViewSet(viewsets.ReadOnlyModelViewSet):
+    pagination_class = None
+    queryset = Tipo_Sanguineo.objects.all()
+    serializer_class = TipoSanguineoSerializer
+    permission_classes = [permissions.AllowAny] 

@@ -132,10 +132,10 @@ export const routes: Routes = [
     path: 'aguardando-validacao-bolsa',
     component: BolsaAguardandoValidacaoComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['medico'] },
+    data: { cargoPermitido: ['medico', 'administrador'] },
   },
   {
-    path: 'validar-bolsa',
+    path: 'validar-bolsa/:id',
     component: ValidacaoBolsaComponent,
     canActivate: [authGuard],
     data: { cargoPermitido: ['medico', 'administrador'] },

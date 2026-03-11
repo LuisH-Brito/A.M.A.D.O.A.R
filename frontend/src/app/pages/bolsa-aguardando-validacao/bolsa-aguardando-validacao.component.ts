@@ -43,7 +43,7 @@ export class BolsaAguardandoValidacaoComponent implements OnInit {
     return data.toLocaleDateString('pt-BR');
   }
 
-  validarBolsa() {
-    this.router.navigate(['/validar-bolsa']);
+  validarBolsa(id: number) {
+    this.router.navigate(['/validar-bolsa', id]);
   }
 }
