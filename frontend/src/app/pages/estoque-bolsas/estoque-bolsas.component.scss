@@ -123,178 +123,6 @@
   }
 }
 
-// teste
-
-// .controles-topo {
-//   display: flex;
-//   gap: 15px;
-//   margin-bottom: 15px;
-
-//   .filtros-container {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 15px;
-//     margin-bottom: 25px;
-//     background-color: #ffffff;
-//     padding: 15px 20px;
-//     border-radius: 12px;
-//     border: 1px solid #e0e0e0;
-//     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
-//   }
-
-//   .chips-tipos-sanguineos {
-//     display: flex;
-//     align-items: center;
-//     gap: 15px;
-//     flex-wrap: wrap; // Permite que os chips quebrem de linha em telas pequenas
-//     padding-top: 15px;
-//     border-top: 1px dashed #e0e0e0;
-
-//     .label-chip {
-//       font-weight: 600;
-//       color: #555;
-//       font-size: 0.95rem;
-//     }
-
-//     .chips-lista {
-//       display: flex;
-//       gap: 8px;
-//       flex-wrap: wrap;
-
-//       .chip-btn {
-//         padding: 6px 14px;
-//         border-radius: 20px; /* Bordas bem arredondadas, formato de pílula */
-//         border: 1px solid #ccc;
-//         background-color: #f9f9f9;
-//         color: #555;
-//         font-weight: 600;
-//         font-size: 0.85rem;
-//         cursor: pointer;
-//         transition: all 0.2s;
-
-//         &:hover {
-//           background-color: #ebebeb;
-//         }
-
-//         /* Quando o tipo sanguíneo for selecionado */
-//         &.ativo {
-//           background-color: #004b87; /* Azul padrão da sua paleta */
-//           color: #ffffff;
-//           border-color: #004b87;
-//           box-shadow: 0 2px 4px rgba(0, 75, 135, 0.3);
-//         }
-//       }
-//     }
-//   }
-
-//   .campo {
-//     display: flex;
-//     flex-direction: column;
-//     gap: 5px;
-//     label {
-//       font-weight: 600;
-//       color: #444;
-//       font-size: 0.95rem;
-//       margin-left: 5px;
-//     }
-
-//     input {
-//       height: 38px;
-//       border-radius: 8px;
-//       border: 1px solid #ccc;
-//       background-color: #e5e5e5;
-//       padding: 0 10px;
-//       font-size: 0.95rem;
-//     }
-//   }
-
-//   .campo-busca {
-//     flex: 1;
-//   }
-
-//   .custom-dropdown {
-//     position: relative;
-//     min-width: 180px;
-
-//     .btn-dropdown {
-//       height: 38px;
-//       border-radius: 8px;
-//       border: 1px solid #ccc;
-//       background-color: #e5e5e5;
-//       padding: 0 15px;
-//       font-size: 0.95rem;
-//       display: flex;
-//       justify-content: space-between;
-//       align-items: center;
-//       cursor: pointer;
-//       color: #333;
-//       font-weight: 600;
-
-//       &:hover {
-//         background-color: #d5d5d5;
-//       }
-//     }
-
-//     .dropdown-menu-flutuante {
-//       position: absolute;
-//       top: 100%;
-//       left: 0;
-//       margin-top: 5px;
-//       width: 100%;
-//       background: white;
-//       border-radius: 8px;
-//       overflow: hidden;
-//       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-//       display: flex;
-//       flex-direction: column;
-//       z-index: 100;
-
-//       max-height: 250px;
-//       overflow-y: auto;
-//       .dropdown-menu-flutuante::-webkit-scrollbar {
-//         width: 6px;
-//       }
-//       .dropdown-menu-flutuante::-webkit-scrollbar-thumb {
-//         background-color: #ccc;
-//         border-radius: 4px;
-//       }
-
-//       button {
-//         width: 100%;
-//         text-align: center;
-//         padding: 12px 10px;
-//         background: white;
-//         border: none;
-//         border-bottom: 1px solid #f0f0f0;
-//         font-weight: 600;
-//         font-size: 0.95rem;
-//         color: #444;
-//         cursor: pointer;
-//         transition: 0.2s;
-
-//         &:last-child {
-//           border-bottom: none;
-//         }
-//         &:hover {
-//           background-color: #f9f9f9;
-//         }
-
-//         &.ativo {
-//           background-color: #f0f7f2;
-//           color: #1e7e34;
-//           border-left: 3px solid #1e7e34;
-//         }
-
-//         &.mais-opcoes {
-//           font-size: 1.2rem;
-//           color: #999;
-//         }
-//       }
-//     }
-//   }
-// }
-
-// CONTEÚDO PRINCIPAL
 .conteudo-principal {
   display: block;
 }
@@ -302,7 +130,7 @@
 .lista-area {
   width: 100%;
 }
-/* --- O NOVO CONTAINER PAI DOS FILTROS --- */
+
 .filtros-container {
   display: flex;
   flex-direction: column;
@@ -314,7 +142,6 @@
   border: 1px solid #e0e0e0;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
 
-  /* A linha de cima (Dropdown e Busca) fica DENTRO do container */
   .controles-topo {
     display: flex;
     gap: 15px;
@@ -420,7 +247,6 @@
     }
   }
 
-  /* A linha de baixo (Chips de Sangue) também fica DENTRO do container */
   .chips-tipos-sanguineos {
     display: flex;
     align-items: center;

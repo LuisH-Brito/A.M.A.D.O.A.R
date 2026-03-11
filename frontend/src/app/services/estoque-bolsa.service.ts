@@ -36,7 +36,7 @@ export class EstoqueBolsaService {
   }
 
   listarBolsasAguardando(): Observable<any> {
-    const params = new HttpParams().set('status', '1');
+    const params = new HttpParams().set('filtro_aba', 'Aguardando');
     return this.http.get(`${this.endpoint}/`, { params });
   }
 
@@ -44,7 +44,19 @@ export class EstoqueBolsaService {
     return this.http.patch(`${this.endpoint}/${id}/registrar_uso/`, {});
   }
 
-  descartar(id: number): Observable<any> {
-    return this.http.patch(`${this.endpoint}/${id}/descartar/`, {});
+  descartar(id: number, formData: FormData = new FormData()): Observable<any> {
+    return this.http.post(`${this.endpoint}/${id}/descartar/`, formData);
+  }
+
+  validarBolsa(id: number, formData: FormData): Observable<any> {
+    return this.http.patch(`${this.endpoint}/${id}/validar/`, formData);
+  }
+
+  obterTiposSanguineos(): Observable<any> {
+    return this.http.get(`${this.baseUrl}/tipos-sanguineos/`);
+  }
+
+  obterBolsa(id: number): Observable<any> {
+    return this.http.get(`${this.endpoint}/${id}/`);
   }
 }

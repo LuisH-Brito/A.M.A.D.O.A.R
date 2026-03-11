@@ -8,17 +8,24 @@
           <div class="usuario-card">
             <div class="info">
               ID: {{ bolsa.id }} &nbsp;&nbsp;&nbsp; Data da Coleta:
-              {{ bolsa.dataColeta }} &nbsp;&nbsp;&nbsp; Doador: {{ bolsa.doadorNome }}
+              {{ bolsa.dataColeta }} &nbsp;&nbsp;&nbsp; Doador:
+              {{ bolsa.doadorNome }}
             </div>
             <div class="acoes">
-              <button class="btn-acao" (click)="validarBolsa()" *ngIf="ehMedico">
+              <button
+                class="btn-acao"
+                (click)="validarBolsa(bolsa.id)"
+                *ngIf="ehMedico"
+              >
                 Realizar Validação
               </button>
               <span *ngIf="!ehMedico">Aguardando validação médica</span>
             </div>
           </div>
         }
-        <div *ngIf="bolsas.length === 0">Nenhuma bolsa aguardando validacao.</div>
+        <div *ngIf="bolsas.length === 0">
+          Nenhuma bolsa aguardando validacao.
+        </div>
       </div>
     </div>
   </div>
