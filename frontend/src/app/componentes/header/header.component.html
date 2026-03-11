@@ -30,16 +30,37 @@
   </div>
 
   <div class="mobile-menu" [ngClass]="{ show: isMenuOpen }">
-  <a routerLink="/" class="menu-item" (click)="toggleMenu()">Início</a>
-  <a (click)="irParaSecao('secao-condicoes')" class="menu-item" style="cursor: pointer;">
-    Condições para doar
-  </a>
-  <a (click)="irParaSecao('secao-hemometro')" class="menu-item" style="cursor: pointer;">
-    Hemômetro
-  </a>
+
+      
+    <div class="mobile-menu-header">
+      <div class="brand-container">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="icon-amadoar" width="50" height="50">
+        <circle cx="12" cy="12" r="11" fill="none" stroke="#fff" stroke-width="2"/>
+        <path transform="translate(0, 1.5)" fill="#fff" d="M12 17.27L10.59 16C7.26 12.98 5 10.93 5 8.5 5 6.4 6.6 4.8 8.7 4.8c1.2 0 2.36.56 3.3 1.45.94-.89 2.1-1.45 3.3-1.45 2.1 0 3.7 1.6 3.7 3.7 0 2.43-2.26 4.48-5.59 7.5L12 17.27z"/>
+      </svg>
+        <span class="brand-text">A.M.A.D.O.A.R</span>
+      </div>
+      
+      <div class="user-container" *ngIf="isLogado()">
+        <span class="user-role">{{ getCargoFormatado() }}:</span>
+        <span class="user-name">{{ getNomeUsuario() }}</span>
+      </div>
+    </div>
+  
+
+    <div class="menu-links">
+      <a routerLink="/" class="menu-item" (click)="toggleMenu()">Início</a>
+      <a (click)="irParaSecao('secao-hemometro')" class="menu-item" style="cursor: pointer;">
+        Hemômetro
+      </a>
+      <a (click)="irParaSecao('secao-condicoes')" class="menu-item" style="cursor: pointer;">
+        Condições para doar
+      </a>
 
     <ng-container *ngIf="isLogado()">
-      <a routerLink="/questionario" class="menu-item" (click)="toggleMenu()"
+      <a 
+        *ngIf="temAcesso(['doador', 'administrador'])"
+        routerLink="/questionario" class="menu-item" (click)="toggleMenu()"
         >Questionário da triagem</a
       >
 
@@ -60,11 +81,19 @@
       >
 
       <a
-        *ngIf="temAcesso(['medico', 'enfermeiro', 'administrador'])"
+        *ngIf="temAcesso(['medico', 'administrador'])"
         routerLink="/processo-doacao-MED"
         class="menu-item"
         (click)="toggleMenu()"
         >Processo de Doação - MED</a
+      >
+
+      <a
+        *ngIf="temAcesso(['enfermeiro', 'administrador'])"
+        routerLink="/processo-doacao-MED"
+        class="menu-item"
+        (click)="toggleMenu()"
+        >Processo de Doação - ENF</a
       >
 
       <a
@@ -76,7 +105,7 @@
       >
 
       <a
-        *ngIf="temAcesso(['administrador'])"
+        *ngIf="temAcesso(['administrador', 'medico', 'enfermeiro'])"
         routerLink="/estoque-bolsas"
         class="menu-item"
         (click)="toggleMenu()"
@@ -91,13 +120,8 @@
       >
     </ng-container>
 
-    <a
-      *ngIf="!isLogado()"
-      routerLink="/login"
-      class="menu-item"
-      (click)="toggleMenu()"
-      >Login</a
-    >
+      <a *ngIf="!isLogado()" routerLink="/login" class="menu-item" (click)="toggleMenu()">Login</a>
+    </div>
   </div>
 
   <div

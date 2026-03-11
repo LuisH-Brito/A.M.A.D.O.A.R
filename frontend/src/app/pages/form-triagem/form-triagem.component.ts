@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { QuestionarioService } from '../../services/questionario.service';
 
 @Component({
   selector: 'app-form-triagem',
@@ -20,7 +21,8 @@ export class FormTriagemComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private api: ApiService
+    private api: ApiService,
+    private questionarioService: QuestionarioService 
   ) {}
 
   ngOnInit(): void {
@@ -40,7 +42,15 @@ export class FormTriagemComponent implements OnInit {
           dataNascimento: processo?.doador?.data_nascimento || '',
           cpf: processo?.doador?.cpf || '',
         };
-        this.questionarioVinculado = !!processo?.questionario;
+        
+        // Em vez de olhar pro processo, olha pro histórico do CPF
+        if (this.doador.cpf) {
+          this.questionarioService.getQuestionariosPorCpf(this.doador.cpf).subscribe({
+            next: (questionarios) => {
+              this.questionarioVinculado = questionarios && questionarios.length > 0;
+            }
+          });
+        }
       },
       error: () => {
         alert('Não foi possível carregar a ficha de triagem.');
@@ -54,7 +64,7 @@ export class FormTriagemComponent implements OnInit {
       alert('Processo inválido.');
       return;
     }
-    this.router.navigate(['/questionario-processo/proc', this.processoId]);
+    this.router.navigate(['/questionario-processo/proc', this.processoId, this.doador.cpf]);
   }
 
   private validarPressao(): boolean {

@@ -53,18 +53,47 @@
   .btn-acao {
     flex: 1;
     max-width: 200px;
-    background-color: #e5e5e5;
     border: none;
     padding: 12px 0;
     border-radius: 20px;
     font-weight: 600;
-    color: #555;
     cursor: pointer;
     transition: background 0.2s;
 
-    &:hover { background-color: #d4d4d4; }
   }
 }
+
+  .btn-voltar {
+    background-color: #6c757d; 
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(108, 117, 125, 0.3);
+
+    &:hover { 
+      background-color: #5a6268; 
+      transform: translateY(-2px);
+    }
+  }
+
+  .btn-editar {
+    background-color: #4ade80; 
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(18, 161, 80, 0.3);
+
+    &:hover { 
+      background-color: #22c55e; 
+      transform: translateY(-2px);
+    }
+  }
+  .btn-salvar {
+    background-color: #12a150; 
+    color: #ffffff;
+    box-shadow: 0 4px 6px rgba(18, 161, 80, 0.3);
+
+    &:hover { 
+      background-color: #0e8a44; 
+      transform: translateY(-2px);
+    }
+  }
 
 .loading { text-align: center; font-size: 1.2rem; margin-top: 50px; }
 

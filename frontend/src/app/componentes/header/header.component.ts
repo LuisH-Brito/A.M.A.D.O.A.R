@@ -33,6 +33,16 @@ export class HeaderComponent {
     this.router.navigate(['/login']);
   }
 
+  getNomeUsuario(): string {
+    return localStorage.getItem('nomeUsuario') || 'Visitante';
+  }
+
+  getCargoFormatado(): string {
+    const cargo = localStorage.getItem('cargo');
+    if (!cargo) return '';
+    return cargo.charAt(0).toUpperCase() + cargo.slice(1).toLowerCase();
+  }
+
   irParaSecao(fragmento: string) {
     this.isMenuOpen = false; 
 

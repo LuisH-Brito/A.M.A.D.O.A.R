@@ -144,7 +144,7 @@ export const routes: Routes = [
     path: 'estoque-bolsas',
     component: EstoqueBolsasComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['administrador'] },
+    data: { cargoPermitido: ['administrador', 'medico', 'enfermeiro'] },
   },
   {
     path: 'questionario-processo',
@@ -152,8 +152,8 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
   },
-  {
-    path: 'questionario-processo/proc/:processoId',
+{
+    path: 'questionario-processo/proc/:processoId/:cpf', // <-- Tem que ter o /:cpf no final
     component: QuestionarioProcessoComponent,
     canActivate: [authGuard],
     data: { cargoPermitido: ['medico'] },

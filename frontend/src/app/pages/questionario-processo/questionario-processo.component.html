@@ -33,7 +33,7 @@
 
     <div class="footer-botoes">
       <button class="btn-acao btn-voltar" (click)="voltar()">Voltar</button>
-      <button class="btn-acao btn-editar" (click)="alternarEdicao()">
+      <button class="btn-acao" [ngClass]="modoEdicao ? 'btn-salvar' : 'btn-editar'" (click)="alternarEdicao()">
         {{ modoEdicao ? 'Salvar' : 'Editar' }}
       </button>
     </div>
