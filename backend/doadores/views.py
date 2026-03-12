@@ -37,7 +37,7 @@ class DoadorViewSet(viewsets.ModelViewSet):
         """
         user = self.request.user
 
-        if hasattr(user, 'administrador') or user.is_superuser or hasattr(user, 'recepcionista'):
+        if hasattr(user, 'administrador') or user.is_superuser or hasattr(user, 'recepcionista') or hasattr(user, 'enfermeiro') or hasattr(user, 'medico'):
             queryset = Doador.objects.all()
         else:
             queryset = Doador.objects.filter(pk=user.pk)

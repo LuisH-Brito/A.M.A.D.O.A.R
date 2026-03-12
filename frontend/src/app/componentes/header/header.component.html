@@ -151,28 +151,27 @@
         >
 
         <a
+          *ngIf="
+            temAcesso([
+              'doador',
+              'medico',
+              'recepcionista',
+              'enfermeiro',
+              'administrador',
+            ])
+          "
+          routerLink="/pagina-doador"
+          class="menu-item"
+          (click)="toggleMenu()"
+          >Meu Perfil</a
+        >
+        <a
           (click)="deslogar()"
           class="menu-item text-danger"
           style="cursor: pointer"
           >Sair</a
         >
       </ng-container>
-
-      <a
-        *ngIf="
-          temAcesso([
-            'doador',
-            'medico',
-            'recepcionista',
-            'enfermeiro',
-            'administrador',
-          ])
-        "
-        routerLink="/pagina-doador"
-        class="menu-item"
-        (click)="toggleMenu()"
-        >Meu Perfil</a
-      >
     </div>
   </div>
 
