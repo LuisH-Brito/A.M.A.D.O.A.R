@@ -27,6 +27,7 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Processo_Doacao.objects.select_related('doador', 'questionario').all()
     serializer_class = ProcessoDoacaoSerializer
     permission_classes = [IsAuthenticated]
+    pagination_class = None
 
     def get_permissions(self):
         if self.action == 'iniciar':
@@ -54,8 +55,16 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
         if novo_status not in status_validos:
             return Response({'erro': 'Status fora das opções permitidas.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        processo.status = novo_status
-        processo.save(update_fields=['status'])
+        with transaction.atomic():
+            processo.status = novo_status
+            processo.save(update_fields=['status'])
+
+            
+            if novo_status == StatusProcesso.CANCELADO:
+                if hasattr(processo, 'dados_clinicos'):
+                    dados = processo.dados_clinicos
+                    dados.status_clinico = StatusClinico.INAPTO
+                    dados.save(update_fields=['status_clinico'])
 
         return Response(self.get_serializer(processo).data, status=status.HTTP_200_OK)
 
@@ -134,6 +143,7 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
 
         pressao_arterial = (request.data.get('pressao_arterial') or '').strip()
         aprovado = request.data.get('aprovado')
+        medico_id = request.data.get('medico_id')
 
         if not pressao_arterial:
             return Response({'erro': 'Pressão arterial é obrigatória.'}, status=status.HTTP_400_BAD_REQUEST)
@@ -141,33 +151,38 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
         if not isinstance(aprovado, bool):
             return Response({'erro': 'Campo "aprovado" deve ser booleano.'}, status=status.HTTP_400_BAD_REQUEST)
 
-        dados, _ = Dados_Clinicos.objects.get_or_create(
-            processo=processo,
-            defaults={
-                'peso': 0,
-                'altura': 0,
-                'hemoglobina': 0,
-                'status_clinico': StatusClinico.APTO
-            }
-        )
+        with transaction.atomic():
+            dados, _ = Dados_Clinicos.objects.get_or_create(
+                processo=processo,
+                defaults={
+                    'peso': 0, 'altura': 0, 'hemoglobina': 0,
+                    'status_clinico': StatusClinico.APTO
+                }
+            )
 
-        dados.pressao_arterial = pressao_arterial
-        dados.status_clinico = StatusClinico.APTO if aprovado else StatusClinico.INAPTO
-        dados.save()
+            dados.pressao_arterial = pressao_arterial
+            dados.status_clinico = StatusClinico.APTO if aprovado else StatusClinico.INAPTO
+            dados.save()
 
-        if aprovado:
-            # "Apto na triagem" mapeado para próxima etapa operacional: coleta
-            processo.status = StatusProcesso.COLETA
-        else:
-            # Encerrado por inaptidão
-            processo.status = StatusProcesso.CANCELADO
-
-        processo.save(update_fields=['status'])
-
+            if medico_id:
+                from medicos.models import Medico
+                from dados_clinicos.models import MedicoDados 
+                
+                try:
+                    medico = Medico.objects.get(id=medico_id)
+                    MedicoDados.objects.create(
+                        medico=medico,
+                        dados=dados,
+                        papel=Papel.RESPONSAVEL_TRIAGEM
+                    )
+                except Medico.DoesNotExist:
+                    return Response(
+                        {"erro": "Médico responsável não encontrado."},
+                        status=status.HTTP_400_BAD_REQUEST
+                    )
         return Response({
-            'mensagem': 'Triagem registrada com sucesso.',
+            'mensagem': 'Dados da triagem registrados com sucesso.',
             'processo_id': processo.id,
-            'status': processo.status,
             'status_clinico': dados.status_clinico
         }, status=status.HTTP_200_OK)
 
@@ -211,40 +226,42 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-        if not puncao_sucesso:
-            processo.status = StatusProcesso.CANCELADO
-            processo.save(update_fields=['status'])
-            return Response(
-                {
-                    'mensagem': 'Coleta finalizada sem sucesso. Processo encerrado como cancelado.',
-                    'processo_id': processo.id,
-                    'status': processo.status,
-                    'bolsa_criada': False,
-                },
-                status=status.HTTP_200_OK
-            )
-
-        if processo.bolsas.exists():
-            return Response(
-                {'erro': 'Este processo ja possui bolsa gerada.'},
-                status=status.HTTP_400_BAD_REQUEST
-            )
-
-     
         with transaction.atomic():
-            bolsa = Bolsa.objects.create(
-                processo=processo,
-                doador=processo.doador,
-                tipo_sanguineo=None, 
-                enfermeiro_coleta=enfermeiro,
-                status=StatusBolsa.AGUARDANDO
-            )
             dados_clinicos = processo.dados_clinicos
             
             EnfermeiroDados.objects.create(
                 enfermeiro=enfermeiro,
                 dados=dados_clinicos,
                 papel=Papel.RESPONSAVEL_COLETA
+            )
+
+            if not puncao_sucesso:
+                processo.status = StatusProcesso.CANCELADO
+                processo.save(update_fields=['status'])
+                
+                dados_clinicos.status_clinico = StatusClinico.INAPTO
+                dados_clinicos.save(update_fields=['status_clinico']) 
+                
+                return Response(
+                    {
+                        'mensagem': 'Coleta finalizada sem sucesso. Processo encerrado como cancelado.',
+                        'processo_id': processo.id,
+                        'status': processo.status,
+                        'bolsa_criada': False,
+                    },
+                    status=status.HTTP_200_OK
+                )
+
+            if processo.bolsas.exists():
+                return Response({'erro': 'Este processo ja possui bolsa gerada.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    
+            bolsa = Bolsa.objects.create(
+                processo=processo,
+                doador=processo.doador,
+                tipo_sanguineo=None, 
+                enfermeiro_coleta=enfermeiro,
+                status=StatusBolsa.AGUARDANDO
             )
 
             processo.status = StatusProcesso.CONCLUIDO

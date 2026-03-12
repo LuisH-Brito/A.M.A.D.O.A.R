@@ -25,20 +25,43 @@
       <div class="linha">
         <div class="campo pequeno">
           <label>Pressão arterial:</label>
-          <input type="text" name="pressao_arterial" [(ngModel)]="pressaoArterial" placeholder="Ex: 12x8" />
+          <input
+            type="text"
+            name="pressao_arterial"
+            [(ngModel)]="pressaoArterial"
+            placeholder="Ex: 12x8"
+          />
         </div>
 
         <div class="campo">
-          <button type="button" class="btn-questionario" (click)="abrirQuestionarios()">
+          <button
+            type="button"
+            class="btn-questionario"
+            (click)="abrirQuestionarios()"
+          >
             Revisar Questionário
           </button>
-          <small *ngIf="!questionarioVinculado">Este processo não possui questionário vinculado.</small>
+          <small *ngIf="!questionarioVinculado"
+            >Este processo não possui questionário vinculado.</small
+          >
         </div>
       </div>
 
       <div class="acoes">
-        <button type="button" class="btn-cancelar" (click)="reprovar()">Inapto</button>
-        <button type="button" class="btn-concluir" (click)="aprovar()">Apto</button>
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="enviarDecisao(false)"
+        >
+          Inapto
+        </button>
+        <button
+          type="button"
+          class="btn-concluir"
+          (click)="enviarDecisao(true)"
+        >
+          Apto
+        </button>
       </div>
     </form>
   </div>
