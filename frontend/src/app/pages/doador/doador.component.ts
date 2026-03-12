@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { DoadorService } from '../../services/doador.service';
 import { RouterLink } from '@angular/router';
+import { DoadorService } from '../../services/doador.service';
+import { FuncionariosService } from '../../services/funcionarios.service';
 
 @Component({
   selector: 'app-doador',
@@ -13,9 +14,16 @@ import { RouterLink } from '@angular/router';
 })
 export class DoadorComponent implements OnInit {
   modoEdicao = false;
-  idDoador!: number;
+  idUsuario!: number;
+  cargoAtual = '';
+  
+  // Variáveis de controlo de interface
+  isDoador = false;
+  isMedico = false;
+  isEnfermeiro = false;
+  isRecepcionista = false;
 
-  doador = {
+  usuario = {
     nome: '',
     tipoSanguineo: '',
     estado: 'AC',
@@ -29,37 +37,60 @@ export class DoadorComponent implements OnInit {
     cpf: '',
     ultimaDoacao: '',
     proximaDoacao: '',
+    crm: '',
+    coren: ''
   };
 
-  constructor(private doadorService: DoadorService) {}
+  exames = [{ nome: 'Exame laboratorial', data: '12/01/2025' }];
+
+  constructor(
+    private doadorService: DoadorService,
+    private funcionariosService: FuncionariosService
+  ) {}
 
   ngOnInit(): void {
-    this.carregarDadosDoador();
+    this.cargoAtual = localStorage.getItem('cargo') || '';
+    this.isDoador = this.cargoAtual === 'doador';
+    this.isMedico = this.cargoAtual === 'medico';
+    this.isEnfermeiro = this.cargoAtual === 'enfermeiro';
+    this.isRecepcionista = this.cargoAtual === 'recepcionista';
+
+    this.carregarDadosPerfil();
   }
 
-  carregarDadosDoador() {
-    this.doadorService.obterDoador().subscribe({
-      next: (res: any) => {
-        const dados = res;
+  carregarDadosPerfil() {
+    if (this.isDoador) {
+      // Busca dados do Doador
+      this.doadorService.obterDoador().subscribe({
+        next: (res: any) => {
+          this.preencherFormulario(res);
+          this.usuario.tipoSanguineo = (res.tipo_sanguineo_declarado || '') + (res.fator_rh || '');
+          this.usuario.telefone = res.telefone;
+        },
+        error: (err) => console.error('Erro ao carregar dados do doador', err),
+      });
+    } else {
+      // Busca dados do Funcionário (Médico, Enfermeiro, etc)
+      this.funcionariosService.obterPerfilPessoal(this.cargoAtual).subscribe({
+        next: (res: any) => {
+          this.preencherFormulario(res);
+          
+          if (this.isMedico) this.usuario.crm = res.crm || res.registro;
+          if (this.isEnfermeiro) this.usuario.coren = res.coren || res.registro;
+        },
+        error: (err) => console.error('Erro ao carregar dados do profissional', err)
+      });
+    }
+  }
 
-        this.idDoador = dados.id;
-
-        this.doador.nome = dados.nome_completo;
-        this.doador.telefone = dados.telefone;
-        this.doador.email = dados.email;
-        this.doador.dataNascimento = dados.data_nascimento;
-        this.doador.sexo = dados.sexo;
-        this.doador.cpf = dados.cpf;
-        this.doador.rua = dados.endereco;
-
-        this.doador.tipoSanguineo =
-          (dados.tipo_sanguineo_declarado || '') + (dados.fator_rh || '');
-      },
-
-      error: (err) => {
-        console.error('Erro ao carregar dados do doador', err);
-      },
-    });
+  private preencherFormulario(dadosBanco: any) {
+    this.idUsuario = dadosBanco.id;
+    this.usuario.nome = dadosBanco.nome_completo;
+    this.usuario.email = dadosBanco.email;
+    this.usuario.dataNascimento = dadosBanco.data_nascimento;
+    this.usuario.sexo = dadosBanco.sexo;
+    this.usuario.cpf = dadosBanco.cpf || dadosBanco.username; 
+    this.usuario.rua = dadosBanco.endereco;
   }
 
   ativarEdicao() {
@@ -68,27 +99,33 @@ export class DoadorComponent implements OnInit {
 
   cancelarEdicao() {
     this.modoEdicao = false;
-    this.carregarDadosDoador();
+    this.carregarDadosPerfil();
   }
 
   salvarAlteracoes() {
-    const dadosAtualizados = {
-      nome_completo: this.doador.nome,
-      telefone: this.doador.telefone,
-      email: this.doador.email,
-      endereco: `${this.doador.rua}, ${this.doador.numero}`,
+    const dadosAtualizados: any = {
+      nome_completo: this.usuario.nome,
+      email: this.usuario.email,
+      endereco: `${this.usuario.rua}, ${this.usuario.numero}`.replace(', undefined', ''),
     };
 
-    this.doadorService.atualizarDoador(dadosAtualizados).subscribe({
-      next: () => {
-        alert('Dados atualizados com sucesso!');
-        this.modoEdicao = false;
-      },
-
-      error: (err) => {
-        console.error(err);
-      },
-    });
+    if (this.isDoador) {
+      dadosAtualizados.telefone = this.usuario.telefone;
+      this.doadorService.atualizarDoador(dadosAtualizados).subscribe({
+        next: () => {
+          alert('Dados atualizados com sucesso!');
+          this.modoEdicao = false;
+        },
+        error: (err) => console.error(err),
+      });
+    } else {
+      this.funcionariosService.atualizarPerfilPessoal(this.cargoAtual, dadosAtualizados).subscribe({
+        next: () => {
+          alert('Dados atualizados com sucesso!');
+          this.modoEdicao = false;
+        },
+        error: (err) => console.error(err),
+      });
+    }
   }
-  exames = [{ nome: 'Exame laboratorial', data: '12/01/2025' }];
 }

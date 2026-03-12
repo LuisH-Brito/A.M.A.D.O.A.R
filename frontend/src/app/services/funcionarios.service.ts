@@ -72,6 +72,29 @@ export class FuncionariosService {
     return this.http.put(url, payload);
   }
 
+  obterPerfilPessoal(cargo: string): Observable<any> {
+    let endpoint = '';
+    if (cargo === 'medico') endpoint = 'medicos';
+    else if (cargo === 'enfermeiro') endpoint = 'enfermeiros';
+    else if (cargo === 'recepcionista') endpoint = 'recepcionistas';
+    else if (cargo === 'administrador') endpoint = 'administradores';
+
+    // Chama a rota /me/ de cada cargo
+    return this.http.get(`${this.baseUrl}/${endpoint}/me/`);
+  }
+
+  /* Atualiza os dados do  funcionário logado*/
+  atualizarPerfilPessoal(cargo: string, dados: any): Observable<any> {
+    let endpoint = '';
+    if (cargo === 'medico') endpoint = 'medicos';
+    else if (cargo === 'enfermeiro') endpoint = 'enfermeiros';
+    else if (cargo === 'recepcionista') endpoint = 'recepcionistas';
+    else if (cargo === 'administrador') endpoint = 'administradores';
+
+    return this.http.patch(`${this.baseUrl}/${endpoint}/me/`, dados);
+  }
+
+
   /**
    * Remove um funcionário do sistema.
    * Requer o ID e o Cargo para saber qual tabela do banco de dados acessar.

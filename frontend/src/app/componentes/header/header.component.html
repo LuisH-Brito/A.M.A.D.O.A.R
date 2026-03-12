@@ -65,11 +65,11 @@
       >
 
       <a
-        *ngIf="temAcesso(['doador', 'administrador'])"
+        *ngIf="temAcesso(['doador', 'medico', 'recepcionista', 'enfermeiro', 'administrador'])"
         routerLink="/pagina-doador"
         class="menu-item"
         (click)="toggleMenu()"
-        >Página do Doador</a
+        >Meu Perfil</a
       >
 
       <a
