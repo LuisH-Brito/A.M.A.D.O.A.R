@@ -47,24 +47,50 @@
           </div>
         </div>
 
-        <div class="secao-upload">
-          <label class="label-destaque">Exame Laboratorial</label>
-          <div class="upload-container" (click)="acionarInputArquivo()">
-            <i class="bi bi-cloud-arrow-up-fill"></i>
-            <p *ngIf="!arquivoLaudo">Clique para enviar o Laudo em PDF</p>
-            <p *ngIf="arquivoLaudo" class="arquivo-sucesso">
-              <i class="bi bi-check-circle-fill"></i> {{ arquivoLaudo.name }}
-            </p>
-            <button class="btn-upload" type="button">
-              {{ arquivoLaudo ? "Trocar Arquivo" : "Adicionar Exame" }}
-            </button>
-            <input
-              type="file"
-              hidden
-              #fileInput
-              accept=".pdf"
-              (change)="aoSelecionarArquivo($event)"
-            />
+        <div class="grid-uploads">
+          <div class="secao-upload">
+            <label class="label-destaque">Exame Laboratorial</label>
+            <div class="upload-container" (click)="acionarInputArquivo()">
+              <i class="bi bi-cloud-arrow-up-fill"></i>
+              <p *ngIf="!arquivoLaudo">Clique para enviar o Laudo (PDF)</p>
+              <p *ngIf="arquivoLaudo" class="arquivo-sucesso">
+                <i class="bi bi-check-circle-fill"></i> {{ arquivoLaudo.name }}
+              </p>
+              <button class="btn-upload" type="button">
+                {{ arquivoLaudo ? "Trocar Arquivo" : "Adicionar Laudo" }}
+              </button>
+              <input
+                type="file"
+                hidden
+                #fileInput
+                accept=".pdf"
+                (change)="aoSelecionarArquivo($event)"
+              />
+            </div>
+          </div>
+
+          <div class="secao-upload">
+            <label class="label-destaque">Exame do Doador</label>
+            <div class="upload-container" (click)="acionarInputExameDoador()">
+              <i class="bi bi-file-earmark-medical-fill"></i>
+              <p *ngIf="!arquivoExameDoador">
+                Clique para enviar o Exame (PDF)
+              </p>
+              <p *ngIf="arquivoExameDoador" class="arquivo-sucesso">
+                <i class="bi bi-check-circle-fill"></i>
+                {{ arquivoExameDoador.name }}
+              </p>
+              <button class="btn-upload btn-upload-secundario" type="button">
+                {{ arquivoExameDoador ? "Trocar Arquivo" : "Adicionar Exame" }}
+              </button>
+              <input
+                type="file"
+                hidden
+                #fileInputExameDoador
+                accept=".pdf"
+                (change)="aoSelecionarExameDoador($event)"
+              />
+            </div>
           </div>
         </div>
       </div>

@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DoadorService } from '../../services/doador.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
+import { ExameDoadorService } from '../../services/exame-doador.service';
 
 @Component({
   selector: 'app-doador',
@@ -19,6 +20,7 @@ export class DoadorComponent implements OnInit {
   carteiraUrl: string | null = null;
   mostrarCarteira = false;
 
+  // Variáveis de controlo de interface
   isDoador = false;
   isMedico = false;
   isEnfermeiro = false;
@@ -42,11 +44,12 @@ export class DoadorComponent implements OnInit {
     coren: '',
   };
 
-  exames = [{ nome: 'Exame laboratorial', data: '12/01/2025' }];
+  exames: any[] = [];
 
   constructor(
     private doadorService: DoadorService,
     private funcionariosService: FuncionariosService,
+    private exameDoadorService: ExameDoadorService,
   ) {}
 
   ngOnInit(): void {
@@ -70,6 +73,22 @@ export class DoadorComponent implements OnInit {
           this.carteiraUrl = res.carteira_doador;
         },
         error: (err) => console.error('Erro ao carregar dados do doador', err),
+      });
+
+      // Busca a lista de exames do doador
+      this.exameDoadorService.listarMeusExames().subscribe({
+        next: (resposta: any) => {
+          const listaExames = Array.isArray(resposta)
+            ? resposta
+            : resposta.results || [];
+
+          this.exames = listaExames.map((ex: any) => ({
+            nome: ex.nome_arquivo,
+            data: new Date(ex.data_upload).toLocaleDateString('pt-BR'),
+            link: ex.arquivo,
+          }));
+        },
+        error: (err) => console.error('Erro ao buscar exames do doador', err),
       });
     } else {
       this.funcionariosService.obterPerfilPessoal(this.cargoAtual).subscribe({

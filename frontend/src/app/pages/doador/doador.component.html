@@ -112,19 +112,31 @@
     <div class="historico" *ngIf="isDoador">
       <div class="historico-topo">
         <h3>Histórico de exames</h3>
-        <i class="bi bi-funnel"></i>
       </div>
 
       <div class="tabela-wrapper">
         <div class="tabela-scroll">
-          <div class="linha-exame" *ngFor="let exame of exames">
-            <div class="nome-exame">
-              {{ exame.nome }}
-              <i class="bi bi-download"></i>
+          <a
+            class="linha-exame"
+            *ngFor="let exame of exames"
+            [href]="exame.link"
+            target="_blank"
+            download
+            title="Baixar {{ exame.nome }}"
+          >
+            <div class="info-exame">
+              <i class="bi bi-file-earmark-pdf-fill icone-pdf"></i>
+              <span class="nome-exame">{{ exame.nome }}</span>
             </div>
-            <div class="data-exame">
-              {{ exame.data }}
+
+            <div class="acoes-exame">
+              <span class="data-exame">{{ exame.data }}</span>
+              <i class="bi bi-cloud-arrow-down-fill icone-download"></i>
             </div>
+          </a>
+
+          <div *ngIf="exames.length === 0" class="sem-exames">
+            Nenhum exame laboratorial disponível no momento.
           </div>
         </div>
       </div>
