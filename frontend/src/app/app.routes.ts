@@ -121,13 +121,13 @@ export const routes: Routes = [
     path: 'pagina-doador',
     component: DoadorComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['doador', 'administrador'] },
+    data: { cargoPermitido: ['doador', 'administrador', 'medico', 'recepcionista', 'enfermeiro'] },
   },
   {
     path: 'cadastro-funcionario',
     component: CadastroFuncionarioComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['administrador'] }, // Exemplo de dado para o guard usar
+    data: { cargoPermitido: ['administrador', 'medico', 'enfermeiro', 'recepcionista'] }, // Exemplo de dado para o guard usar
   },
   {
     path: 'aguardando-validacao-bolsa',

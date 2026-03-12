@@ -1,13 +1,13 @@
 <div class="pagina-doador">
   <div class="container">
     <div class="topo-pagina">
-      <h2 class="titulo">Página do Doador</h2>
+      <h2 class="titulo">Meu Perfil</h2>
 
-      <div
-        class="editar-perfil"
-        routerLink="/cadastro"
-        [queryParams]="{ modo: 'editar' }"
-      >
+      <div class="editar-perfil" routerLink="/cadastro" [queryParams]="{ modo: 'editar' }" *ngIf="isDoador">
+        <span>Editar perfil</span>
+        <i class="bi bi-pencil"></i>
+      </div>
+      <div class="editar-perfil" routerLink="/cadastro-funcionario" [queryParams]="{ modo: 'editar' }" *ngIf="isEnfermeiro || isMedico || isRecepcionista">
         <span>Editar perfil</span>
         <i class="bi bi-pencil"></i>
       </div>
@@ -17,58 +17,53 @@
       <div class="linha">
         <div class="campo grande">
           <label>Nome completo</label>
-          <input type="text" [(ngModel)]="doador.nome" disabled />
+          <input type="text" [(ngModel)]="usuario.nome" disabled />
         </div>
 
-        <div class="campo pequeno">
+        <div class="campo pequeno" *ngIf="isDoador">
           <label>Tipo Sanguíneo</label>
-          <input type="text" [(ngModel)]="doador.tipoSanguineo" disabled />
+          <input type="text" [(ngModel)]="usuario.tipoSanguineo" disabled />
+        </div>
+
+        <div class="campo pequeno" *ngIf="isMedico">
+          <label>CRM</label>
+          <input type="text" [(ngModel)]="usuario.crm" disabled />
+        </div>
+
+        <div class="campo pequeno" *ngIf="isEnfermeiro">
+          <label>COREN</label>
+          <input type="text" [(ngModel)]="usuario.coren" disabled />
         </div>
       </div>
 
       <div class="linha">
-        <!-- <div class="campo estado">
-          <label>Estado</label>
-          <input type="text" [(ngModel)]="doador.estado" />
-        </div>
-
-        <div class="campo">
-          <label>Cidade</label>
-          <input type="text" [(ngModel)]="doador.cidade" />
-        </div>  -->
-
         <div class="campo grande">
-          <label>Rua</label>
-          <input type="text" [(ngModel)]="doador.rua" disabled />
+          <label>Endereço</label>
+          <input type="text" [(ngModel)]="usuario.rua" disabled />
         </div>
-        <!-- 
-        <div class="campo numero">
-          <label>Nº</label>
-          <input type="text" [(ngModel)]="doador.numero" />
-        </div> -->
       </div>
 
       <div class="linha">
-        <div class="campo">
+        <div class="campo" *ngIf="isDoador">
           <label>Telefone</label>
-          <input type="text" [(ngModel)]="doador.telefone" disabled />
+          <input type="text" [(ngModel)]="usuario.telefone" disabled />
         </div>
 
         <div class="campo">
           <label>Email</label>
-          <input type="email" [(ngModel)]="doador.email" disabled />
+          <input type="email" [(ngModel)]="usuario.email" disabled />
         </div>
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>Data de Nascimento</label>
-          <input type="date" [(ngModel)]="doador.dataNascimento" disabled />
+          <input type="date" [(ngModel)]="usuario.dataNascimento" disabled />
         </div>
 
         <div class="campo pequeno">
           <label>Sexo</label>
-          <select [(ngModel)]="doador.sexo" disabled>
+          <select [(ngModel)]="usuario.sexo" disabled>
             <option value="F">Feminino</option>
             <option value="M">Masculino</option>
           </select>
@@ -76,30 +71,29 @@
 
         <div class="campo grande">
           <label>CPF</label>
-          <input type="text" [(ngModel)]="doador.cpf" disabled />
+          <input type="text" [(ngModel)]="usuario.cpf" disabled />
         </div>
       </div>
 
-      <div class="linha">
+      <div class="linha" *ngIf="isDoador">
         <div class="campo">
           <label>Última Doação</label>
-          <input type="date" [(ngModel)]="doador.ultimaDoacao" disabled />
+          <input type="date" [(ngModel)]="usuario.ultimaDoacao" disabled />
         </div>
 
         <div class="campo">
           <label>Próxima Doação</label>
-          <input type="date" [(ngModel)]="doador.proximaDoacao" disabled />
+          <input type="date" [(ngModel)]="usuario.proximaDoacao" disabled />
         </div>
       </div>
     </div>
 
-    <div class="acoes-centrais">
+    <div class="acoes-centrais" *ngIf="isDoador">
       <button class="btn-principal">Visualizar Carteira Digital</button>
-
       <button class="btn-principal">Visualizar Questionário Online</button>
     </div>
 
-    <div class="historico">
+    <div class="historico" *ngIf="isDoador">
       <div class="historico-topo">
         <h3>Histórico de exames</h3>
         <i class="bi bi-funnel"></i>
@@ -112,7 +106,6 @@
               {{ exame.nome }}
               <i class="bi bi-download"></i>
             </div>
-
             <div class="data-exame">
               {{ exame.data }}
             </div>

@@ -159,11 +159,19 @@
       </ng-container>
 
       <a
-        *ngIf="!isLogado()"
-        routerLink="/login"
+        *ngIf="
+          temAcesso([
+            'doador',
+            'medico',
+            'recepcionista',
+            'enfermeiro',
+            'administrador',
+          ])
+        "
+        routerLink="/pagina-doador"
         class="menu-item"
         (click)="toggleMenu()"
-        >Login</a
+        >Meu Perfil</a
       >
     </div>
   </div>
