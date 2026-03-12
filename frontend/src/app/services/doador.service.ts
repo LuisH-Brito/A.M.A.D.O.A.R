@@ -21,4 +21,8 @@ export class DoadorService {
   atualizarDoador(dados: any): Observable<any> {
     return this.http.patch(`${this.apiUrl}me/`, dados);
   }
+
+  listarTodos(): Observable<any[]> {
+    return this.http.get<any[]>(this.apiUrl);
+  }
 }

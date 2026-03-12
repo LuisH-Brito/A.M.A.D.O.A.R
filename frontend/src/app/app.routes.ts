@@ -20,6 +20,7 @@ import { FormColetaComponent } from './pages/form-coleta/form-coleta.component';
 import { QuestionarioProcessoComponent } from './pages/questionario-processo/questionario-processo.component';
 import { ProcessoDoacaoMedComponent } from './pages/processo-doacao-med/processo-doacao-med.component';
 import { authGuard } from './auth.guard';
+import { ListaDoadoresComponent } from './pages/lista-doadores/lista-doadores.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -152,7 +153,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
   },
-{
+  {
     path: 'questionario-processo/proc/:processoId/:cpf', // <-- Tem que ter o /:cpf no final
     component: QuestionarioProcessoComponent,
     canActivate: [authGuard],
@@ -163,5 +164,18 @@ export const routes: Routes = [
     component: QuestionarioProcessoComponent,
     canActivate: [authGuard],
     data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
+  },
+  {
+    path: 'listar-doadores',
+    component: ListaDoadoresComponent,
+    canActivate: [authGuard],
+    data: {
+      cargoPermitido: [
+        'administrador',
+        'medico',
+        'enfermeiro',
+        'recepcionista',
+      ],
+    },
   },
 ];
