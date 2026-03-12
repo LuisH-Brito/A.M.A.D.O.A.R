@@ -25,4 +25,8 @@ export class DoadorService {
   listarTodos(): Observable<any[]> {
     return this.http.get<any[]>(this.apiUrl);
   }
+
+  enviarCarteirinha(doadorId: number, formData: FormData) {
+    return this.http.patch(`${this.apiUrl}${doadorId}/`, formData);
+  }
 }

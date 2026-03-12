@@ -11,6 +11,7 @@ from django.utils import timezone
 import datetime
 from rest_framework import status
 from .services import notificar_estoque_critico
+from django.db.models import Count
 
 
 class NotificacaoEstoqueView(APIView):
@@ -222,3 +223,39 @@ class BolsaViewSet(viewsets.ModelViewSet):
             {"mensagem": f"Bolsa {bolsa.id} validada com sucesso!."},
             status=status.HTTP_200_OK
         )
+    
+
+
+    @action(detail=False, methods=['get'])
+    def doadores_aptos_carteirinha(self, request):
+
+        dados = (
+            Bolsa.objects
+            .values(
+                'doador',
+                'doador__cpf',
+                'doador__nome_completo',
+                'tipo_sanguineo__tipo',
+                'tipo_sanguineo__fator_rh',
+                'doador__carteira_doador'
+            )
+            .annotate(total_bolsas=Count('id'))
+            .filter(total_bolsas__gte=3)
+            .filter(doador__carteira_doador='')
+        )
+
+        resultado = []
+
+        for item in dados:
+            tipo = item['tipo_sanguineo__tipo']
+            fator = item['tipo_sanguineo__fator_rh']
+
+            resultado.append({
+                "doador_id": item['doador'],
+                "cpf": item['doador__cpf'],
+                "nome": item['doador__nome_completo'],
+                "tipo_sanguineo": f"{tipo}{fator}",
+                "total_bolsas": item['total_bolsas']
+            })
+
+        return Response(resultado)

@@ -59,4 +59,8 @@ export class EstoqueBolsaService {
   obterBolsa(id: number): Observable<any> {
     return this.http.get(`${this.endpoint}/${id}/`);
   }
+
+  listarDoadoresAptosCarteirinha(): Observable<any> {
+    return this.http.get(`${this.endpoint}/doadores_aptos_carteirinha/`);
+  }
 }

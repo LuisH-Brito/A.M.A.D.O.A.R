@@ -166,6 +166,20 @@
           >Meu Perfil</a
         >
         <a
+          *ngIf="
+            temAcesso([
+              'administrador',
+              'recepcionista',
+              'medico',
+              'enfermeiro',
+            ])
+          "
+          routerLink="/carteira-doacao"
+          class="menu-item"
+          (click)="toggleMenu()"
+          >Carteiras de Doadores</a
+        >
+        <a
           (click)="deslogar()"
           class="menu-item text-danger"
           style="cursor: pointer"
