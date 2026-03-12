@@ -178,6 +178,10 @@ select {
 
   flex-shrink: 0;
   transition: all 0.2s ease;
+
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
 }
 
 .linha-exame:hover {
@@ -185,17 +189,51 @@ select {
   box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
 }
 
-.nome-exame {
-  font-weight: 600;
+.linha-exame:hover .icone-download {
+  color: #0b5d2a;
+  transform: scale(1.15);
+}
+
+.info-exame {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
+}
+
+.icone-pdf {
+  font-size: 24px;
+  color: #dc3545;
+}
+
+.nome-exame {
+  font-weight: 600;
   color: #2b2b2b;
+}
+
+.acoes-exame {
+  display: flex;
+  align-items: center;
+  gap: 20px;
 }
 
 .data-exame {
   font-weight: 700;
   color: #444;
+}
+
+.icone-download {
+  font-size: 22px;
+  color: #888;
+  transition: all 0.2s ease;
+}
+
+.sem-exames {
+  background: rgba(255, 255, 255, 0.95);
+  padding: 20px;
+  border-radius: 10px;
+  text-align: center;
+  font-weight: 600;
+  color: #0b5d2a;
 }
 
 .tabela-scroll::-webkit-scrollbar {

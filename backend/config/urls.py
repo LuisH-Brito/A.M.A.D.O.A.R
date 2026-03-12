@@ -12,6 +12,7 @@ urlpatterns = [
     path('api/', include('processos_doacao.urls')),
     path('api/', include('bolsas.urls')),
     path('api/', include('core.urls')),
+    path('api/', include('exames_doador.urls')),
     path('api/', include('dados_clinicos.urls')),
     path('api/medicos/', include('medicos.urls')),
     path('api/enfermeiros/', include('enfermeiros.urls')),

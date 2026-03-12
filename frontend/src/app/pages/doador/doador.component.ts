@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DoadorService } from '../../services/doador.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
+import { ExameDoadorService } from '../../services/exame-doador.service';
 
 @Component({
   selector: 'app-doador',
@@ -16,7 +17,7 @@ export class DoadorComponent implements OnInit {
   modoEdicao = false;
   idUsuario!: number;
   cargoAtual = '';
-  
+
   // Variáveis de controlo de interface
   isDoador = false;
   isMedico = false;
@@ -38,14 +39,15 @@ export class DoadorComponent implements OnInit {
     ultimaDoacao: '',
     proximaDoacao: '',
     crm: '',
-    coren: ''
+    coren: '',
   };
 
-  exames = [{ nome: 'Exame laboratorial', data: '12/01/2025' }];
+  exames: any[] = [];
 
   constructor(
     private doadorService: DoadorService,
-    private funcionariosService: FuncionariosService
+    private funcionariosService: FuncionariosService,
+    private exameDoadorService: ExameDoadorService,
   ) {}
 
   ngOnInit(): void {
@@ -64,21 +66,39 @@ export class DoadorComponent implements OnInit {
       this.doadorService.obterDoador().subscribe({
         next: (res: any) => {
           this.preencherFormulario(res);
-          this.usuario.tipoSanguineo = (res.tipo_sanguineo_declarado || '') + (res.fator_rh || '');
+          this.usuario.tipoSanguineo =
+            (res.tipo_sanguineo_declarado || '') + (res.fator_rh || '');
           this.usuario.telefone = res.telefone;
         },
         error: (err) => console.error('Erro ao carregar dados do doador', err),
+      });
+
+      // Busca a lista de exames do doador
+      this.exameDoadorService.listarMeusExames().subscribe({
+        next: (resposta: any) => {
+          const listaExames = Array.isArray(resposta)
+            ? resposta
+            : resposta.results || [];
+
+          this.exames = listaExames.map((ex: any) => ({
+            nome: ex.nome_arquivo,
+            data: new Date(ex.data_upload).toLocaleDateString('pt-BR'),
+            link: ex.arquivo,
+          }));
+        },
+        error: (err) => console.error('Erro ao buscar exames do doador', err),
       });
     } else {
       // Busca dados do Funcionário (Médico, Enfermeiro, etc)
       this.funcionariosService.obterPerfilPessoal(this.cargoAtual).subscribe({
         next: (res: any) => {
           this.preencherFormulario(res);
-          
+
           if (this.isMedico) this.usuario.crm = res.crm || res.registro;
           if (this.isEnfermeiro) this.usuario.coren = res.coren || res.registro;
         },
-        error: (err) => console.error('Erro ao carregar dados do profissional', err)
+        error: (err) =>
+          console.error('Erro ao carregar dados do profissional', err),
       });
     }
   }
@@ -89,7 +109,7 @@ export class DoadorComponent implements OnInit {
     this.usuario.email = dadosBanco.email;
     this.usuario.dataNascimento = dadosBanco.data_nascimento;
     this.usuario.sexo = dadosBanco.sexo;
-    this.usuario.cpf = dadosBanco.cpf || dadosBanco.username; 
+    this.usuario.cpf = dadosBanco.cpf || dadosBanco.username;
     this.usuario.rua = dadosBanco.endereco;
   }
 
@@ -106,7 +126,10 @@ export class DoadorComponent implements OnInit {
     const dadosAtualizados: any = {
       nome_completo: this.usuario.nome,
       email: this.usuario.email,
-      endereco: `${this.usuario.rua}, ${this.usuario.numero}`.replace(', undefined', ''),
+      endereco: `${this.usuario.rua}, ${this.usuario.numero}`.replace(
+        ', undefined',
+        '',
+      ),
     };
 
     if (this.isDoador) {
@@ -119,13 +142,15 @@ export class DoadorComponent implements OnInit {
         error: (err) => console.error(err),
       });
     } else {
-      this.funcionariosService.atualizarPerfilPessoal(this.cargoAtual, dadosAtualizados).subscribe({
-        next: () => {
-          alert('Dados atualizados com sucesso!');
-          this.modoEdicao = false;
-        },
-        error: (err) => console.error(err),
-      });
+      this.funcionariosService
+        .atualizarPerfilPessoal(this.cargoAtual, dadosAtualizados)
+        .subscribe({
+          next: () => {
+            alert('Dados atualizados com sucesso!');
+            this.modoEdicao = false;
+          },
+          error: (err) => console.error(err),
+        });
     }
   }
 }

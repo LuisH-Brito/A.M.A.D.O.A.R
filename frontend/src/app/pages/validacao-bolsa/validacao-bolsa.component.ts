@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
+import { ExameDoadorService } from '../../services/exame-doador.service';
 
 @Component({
   selector: 'app-validacao-bolsa',
@@ -13,6 +14,7 @@ import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 })
 export class ValidacaoBolsaComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
+  @ViewChild('fileInputExameDoador') fileInputExameDoador!: ElementRef;
 
   bolsaId!: number;
   bolsaDados: any = null;
@@ -20,12 +22,14 @@ export class ValidacaoBolsaComponent implements OnInit {
 
   tipoSanguineoSelecionado: number | null = null;
   arquivoLaudo: File | null = null;
+  arquivoExameDoador: File | null = null;
   carregando: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private estoqueService: EstoqueBolsaService,
+    private exameDoadorService: ExameDoadorService,
   ) {}
 
   ngOnInit(): void {
@@ -72,6 +76,47 @@ export class ValidacaoBolsaComponent implements OnInit {
     }
   }
 
+  acionarInputExameDoador() {
+    if (this.fileInputExameDoador) {
+      this.fileInputExameDoador.nativeElement.click();
+    }
+  }
+
+  aoSelecionarExameDoador(event: any) {
+    const file = event.target.files[0];
+    if (file && file.type === 'application/pdf') {
+      this.arquivoExameDoador = file;
+    } else {
+      alert('Por favor, selecione apenas arquivos PDF para o exame do doador.');
+      this.arquivoExameDoador = null;
+    }
+  }
+
+  private salvarExameDoador(callbackConclusao: () => void) {
+    const doadorId =
+      this.bolsaDados?.doador_id ||
+      this.bolsaDados?.doador?.id ||
+      this.bolsaDados?.doador;
+
+    if (this.arquivoExameDoador && doadorId) {
+      const nomeExame = `Exame Lab - Bolsa #${this.bolsaId}`;
+
+      this.exameDoadorService
+        .enviarExame(doadorId, nomeExame, this.arquivoExameDoador)
+        .subscribe({
+          next: () => {
+            console.log('Exame do doador salvo em segundo plano.');
+            callbackConclusao();
+          },
+          error: (err) => {
+            console.error('Erro ao salvar exame do doador', err);
+            callbackConclusao();
+          },
+        });
+    } else {
+      callbackConclusao();
+    }
+  }
   liberarParaEstoque() {
     if (!this.tipoSanguineoSelecionado || !this.arquivoLaudo) {
       alert('Selecione o tipo sanguíneo e anexe o laudo laboratorial.');
@@ -91,8 +136,10 @@ export class ValidacaoBolsaComponent implements OnInit {
 
       this.estoqueService.validarBolsa(this.bolsaId, formData).subscribe({
         next: (res) => {
-          alert('Bolsa validada e enviada para o estoque com sucesso!');
-          this.router.navigate(['/aguardando-validacao-bolsa']);
+          this.salvarExameDoador(() => {
+            alert('Bolsa validada e enviada para o estoque com sucesso!');
+            this.router.navigate(['/aguardando-validacao-bolsa']);
+          });
         },
         error: (err) => {
           alert(err.error?.erro || 'Erro ao validar a bolsa.');
@@ -132,8 +179,10 @@ export class ValidacaoBolsaComponent implements OnInit {
       }
       this.estoqueService.descartar(this.bolsaId, formData).subscribe({
         next: () => {
-          alert('Bolsa descartada e evidências clínicas salvas com sucesso.');
-          this.router.navigate(['/aguardando-validacao-bolsa']);
+          this.salvarExameDoador(() => {
+            alert('Bolsa descartada e evidências salvas com sucesso.');
+            this.router.navigate(['/aguardando-validacao-bolsa']);
+          });
         },
         error: (err) => {
           alert(err.error?.erro || 'Erro ao descartar a bolsa.');
