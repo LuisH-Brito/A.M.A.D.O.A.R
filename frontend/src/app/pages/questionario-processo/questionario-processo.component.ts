@@ -63,6 +63,8 @@ export class QuestionarioProcessoComponent implements OnInit {
               perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
             }
           });
+        } else {
+          this.modoEdicao = true;
         }
         this.carregando = false;
       },
@@ -110,8 +112,9 @@ export class QuestionarioProcessoComponent implements OnInit {
   }
 
   salvarQuestionarioEditado() {
-    if (!this.cpfDoador) {
-      alert('O sistema precisa do CPF para salvar as respostas.');
+    const cargo = localStorage.getItem('cargo'); 
+    if (!this.cpfDoador && cargo !== 'doador') {
+      alert('O sistema precisa do CPF na URL para salvar as respostas.');
       return;
     }
 
@@ -126,10 +129,15 @@ export class QuestionarioProcessoComponent implements OnInit {
       resposta: p.resposta_dada
     }));
 
-    const payload = {
-      cpf: this.cpfDoador,
-      respostas
-    };
+    const payload: any = { respostas: respostas };
+
+    if (this.cpfDoador) {
+      payload.cpf = this.cpfDoador;
+    }
+
+    if (this.processoId) {
+      payload.processo_id = this.processoId; 
+    }
 
     this.questionarioService.salvarQuestionario(payload).subscribe({
       next: () => {

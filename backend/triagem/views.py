@@ -1,3 +1,5 @@
+from django.utils import timezone
+from datetime import timedelta
 from django.db.models import F, Value
 from django.db.models.functions import Replace
 from rest_framework import viewsets, status
@@ -44,16 +46,17 @@ class SalvarQuestionarioView(APIView):
 
     def post(self, request):
         payload = request.data
+        processo_id = None
 
-        # Aceita os dois formatos:
-        # antigo: [ {id, resposta}, ... ]
-        # novo: { cpf, respostas: [ {id, resposta}, ... ] }
+        # verifica se o payload é uma lista ou um dicionário pq depende 
+        # se vem pelo processo ou pelo questionário do doador
         if isinstance(payload, list):
             respostas_payload = payload
             cpf_payload = None
         else:
             respostas_payload = payload.get('respostas', [])
             cpf_payload = payload.get('cpf')
+            processo_id = payload.get('processo_id') 
 
         if not respostas_payload:
             return Response(
@@ -105,26 +108,75 @@ class SalvarQuestionarioView(APIView):
             if resposta_valor != pergunta.resposta_esperada:
                 is_valido = False
 
-        questionario = Questionario.objects.create(
-            doador=doador,
-            validade=is_valido
-        )
+        # LÓGICA do VÍNCULO QUESTIONÁRIO <-> PROCESSO DE DOAÇÃO
+        questionario_alvo = None
+        processo_obj = None
 
-        for item in respostas_payload:
-            pergunta = perguntas_cache[item.get('id')]
-            Resposta.objects.create(
-                questionario=questionario,
-                pergunta=pergunta,
-                resposta_texto=item.get('resposta')
+        # Tenta pegar o questionário pelo Processo (Se o médico estiver salvando)
+        if processo_id:
+            from processos_doacao.models import Processo_Doacao # Importação local para evitar dependência circular
+            try:
+                processo_obj = Processo_Doacao.objects.get(id=processo_id)
+                if processo_obj.questionario:
+                    questionario_alvo = processo_obj.questionario
+            except Processo_Doacao.DoesNotExist:
+                pass
+
+        # Isso ignora se a data virou meia-noite e resolve o bug do fuso horário :(
+        if not questionario_alvo:
+            limite_tempo = timezone.now() - timedelta(hours=24)
+            questionario_alvo = Questionario.objects.filter(
+                doador=doador,
+                data_hora_submissao__gte=limite_tempo
+            ).order_by('-data_hora_submissao').first()
+
+        # 3. Decide se Atualiza ou Cria
+        if questionario_alvo:
+            print(f"--- DEBUG: Atualizando Questionario Existente ID: {questionario_alvo.id} ---")
+            questionario_alvo.validade = is_valido
+            questionario_alvo.save()
+            questionario = questionario_alvo
+
+            for item in respostas_payload:
+                pergunta = perguntas_cache[item.get('id')]
+                Resposta.objects.update_or_create(
+                    questionario=questionario,
+                    pergunta=pergunta,
+                    defaults={'resposta_texto': item.get('resposta')}
+                )
+                
+            mensagem_retorno = "Questionário atualizado com sucesso!"
+            codigo_status = status.HTTP_200_OK
+        else:
+            print("--- DEBUG: Nenhum questionário recente. Criando um NOVO! ---")
+            questionario = Questionario.objects.create(
+                doador=doador,
+                validade=is_valido
             )
+
+            for item in respostas_payload:
+                pergunta = perguntas_cache[item.get('id')]
+                Resposta.objects.create(
+                    questionario=questionario,
+                    pergunta=pergunta,
+                    resposta_texto=item.get('resposta')
+                )
+                
+            mensagem_retorno = "Novo questionário salvo com sucesso!"
+            codigo_status = status.HTTP_201_CREATED
+
+        if processo_obj and processo_obj.questionario != questionario:
+            processo_obj.questionario = questionario
+            processo_obj.save(update_fields=['questionario'])
+            print(f"--- DEBUG: Questionário {questionario.id} vinculado ao Processo {processo_obj.id}! ---")
 
         return Response(
             {
-                "mensagem": "Questionário salvo com sucesso!",
+                "mensagem": mensagem_retorno,
                 "questionario_id": questionario.id,
                 "validade": questionario.validade
             },
-            status=status.HTTP_201_CREATED
+            status=codigo_status
         )
 
 
