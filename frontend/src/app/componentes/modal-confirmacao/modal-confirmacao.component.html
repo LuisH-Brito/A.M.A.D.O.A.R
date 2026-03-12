@@ -1,0 +1,29 @@
+<div class="modal-overlay" *ngIf="visivel" (click)="aoCancelar()">
+  <div class="modal-box" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="icone-alerta" [ngClass]="tipo">
+        <i
+          class="bi"
+          [ngClass]="{
+            'bi-exclamation-triangle': tipo === 'descartar',
+            'bi-info-circle': tipo === 'usar',
+            'bi-question-circle': tipo === 'padrao',
+          }"
+        >
+        </i>
+      </div>
+      <h3>{{ titulo }}</h3>
+    </div>
+
+    <div class="modal-body">
+      <p>{{ mensagem }}</p>
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-cancelar" (click)="aoCancelar()">Cancelar</button>
+      <button class="btn-confirmar" [ngClass]="tipo" (click)="aoConfirmar()">
+        {{ textoConfirmar }}
+      </button>
+    </div>
+  </div>
+</div>

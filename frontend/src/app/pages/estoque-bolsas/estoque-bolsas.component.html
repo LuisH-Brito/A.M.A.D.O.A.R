@@ -23,13 +23,17 @@
         <span class="titulo"> Bolsas<br />validas</span
         ><span class="numero">{{ resumoGeral.validas }} </span>
       </div>
-      <div class="kpi-card vencendo">
-        <span class="titulo"> Bolsas<br />vencendo</span
-        ><span class="numero">{{ resumoGeral.vencendo }} </span>
-      </div>
       <div class="kpi-card vencida">
         <span class="titulo">Bolsas<br />vencidas</span
         ><span class="numero">{{ resumoGeral.vencidas }}</span>
+      </div>
+      <div class="kpi-card total">
+        <span class="titulo">Bolsas<br />Armazenadas</span
+        ><span class="numero">{{ resumoGeral.total }}</span>
+      </div>
+      <div class="kpi-card vencendo">
+        <span class="titulo"> Bolsas<br />a vencer</span
+        ><span class="numero">{{ resumoGeral.vencendo }} </span>
       </div>
       <div class="kpi-card utilizada">
         <span class="titulo">Bolsas<br />utilizadas</span
@@ -38,10 +42,6 @@
       <div class="kpi-card descartada">
         <span class="titulo">Bolsas<br />descartadas</span
         ><span class="numero">{{ resumoGeral.descartadas }}</span>
-      </div>
-      <div class="kpi-card total">
-        <span class="titulo">Bolsas<br />Total no Estoque</span
-        ><span class="numero">{{ resumoGeral.total }}</span>
       </div>
     </div>
 
@@ -220,3 +220,27 @@
     </div>
   </div>
 </div>
+
+<div class="toast-notificacao" [class.show]="notificacaoAtiva">
+  <div class="toast-icone">
+    <i class="bi bi-check-circle-fill"></i>
+  </div>
+  <div class="toast-conteudo">
+    <h4>Operação Concluída</h4>
+    <p>{{ notificacaoMensagem }}</p>
+  </div>
+  <button class="toast-fechar" (click)="notificacaoAtiva = false">
+    <i class="bi bi-x"></i>
+  </button>
+</div>
+
+<app-modal-confirmacao
+  [visivel]="modalVisivel"
+  [titulo]="modalDados.titulo"
+  [mensagem]="modalDados.mensagem"
+  [tipo]="modalDados.tipo"
+  [textoConfirmar]="modalDados.textoBtn"
+  (confirmado)="executarAcaoModal()"
+  (cancelado)="modalVisivel = false"
+>
+</app-modal-confirmacao>

@@ -4,11 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 
 @Component({
   selector: 'app-estoque-bolsas',
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginacaoComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PaginacaoComponent,
+    ModalConfirmacaoComponent,
+  ],
   templateUrl: './estoque-bolsas.component.html',
   styleUrl: './estoque-bolsas.component.scss',
 })
@@ -17,6 +23,17 @@ export class EstoqueBolsasComponent implements OnInit {
   tipoAtivo: string = 'Todos';
   busca: string = '';
   menuFiltroAberto: boolean = false;
+  notificacaoAtiva: boolean = false;
+  notificacaoMensagem: string = '';
+  notificacaoTimeout: any;
+  modalVisivel = false;
+  modalDados = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'padrao' as any,
+    textoBtn: '',
+  };
+  bolsaSelecionada: any;
 
   paginaAtual: number = 1;
   itensPorPagina: number = 10;
@@ -149,35 +166,75 @@ export class EstoqueBolsasComponent implements OnInit {
     bolsa.expandido = !bolsa.expandido;
   }
 
-  registrarUso(bolsa: any) {
-    if (
-      confirm(`Tem certeza que deseja REGISTRAR O USO da bolsa ${bolsa.id}?`)
-    ) {
-      this.EstoqueService.registrarUso(bolsa.idOriginal).subscribe({
-        next: (res) => {
-          alert(res.mensagem);
-          this.atualizarTudo();
-        },
-        error: (err) => alert(err.error?.erro || 'Erro ao registrar uso.'),
-      });
+  acaoConfirmacao!: () => void;
+
+  abrirModalConfirmacao(
+    titulo: string,
+    mensagem: string,
+    tipo: 'descartar' | 'usar',
+    textoBtn: string,
+    acao: () => void,
+  ) {
+    this.modalDados = { titulo, mensagem, tipo, textoBtn };
+    this.acaoConfirmacao = acao;
+    this.modalVisivel = true;
+  }
+
+  executarAcaoModal() {
+    this.modalVisivel = false;
+    if (this.acaoConfirmacao) {
+      this.acaoConfirmacao();
     }
   }
+
+  registrarUso(bolsa: any) {
+    this.abrirModalConfirmacao(
+      'Registrar Uso',
+      `Tem certeza que deseja registrar o uso da bolsa ${bolsa.id}? Esta ação dará baixa no estoque e não poderá ser desfeita.`,
+      'usar',
+      'Sim, Registrar Uso',
+      () => {
+        this.EstoqueService.registrarUso(bolsa.idOriginal).subscribe({
+          next: (res) => {
+            this.exibirNotificacao(res.mensagem);
+            this.atualizarTudo();
+          },
+          error: (err) => alert(err.error?.erro || 'Erro ao registrar uso.'),
+        });
+      },
+    );
+  }
+
   descartarBolsa(bolsa: any) {
-    if (
-      confirm(`ATENÇÃO! Tem certeza que deseja DESCARTAR a bolsa ${bolsa.id}?`)
-    ) {
-      this.EstoqueService.descartar(bolsa.idOriginal).subscribe({
-        next: (res) => {
-          alert(res.mensagem);
-          this.atualizarTudo();
-        },
-        error: (err) => alert(err.error?.erro || 'Erro ao descartar bolsa.'),
-      });
-    }
+    this.abrirModalConfirmacao(
+      'Descartar Bolsa',
+      `ATENÇÃO! Tem certeza que deseja descartar a bolsa ${bolsa.id}? Este item será removido do estoque útil de forma irreversível.`,
+      'descartar',
+      'Sim, Descartar',
+      () => {
+        this.EstoqueService.descartar(bolsa.idOriginal).subscribe({
+          next: (res) => {
+            this.exibirNotificacao(res.mensagem);
+            this.atualizarTudo();
+          },
+          error: (err) => alert(err.error?.erro || 'Erro ao descartar bolsa.'),
+        });
+      },
+    );
   }
 
   private atualizarTudo() {
     this.carregarBolsas();
     this.carregarDashboard();
+  }
+
+  exibirNotificacao(mensagem: string) {
+    this.notificacaoMensagem = mensagem;
+    this.notificacaoAtiva = true;
+
+    clearTimeout(this.notificacaoTimeout);
+    this.notificacaoTimeout = setTimeout(() => {
+      this.notificacaoAtiva = false;
+    }, 6000);
   }
 }
