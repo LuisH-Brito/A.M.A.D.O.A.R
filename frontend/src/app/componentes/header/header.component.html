@@ -186,6 +186,13 @@
           >Sair</a
         >
       </ng-container>
+      <a
+        *ngIf="!isLogado()"
+        routerLink="/login"
+        class="menu-item"
+        (click)="toggleMenu()"
+        >Login</a
+      >
     </div>
   </div>
 
