@@ -226,3 +226,52 @@ select {
     gap: 20px;
   }
 }
+
+.modal-carteira {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+}
+
+.modal-overlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.modal-conteudo {
+  position: relative;
+  width: 500px;
+  max-width: 90%;
+  margin: 80px auto;
+  background: white;
+  border-radius: 10px;
+  padding: 20px;
+  z-index: 1001;
+}
+
+.modal-topo {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.modal-topo i {
+  cursor: pointer;
+  font-size: 18px;
+}
+
+.carteira-container {
+  display: flex;
+  justify-content: center;
+}
+
+.carteira-container img {
+  max-width: 100%;
+  border-radius: 8px;
+}

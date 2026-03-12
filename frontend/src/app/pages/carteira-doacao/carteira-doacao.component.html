@@ -1,0 +1,83 @@
+<div class="pagina">
+  <h2>Adicionar Carteirinhas de Doadores</h2>
+
+  <div class="centralizando">
+    <div class="topo">
+      <div class="campo-busca">
+        <label>Buscar</label>
+        <input
+          type="text"
+          placeholder="Nome ou CPF"
+          [(ngModel)]="busca"
+          (ngModelChange)="filtrar()"
+        />
+      </div>
+
+      <div class="campo-filtro">
+        <label>Tipo Sanguíneo</label>
+        <select [(ngModel)]="tipoSelecionado" (ngModelChange)="filtrar()">
+          <option value="Todos">Todos</option>
+          <option value="A+">A+</option>
+          <option value="A-">A-</option>
+          <option value="B+">B+</option>
+          <option value="B-">B-</option>
+          <option value="AB+">AB+</option>
+          <option value="AB-">AB-</option>
+          <option value="O+">O+</option>
+          <option value="O-">O-</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="lista-container">
+      <div *ngIf="doadoresFiltrados.length === 0" class="sem-resultados">
+        Nenhum doador apto encontrado.
+      </div>
+
+      <div class="lista-doadores">
+        <div class="doador-card" *ngFor="let doador of doadoresPaginados">
+          <div class="doador-header">
+            <div class="tipo-badge">
+              <span>{{ doador.tipo_sanguineo }}</span>
+            </div>
+
+            <div class="doador-info">
+              <span class="nome">{{ doador.nome }}</span>
+
+              <span class="cpf">
+                <i class="bi bi-person"></i>
+                {{ doador.cpf }}
+              </span>
+
+              <span class="bolsas">
+                {{ doador.total_bolsas }} bolsas registradas
+              </span>
+            </div>
+
+            <div class="acoes-carteira">
+              <input
+                type="file"
+                #fileInput
+                hidden
+                (change)="uploadCarteirinha($event, doador)"
+              />
+
+              <button class="btn-upload" (click)="fileInput.click()">
+                <i class="bi bi-upload"></i>
+                Upload Carteirinha
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-paginacao
+      [paginaAtual]="paginaAtual"
+      [totalItens]="doadoresFiltrados.length"
+      [itensPorPagina]="itensPorPagina"
+      (mudancaPagina)="mudarPagina($event)"
+    >
+    </app-paginacao>
+  </div>
+</div>

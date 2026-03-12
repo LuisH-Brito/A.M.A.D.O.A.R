@@ -3,11 +3,21 @@
     <div class="topo-pagina">
       <h2 class="titulo">Meu Perfil</h2>
 
-      <div class="editar-perfil" routerLink="/cadastro" [queryParams]="{ modo: 'editar' }" *ngIf="isDoador">
+      <div
+        class="editar-perfil"
+        routerLink="/cadastro"
+        [queryParams]="{ modo: 'editar' }"
+        *ngIf="isDoador"
+      >
         <span>Editar perfil</span>
         <i class="bi bi-pencil"></i>
       </div>
-      <div class="editar-perfil" routerLink="/cadastro-funcionario" [queryParams]="{ modo: 'editar' }" *ngIf="isEnfermeiro || isMedico || isRecepcionista">
+      <div
+        class="editar-perfil"
+        routerLink="/cadastro-funcionario"
+        [queryParams]="{ modo: 'editar' }"
+        *ngIf="isEnfermeiro || isMedico || isRecepcionista"
+      >
         <span>Editar perfil</span>
         <i class="bi bi-pencil"></i>
       </div>
@@ -89,7 +99,13 @@
     </div>
 
     <div class="acoes-centrais" *ngIf="isDoador">
-      <button class="btn-principal">Visualizar Carteira Digital</button>
+      <button
+        class="btn-principal"
+        (click)="abrirCarteira()"
+        *ngIf="carteiraUrl"
+      >
+        Visualizar Carteira Digital
+      </button>
       <button class="btn-principal">Visualizar Questionário Online</button>
     </div>
 
@@ -111,6 +127,20 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal-carteira" *ngIf="mostrarCarteira">
+    <div class="modal-overlay" (click)="fecharCarteira()"></div>
+
+    <div class="modal-conteudo">
+      <div class="modal-topo">
+        <h3>Carteira Digital do Doador</h3>
+        <i class="bi bi-x-lg" (click)="fecharCarteira()"></i>
+      </div>
+
+      <div class="carteira-container">
+        <img [src]="carteiraUrl" alt="Carteira de Doador" />
       </div>
     </div>
   </div>

@@ -21,6 +21,7 @@ import { QuestionarioProcessoComponent } from './pages/questionario-processo/que
 import { ProcessoDoacaoMedComponent } from './pages/processo-doacao-med/processo-doacao-med.component';
 import { authGuard } from './auth.guard';
 import { ListaDoadoresComponent } from './pages/lista-doadores/lista-doadores.component';
+import { CarteiraDoacaoComponent } from './pages/carteira-doacao/carteira-doacao.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
@@ -121,13 +122,28 @@ export const routes: Routes = [
     path: 'pagina-doador',
     component: DoadorComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['doador', 'administrador', 'medico', 'recepcionista', 'enfermeiro'] },
+    data: {
+      cargoPermitido: [
+        'doador',
+        'administrador',
+        'medico',
+        'recepcionista',
+        'enfermeiro',
+      ],
+    },
   },
   {
     path: 'cadastro-funcionario',
     component: CadastroFuncionarioComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['administrador', 'medico', 'enfermeiro', 'recepcionista'] }, // Exemplo de dado para o guard usar
+    data: {
+      cargoPermitido: [
+        'administrador',
+        'medico',
+        'enfermeiro',
+        'recepcionista',
+      ],
+    }, // Exemplo de dado para o guard usar
   },
   {
     path: 'aguardando-validacao-bolsa',
@@ -175,6 +191,19 @@ export const routes: Routes = [
         'medico',
         'enfermeiro',
         'recepcionista',
+      ],
+    },
+  },
+  {
+    path: 'carteira-doacao',
+    component: CarteiraDoacaoComponent,
+    canActivate: [authGuard],
+    data: {
+      cargoPermitido: [
+        'administrador',
+        'medico',
+        'recepcionista',
+        'enfermeiro',
       ],
     },
   },
