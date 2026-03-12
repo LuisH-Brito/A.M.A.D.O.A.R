@@ -25,7 +25,7 @@ export class FormPreTriagemComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private api: ApiService
+    private api: ApiService,
   ) {}
 
   ngOnInit(): void {
@@ -54,8 +54,18 @@ export class FormPreTriagemComponent implements OnInit {
   }
 
   salvarEAvancarTriagem(): void {
-    if (this.form.altura == null || this.form.peso == null || this.form.hemoglobina == null) {
+    if (
+      this.form.altura == null ||
+      this.form.peso == null ||
+      this.form.hemoglobina == null
+    ) {
       alert('Preencha altura, peso e hemoglobina.');
+      return;
+    }
+
+    const enfermeiroId = localStorage.getItem('usuario_id');
+    if (!enfermeiroId) {
+      alert('Acesso negado: Não foi possível identificar o enfermeiro logado.');
       return;
     }
 
@@ -64,7 +74,8 @@ export class FormPreTriagemComponent implements OnInit {
       altura: this.form.altura,
       peso: this.form.peso,
       hemoglobina: this.form.hemoglobina,
-      status_clinico: 1, // apto
+      status_clinico: 1,
+      enfermeiro_id: enfermeiroId,
     };
 
     this.api.salvarDadosClinicos(payload).subscribe({
@@ -74,7 +85,8 @@ export class FormPreTriagemComponent implements OnInit {
             alert('Pré-triagem concluída. Processo enviado para Triagem.');
             this.router.navigate(['/processo-doacao-andamento']);
           },
-          error: () => alert('Dados salvos, mas falhou ao atualizar status para Triagem.'),
+          error: () =>
+            alert('Dados salvos, mas falhou ao atualizar status para Triagem.'),
         });
       },
       error: (err) => {
@@ -88,12 +100,35 @@ export class FormPreTriagemComponent implements OnInit {
   }
 
   marcarInapto(): void {
-    this.api.atualizarStatusProcesso(this.processoId, 0).subscribe({
+    const enfermeiroId = localStorage.getItem('usuario_id');
+    if (!enfermeiroId) {
+      alert('Acesso negado: Não foi possível identificar o enfermeiro logado.');
+      return;
+    }
+
+    const payload = {
+      processo_id: this.processoId,
+      altura: this.form.altura || 0,
+      peso: this.form.peso || 0,
+      hemoglobina: this.form.hemoglobina || 0,
+      status_clinico: 0,
+      enfermeiro_id: enfermeiroId,
+    };
+
+    this.api.salvarDadosClinicos(payload).subscribe({
       next: () => {
-        alert('Processo marcado como cancelado/inapto.');
-        this.router.navigate(['/processo-doacao-andamento']);
+        this.api.atualizarStatusProcesso(this.processoId, 0).subscribe({
+          next: () => {
+            alert('Processo marcado como cancelado/inapto com sucesso.');
+            this.router.navigate(['/processo-doacao-andamento']);
+          },
+          error: () =>
+            alert(
+              'Dados de inaptidão salvos, mas houve erro ao cancelar o processo.',
+            ),
+        });
       },
-      error: () => alert('Erro ao marcar como inapto.'),
+      error: () => alert('Erro ao registrar inaptidão nos dados clínicos.'),
     });
   }
 }

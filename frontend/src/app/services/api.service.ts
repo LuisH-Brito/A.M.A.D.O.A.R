@@ -24,17 +24,28 @@ export class ApiService {
   }
 
   atualizarStatusProcesso(id: number, status: number) {
-    return this.http.patch(`${this.baseUrl}processos/${id}/atualizar-status/`, { status });
+    return this.http.patch(`${this.baseUrl}processos/${id}/atualizar-status/`, {
+      status,
+    });
   }
 
   iniciarDoacao(cpf: string) {
     return this.http.post(`${this.baseUrl}processos/iniciar/`, { cpf });
   }
 
-  decidirTriagem(processoId: number, payload: { pressao_arterial: string; aprovado: boolean }) {
-    return this.http.post(`${this.baseUrl}processos/${processoId}/decidir-triagem/`, payload);
+  decidirTriagem(
+    processoId: number,
+    payload: {
+      pressao_arterial: string;
+      aprovado: boolean;
+      medico_id?: string | null;
+    },
+  ) {
+    return this.http.post(
+      `${this.baseUrl}processos/${processoId}/decidir-triagem/`,
+      payload,
+    );
   }
-
   listarEnfermeiros() {
     return this.http.get<any[]>(`${this.baseUrl}enfermeiros/`);
   }

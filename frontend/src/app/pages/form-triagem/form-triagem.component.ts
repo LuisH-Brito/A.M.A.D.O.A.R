@@ -22,7 +22,7 @@ export class FormTriagemComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private api: ApiService,
-    private questionarioService: QuestionarioService 
+    private questionarioService: QuestionarioService,
   ) {}
 
   ngOnInit(): void {
@@ -42,14 +42,17 @@ export class FormTriagemComponent implements OnInit {
           dataNascimento: processo?.doador?.data_nascimento || '',
           cpf: processo?.doador?.cpf || '',
         };
-        
+
         // Em vez de olhar pro processo, olha pro histórico do CPF
         if (this.doador.cpf) {
-          this.questionarioService.getQuestionariosPorCpf(this.doador.cpf).subscribe({
-            next: (questionarios) => {
-              this.questionarioVinculado = questionarios && questionarios.length > 0;
-            }
-          });
+          this.questionarioService
+            .getQuestionariosPorCpf(this.doador.cpf)
+            .subscribe({
+              next: (questionarios) => {
+                this.questionarioVinculado =
+                  questionarios && questionarios.length > 0;
+              },
+            });
         }
       },
       error: () => {
@@ -64,7 +67,11 @@ export class FormTriagemComponent implements OnInit {
       alert('Processo inválido.');
       return;
     }
-    this.router.navigate(['/questionario-processo/proc', this.processoId, this.doador.cpf]);
+    this.router.navigate([
+      '/questionario-processo/proc',
+      this.processoId,
+      this.doador.cpf,
+    ]);
   }
 
   private validarPressao(): boolean {
@@ -75,36 +82,43 @@ export class FormTriagemComponent implements OnInit {
     return true;
   }
 
-  reprovar(): void {
+  enviarDecisao(aprovado: boolean): void {
     if (!this.validarPressao()) return;
 
-    this.api.decidirTriagem(this.processoId, {
+    const medicoId = localStorage.getItem('usuario_id');
+    if (!medicoId) {
+      alert('Erro: Não foi possível identificar o médico logado.');
+      return;
+    }
+
+    const payload = {
       pressao_arterial: this.pressaoArterial.trim(),
-      aprovado: false,
-    }).subscribe({
+      aprovado: aprovado,
+      medico_id: medicoId,
+    };
+
+    this.api.decidirTriagem(this.processoId, payload as any).subscribe({
       next: () => {
-        alert('Triagem concluída: doador inapto. Processo encerrado.');
-        this.router.navigate(['/processo-doacao-andamento']);
+        const novoStatus = aprovado ? 4 : 0;
+
+        this.api
+          .atualizarStatusProcesso(this.processoId, novoStatus)
+          .subscribe({
+            next: () => {
+              const msg = aprovado
+                ? 'doador apto. Processo enviado para Coleta'
+                : 'doador inapto. Processo encerrado';
+              alert(`Triagem concluída: ${msg}.`);
+              this.router.navigate(['/processo-doacao-andamento']);
+            },
+            error: () =>
+              alert(
+                'Os dados foram salvos, mas houve um erro ao mudar a etapa do processo.',
+              ),
+          });
       },
       error: (err) => {
-        alert(err?.error?.erro || 'Erro ao concluir triagem.');
-      },
-    });
-  }
-
-  aprovar(): void {
-    if (!this.validarPressao()) return;
-
-    this.api.decidirTriagem(this.processoId, {
-      pressao_arterial: this.pressaoArterial.trim(),
-      aprovado: true,
-    }).subscribe({
-      next: () => {
-        alert('Triagem concluída: doador apto.');
-        this.router.navigate(['/processo-doacao-andamento']);
-      },
-      error: (err) => {
-        alert(err?.error?.erro || 'Erro ao concluir triagem.');
+        alert(err?.error?.erro || 'Erro ao registrar os dados da triagem.');
       },
     });
   }
