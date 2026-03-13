@@ -11,7 +11,7 @@ class MedicoSerializer(serializers.ModelSerializer):
         model = Medico
         fields = [
             'id', 'cpf', 'nome_completo', 'email', 
-            'endereco', 'data_nascimento', 'crm', 'is_active'
+            'endereco', 'data_nascimento', 'crm', 'is_active', 'password'
         ]
         extra_kwargs = {'password': {'write_only': True}}
 

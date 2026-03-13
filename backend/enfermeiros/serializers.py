@@ -11,7 +11,7 @@ class EnfermeiroSerializer(serializers.ModelSerializer):
         model = Enfermeiro
         fields = [
             'id', 'cpf', 'nome_completo', 'email', 
-            'endereco', 'data_nascimento', 'coren', 'is_active'
+            'endereco', 'data_nascimento', 'coren', 'is_active', 'password'
         ]
         extra_kwargs = {'password': {'write_only': True, 'required': False}}
 
