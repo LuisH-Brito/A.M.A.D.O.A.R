@@ -30,6 +30,14 @@ export class ValidacaoBolsaComponent implements OnInit {
   doadorFatorRh: string | null = null;
   doadorTipoSanguineo: string | null = null;
 
+  get formularioInvalido(): boolean {
+    return (
+      !this.tipoSanguineoSelecionado ||
+      !this.arquivoLaudo ||
+      !this.arquivoExameDoador
+    );
+  }
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,

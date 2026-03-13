@@ -9,6 +9,36 @@
   margin: 0 auto;
 }
 
+.btn-liberar:disabled {
+  background: #ccc;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.msg-erro {
+  color: #c40000;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+input.ng-invalid.ng-touched {
+  border: 1px solid #c40000;
+}
+
 .titulo {
   font-size: 26px;
   font-weight: 700;

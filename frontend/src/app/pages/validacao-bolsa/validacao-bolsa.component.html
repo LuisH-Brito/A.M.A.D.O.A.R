@@ -47,6 +47,7 @@
                   name="tipo-sangue"
                   [value]="tipo.id"
                   [(ngModel)]="tipoSanguineoSelecionado"
+                  required
                 />
                 <span class="radio-label"
                   >{{ tipo.tipo }}{{ tipo.fator_rh }}</span
@@ -59,12 +60,17 @@
         <div class="grid-uploads">
           <div class="secao-upload">
             <label class="label-destaque">Exame Laboratorial</label>
-            <div class="upload-container" (click)="acionarInputArquivo()">
+            <div
+              class="upload-container"
+              [class.borda-erro]="!arquivoLaudo"
+              (click)="acionarInputArquivo()"
+            >
               <i class="bi bi-cloud-arrow-up-fill"></i>
               <p *ngIf="!arquivoLaudo">Clique para enviar o Laudo (PDF)</p>
               <p *ngIf="arquivoLaudo" class="arquivo-sucesso">
                 <i class="bi bi-check-circle-fill"></i> {{ arquivoLaudo.name }}
               </p>
+
               <button class="btn-upload" type="button">
                 {{ arquivoLaudo ? "Trocar Arquivo" : "Adicionar Laudo" }}
               </button>
@@ -76,11 +82,18 @@
                 (change)="aoSelecionarArquivo($event)"
               />
             </div>
+            <small class="msg-erro" *ngIf="!arquivoLaudo">
+              O laudo laboratorial é obrigatório.
+            </small>
           </div>
 
           <div class="secao-upload">
             <label class="label-destaque">Exame do Doador</label>
-            <div class="upload-container" (click)="acionarInputExameDoador()">
+            <div
+              class="upload-container"
+              [class.borda-erro]="!arquivoExameDoador"
+              (click)="acionarInputExameDoador()"
+            >
               <i class="bi bi-file-earmark-medical-fill"></i>
               <p *ngIf="!arquivoExameDoador">
                 Clique para enviar o Exame (PDF)
@@ -100,6 +113,9 @@
                 (change)="aoSelecionarExameDoador($event)"
               />
             </div>
+            <small class="msg-erro" *ngIf="!arquivoExameDoador">
+              O exame do doador é obrigatório.
+            </small>
           </div>
         </div>
       </div>
@@ -117,7 +133,7 @@
           class="btn-liberar"
           type="button"
           (click)="liberarParaEstoque()"
-          [disabled]="carregando"
+          [disabled]="carregando || formularioInvalido"
         >
           <span *ngIf="!carregando">Liberar para o Estoque</span>
           <span *ngIf="carregando">Processando...</span>
