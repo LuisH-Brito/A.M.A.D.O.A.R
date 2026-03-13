@@ -11,11 +11,10 @@
             placeholder="000.000.000-00"
             [(ngModel)]="cpfBusca"
             (ngModelChange)="onCpfChange()"
-          >
+          />
         </div>
-
       </div>
-      <p *ngIf="mensagem">{{ mensagem }}</p>
+      <p *ngIf="mensagem" class="mensagem-sistema">{{ mensagem }}</p>
 
       <div class="perfil-container" *ngIf="doadorEncontrado">
         <div class="usuario-card">
@@ -29,18 +28,72 @@
             <p><strong>Nome:</strong> {{ doadorEncontrado.nome_completo }}</p>
             <p>
               <strong>Sexo:</strong>
-              {{ doadorEncontrado.sexo === 'M' ? 'Masculino' : doadorEncontrado.sexo === 'F' ? 'Feminino' : 'Não informado' }}
+              {{
+                doadorEncontrado.sexo === "M"
+                  ? "Masculino"
+                  : doadorEncontrado.sexo === "F"
+                    ? "Feminino"
+                    : "Não informado"
+              }}
             </p>
-            <p><strong>Status:</strong> Tempo de doação apto</p>
+
+            <p>
+              <strong>Status:</strong>
+              <span
+                class="status-aptidao"
+                [class.apto]="doadorEncontrado.apto_para_doacao"
+                [class.inapto]="!doadorEncontrado.apto_para_doacao"
+              >
+                {{
+                  doadorEncontrado.apto_para_doacao
+                    ? "Apto para doação"
+                    : "Inapto no momento"
+                }}
+              </span>
+            </p>
+
+            <div
+              *ngIf="!doadorEncontrado.apto_para_doacao"
+              class="alerta-inapto"
+            >
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              Este doador possui um processo em andamento ou ainda não cumpriu o
+              prazo de descanso.
+              <span *ngIf="doadorEncontrado.data_proxima_doacao">
+                Liberado a partir de:
+                <strong>{{
+                  doadorEncontrado.data_proxima_doacao | date: "dd/MM/yyyy"
+                }}</strong>
+              </span>
+            </div>
           </div>
         </div>
       </div>
     </div>
 
     <div class="acoes">
-      <button class="btn-iniciar" (click)="iniciar()" [disabled]="!doadorEncontrado">
+      <button
+        class="btn-iniciar"
+        (click)="iniciar()"
+        [disabled]="!doadorEncontrado || !doadorEncontrado.apto_para_doacao"
+      >
         Iniciar
       </button>
     </div>
   </div>
 </div>
+
+<app-modal-confirmacao
+  [visivel]="modalVisivel"
+  titulo="Confirmar Operação"
+  mensagem="Tem certeza que deseja iniciar um novo processo de doação para {{
+    doadorEncontrado?.nome_completo
+  }}?"
+  tipo="usar"
+  textoConfirmar="Sim, iniciar"
+  (confirmado)="confirmarInicio()"
+  (cancelado)="cancelarInicio()"
+>
+</app-modal-confirmacao>
+
+<app-toast-notificacao #toast></app-toast-notificacao>
