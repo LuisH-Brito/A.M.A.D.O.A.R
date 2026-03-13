@@ -3,6 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend
 from .models import Bolsa
+from .services import notificar_doadores_por_tipo
 from .serializers import BolsaSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
@@ -10,23 +11,8 @@ from django.db.models import Count, Q
 from django.utils import timezone
 import datetime
 from rest_framework import status
-from .services import notificar_estoque_critico
 from django.db.models import Count
 
-
-class NotificacaoEstoqueView(APIView):
-   def post(self, request):
-        try:
-            notificar_estoque_critico()
-            return Response(
-                {"status": "Sucesso", "message": "Verificação de estoque concluída e e-mails disparados."},
-                status=status.HTTP_200_OK
-            )
-        except Exception as e:
-            return Response(
-                {"status": "Erro", "message": str(e)},
-                status=status.HTTP_500_INTERNAL_SERVER_ERROR
-            )
     
 class BolsaViewSet(viewsets.ModelViewSet):
     """
@@ -259,3 +245,17 @@ class BolsaViewSet(viewsets.ModelViewSet):
             })
 
         return Response(resultado)
+    
+    @action(detail=False, methods=['post'], url_path='notificar-doadores')
+    def notificar_doadores(self, request):
+        tipo_sangue = request.data.get('tipo_sanguineo')
+        if not tipo_sangue:
+            return Response({"erro": "Tipo sanguíneo não informado."}, status=status.HTTP_400_BAD_REQUEST)
+            
+        try:
+            qtd_emails = notificar_doadores_por_tipo(tipo_sangue)
+            if qtd_emails == 0:
+                return Response({"mensagem": f"Nenhum doador com e-mail cadastrado para o tipo {tipo_sangue}."}, status=status.HTTP_200_OK)
+            return Response({"mensagem": f"Notificação de emergência enviada para {qtd_emails} doador(es) do tipo {tipo_sangue}."}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({"erro": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

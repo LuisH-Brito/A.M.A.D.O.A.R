@@ -90,35 +90,77 @@
   }
 }
 
-// TAGS AZUIS
+// TAGS AZUIS COM BOTÃO DE NOTIFICAÇÃO (ATUALIZADO)
 .tags-sangue {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 12px 15px;
   width: 100%;
-  max-width: 480px;
+  max-width: 520px; // Ligeiramente maior para caber o botão ao lado
   margin: 0 auto 50px auto;
 
   .tag-item {
-    background-color: #004b87;
-    color: white;
-    border-radius: 6px;
     display: flex;
-    overflow: hidden;
-    font-weight: 600;
-    font-size: 0.85rem;
+    align-items: center;
+    gap: 6px;
     width: 100%;
 
-    .tipo {
-      padding: 4px 0;
+    .tag-info {
+      background-color: #004b87;
+      color: white;
+      border-radius: 6px;
+      display: flex;
+      overflow: hidden;
+      font-weight: 600;
+      font-size: 0.85rem;
       flex: 1;
-      text-align: center;
+
+      .tipo {
+        padding: 4px 0;
+        flex: 1;
+        text-align: center;
+      }
+      .contagem {
+        background-color: rgba(0, 0, 0, 0.2);
+        padding: 4px 0;
+        flex: 1;
+        text-align: center;
+      }
     }
-    .contagem {
-      background-color: rgba(0, 0, 0, 0.2);
-      padding: 4px 0;
-      flex: 1;
-      text-align: center;
+
+    // Se a contagem for crítica, muda a cor do bloco para vermelho
+    &.critico .tag-info {
+      background-color: #dc3545;
+    }
+
+    // Estilo do botão de notificação (Sino)
+    .btn-notificar {
+      background: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      width: 28px;
+      height: 25px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      padding: 0;
+
+      i {
+        font-size: 0.85rem;
+      }
+
+      &:hover:not(:disabled) {
+        background: #b02a37;
+        transform: scale(1.05);
+      }
+
+      &:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
     }
   }
 }
