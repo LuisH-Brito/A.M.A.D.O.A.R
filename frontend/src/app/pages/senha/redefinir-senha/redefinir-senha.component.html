@@ -1,0 +1,29 @@
+<main>
+  <div class="login-container">
+    <div class="login-left">
+      <img src="images/logo-hemoacre.png" alt="HEMO ACRE" class="logo" />
+      <h2>Comece a salvar vidas agora.</h2>
+      <a routerLink="/login" class="btn-voltar"> Voltar para login </a>
+    </div>
+
+    <div class="login-right">
+      <h2>Redefinir Senha</h2>
+
+      <form (ngSubmit)="continuar()">
+        <div class="form-group">
+          <label for="cpf">CPF</label>
+          <input
+            type="text"
+            id="cpf"
+            name="cpf"
+            [(ngModel)]="cpf"
+            placeholder="Digite seu CPF"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-login">Continuar</button>
+      </form>
+    </div>
+  </div>
+</main>
