@@ -1,4 +1,8 @@
-<div class="carousel-wrapper">
+<div
+  class="carousel-wrapper"
+  (touchstart)="onTouchStart($event)"
+  (touchend)="onTouchEnd($event)"
+>
   <div
     class="slide-container"
     *ngFor="let slide of slides; let i = index"
@@ -18,10 +22,10 @@
         [src]="slide.imgSrc"
         [alt]="slide.title"
       />
-      
+
       <!-- USAR IMAGENS 512x512 -->
       <img
-        *ngIf="slide.layout === 'no-full-no-mask'" 
+        *ngIf="slide.layout === 'no-full-no-mask'"
         class="img-no-full-no-mask"
         [src]="slide.imgSrc"
         [alt]="slide.title"

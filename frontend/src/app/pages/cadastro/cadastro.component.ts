@@ -51,7 +51,7 @@ export class CadastroComponent implements OnInit {
 
   voltar() {
     if (this.modoEdicao) {
-      this.router.navigate(['/meu-perfil']);
+      this.router.navigate(['/pagina-doador']);
     } else {
       this.router.navigate(['/login']);
     }

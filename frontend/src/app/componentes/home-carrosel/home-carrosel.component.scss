@@ -11,6 +11,9 @@
   height: 400px;
 }
 
+.carousel-wrapper {
+  touch-action: pan-y;
+}
 .slide-container {
   display: none;
   width: 100%;
@@ -48,8 +51,10 @@
   }
 
   p {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
+    text-align: justify;
     line-height: 1.5;
+    // color: #323232;
   }
 }
 

@@ -16,16 +16,18 @@ main {
   margin: 50px 10px 20px 10px;
   color: #333;
 
-  span { color: #9f0000; }
+  span {
+    color: #9f0000;
+  }
 }
 .container-estoque {
-  background-color: #5B0E0E;
+  background-color: #5b0e0e;
   padding: 40px 20px;
   border-radius: 20px;
   max-width: 1200px;
-  width: 90%; 
+  width: 90%;
   margin: 0 auto 50px auto;
-  box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4);
 }
 
 /* GRID ADAPTÁVEL */
@@ -88,10 +90,11 @@ main {
   }
 
   p {
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     line-height: 1.6;
     margin-bottom: 15px;
-    color: #555;
+    color: #323232;
+    text-align: justify;
   }
 }
 
@@ -154,8 +157,10 @@ main {
 
     p {
       margin: 15px 0;
-      font-size: 1rem;
-      color: #555;
+      font-size: 1.2rem;
+      // color: #555;
+      color: #323232;
+      text-align: justify;
     }
   }
 
@@ -217,10 +222,11 @@ main {
   flex: 3;
 
   p {
-    font-size: 1.1rem;
+    font-size: 1.2rem;
     line-height: 1.6;
-    color: #333;
+    color: #323232;
     margin: 0;
+    text-align: justify;
   }
 }
 

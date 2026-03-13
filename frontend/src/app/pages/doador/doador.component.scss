@@ -1,30 +1,33 @@
+/* =========================================
+   ESTILOS GERAIS (DESKTOP FIRST)
+   ========================================= */
+
 .pagina-doador {
   background: #f4f4f4;
   padding: 30px;
 }
+
 .topo-pagina {
+  display: flex;
+  justify-content: center;
+  align-items: center;
   position: relative;
   margin-bottom: 30px;
 }
 
 .titulo {
-  text-align: center;
   font-weight: 600;
+  text-align: center;
+  margin-bottom: 30px;
 }
 
 .editar-perfil {
   position: absolute;
   right: 0;
-  top: 50%;
-  transform: translateY(-50%);
-
   display: flex;
   align-items: center;
   gap: 8px;
-
   font-weight: 600;
-  color: #000000;
-
   cursor: pointer;
 }
 
@@ -44,12 +47,6 @@
   padding: 30px;
   border-radius: 12px;
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
-}
-
-.titulo {
-  text-align: center;
-  margin-bottom: 30px;
-  font-weight: 600;
 }
 
 .formulario {
@@ -101,31 +98,24 @@ select {
 .acoes-centrais {
   display: flex;
   justify-content: center;
-  gap: 40px;
+  gap: 30px;
+  flex-wrap: wrap;
   margin: 40px 0;
 }
 
 .btn-principal {
-  width: 380px;
-  height: 100px;
-  padding: 0 40px;
-
-  margin: 25px 70px;
-
+  width: 100%;
+  max-width: 380px;
+  height: 90px;
   border-radius: 18px;
   border: none;
-
   background: #ffffff;
   color: #0b5d2a;
-
   font-size: 18px;
   font-weight: 700;
-
   box-shadow: 0 6px 12px rgba(0, 0, 0, 0.18);
-
   cursor: pointer;
   transition: all 0.25s ease;
-
   display: flex;
   align-items: center;
   justify-content: center;
@@ -133,6 +123,8 @@ select {
 
 .btn-principal:hover {
   transform: translateY(-3px);
+  background: #0b5d2a;
+  color: white;
 }
 
 .historico {
@@ -158,26 +150,36 @@ select {
 .tabela-scroll {
   max-height: 320px;
   overflow-y: auto;
-
   display: flex;
   flex-direction: column;
   gap: 14px;
-
   padding-right: 6px;
+  scrollbar-width: thin;
+  scrollbar-color: #1f7a45 transparent;
+}
+
+.tabela-scroll::-webkit-scrollbar {
+  width: 10px;
+}
+
+.tabela-scroll::-webkit-scrollbar-thumb {
+  background: #1f7a45;
+  border-radius: 20px;
+}
+
+.tabela-scroll::-webkit-scrollbar-thumb:hover {
+  background: #145c32;
 }
 
 .linha-exame {
   background: #ffffff;
   border-radius: 10px;
   padding: 16px 22px;
-
   display: flex;
   justify-content: space-between;
   align-items: center;
-
   flex-shrink: 0;
   transition: all 0.2s ease;
-
   text-decoration: none;
   color: inherit;
   cursor: pointer;
@@ -235,35 +237,6 @@ select {
   color: #0b5d2a;
 }
 
-.tabela-scroll::-webkit-scrollbar {
-  width: 10px;
-}
-
-.tabela-scroll::-webkit-scrollbar-thumb {
-  background: #1f7a45;
-  border-radius: 20px;
-}
-
-.tabela-scroll::-webkit-scrollbar-thumb:hover {
-  background: #145c32;
-}
-
-.tabela-scroll {
-  scrollbar-width: thin;
-  scrollbar-color: #1f7a45 transparent;
-}
-
-@media (max-width: 992px) {
-  .linha {
-    flex-direction: column;
-  }
-
-  .acoes-centrais {
-    flex-direction: column;
-    gap: 20px;
-  }
-}
-
 .modal-carteira {
   position: fixed;
   top: 0;
@@ -311,4 +284,68 @@ select {
 .carteira-container img {
   max-width: 100%;
   border-radius: 8px;
+}
+
+/* =========================================
+   MEDIA QUERIES (RESPONSIVIDADE)
+   ========================================= */
+
+/* Tablets */
+@media (max-width: 992px) {
+  .linha {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .acoes-centrais {
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .campo.grande,
+  .campo.pequeno {
+    flex: 1;
+  }
+}
+
+/* Celulares */
+@media (max-width: 768px) {
+  .pagina-doador {
+    padding: 15px;
+  }
+
+  .container {
+    padding: 20px;
+  }
+
+  /* Ajuste específico do topo e botão de editar */
+  .topo-pagina {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin-bottom: 20px;
+  }
+
+  .editar-perfil {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    margin: 0;
+  }
+
+  .editar-perfil span {
+    display: none;
+  }
+
+  .editar-perfil i {
+    font-size: 20px;
+  }
+
+  .acoes-centrais {
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
 }

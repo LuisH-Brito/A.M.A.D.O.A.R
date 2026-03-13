@@ -10,6 +10,26 @@ import { CommonModule } from '@angular/common';
 })
 export class HomeCarroselComponent {
   currentSlide = 0;
+  touchStartX = 0;
+  touchEndX = 0;
+  onTouchStart(event: TouchEvent) {
+    this.touchStartX = event.changedTouches[0].screenX;
+  }
+  onTouchEnd(event: TouchEvent) {
+    this.touchEndX = event.changedTouches[0].screenX;
+    this.handleSwipe();
+  }
+  handleSwipe() {
+    const swipeDistance = this.touchEndX - this.touchStartX;
+
+    if (swipeDistance > 50) {
+      this.prev(); // arrastou para direita
+    }
+
+    if (swipeDistance < -50) {
+      this.next(); // arrastou para esquerda
+    }
+  }
 
   slides = [
     {
@@ -17,7 +37,7 @@ export class HomeCarroselComponent {
       text: 'O Centro de Hematologia e Hemoterapia do Acre é a instituição responsável por garantir o abastecimento de sangue para hospitais em todo o Acre. Por meio da solidariedade dos doadores, o hemocentro salva vidas todos os dias, conectando quem pode doar com quem precisa de transfusões para continuar lutando pela vida.',
       imgSrc: 'images/logo-hemoacre512-white-background.png',
       bgColor: '#E8F5E9',
-      textColor: '#333333',
+      textColor: '#323232',
       layout: 'no-full-no-mask',
     },
     {
