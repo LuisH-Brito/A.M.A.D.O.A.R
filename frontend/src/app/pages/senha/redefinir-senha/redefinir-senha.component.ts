@@ -32,12 +32,9 @@ export class RedefinirSenhaComponent {
     }
 
     this.api.searchEmailByCpf(cpfSemMascara).subscribe({
-      next: (res) => {
+      next: () => {
         this.router.navigate(['/redefinir-senha/codigo'], {
-          queryParams: {
-            cpf: cpfSemMascara,
-            email: res.email,
-          },
+          queryParams: { cpf: cpfSemMascara },
         });
       },
       error: (err) => {

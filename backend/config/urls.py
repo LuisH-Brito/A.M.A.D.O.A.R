@@ -8,6 +8,7 @@ from usuarios.views import (
     search_email_by_cpf,
     request_code_password_reset,
     confirm_password_reset,
+    validate_password_reset_code,
 )
 
 urlpatterns = [
@@ -28,6 +29,7 @@ urlpatterns = [
     path('api/usuarios/search-email-by-cpf/', search_email_by_cpf, name='search_email_by_cpf'),
     path('api/usuarios/request-code-password-reset/', request_code_password_reset, name='request_code_password_reset'),
     path('api/usuarios/confirm-password-reset/', confirm_password_reset, name='confirm_password_reset'),
+    path('api/usuarios/validate-password-reset-code/', validate_password_reset_code, name='validate_password_reset_code'),
 ]
 
 if settings.DEBUG:

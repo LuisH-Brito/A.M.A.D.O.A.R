@@ -81,4 +81,10 @@ export class ApiService {
       },
     );
   }
+  validatePasswordResetCode(cpf: string, codigo: string) {
+    return this.http.post<{ mensagem: string }>(
+      `${this.baseUrl}usuarios/validate-password-reset-code/`,
+      { cpf, codigo },
+    );
+  }
 }
