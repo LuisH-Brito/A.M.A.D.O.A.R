@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { RouterLink, Router } from '@angular/router';
 import { DoadorService } from '../../services/doador.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { ExameDoadorService } from '../../services/exame-doador.service';
@@ -52,6 +52,8 @@ export class DoadorComponent implements OnInit {
     private doadorService: DoadorService,
     private funcionariosService: FuncionariosService,
     private exameDoadorService: ExameDoadorService,
+    private router: Router,
+    
   ) {}
 
   ngOnInit(): void {
@@ -133,6 +135,16 @@ export class DoadorComponent implements OnInit {
 
   fecharCarteira() {
     this.mostrarCarteira = false;
+  }
+
+  abrirQuestionario() {
+    if (!this.usuario.cpf) {
+      alert('Doador não encontrado.');
+      return;
+    }
+    this.router.navigate(['/questionario-processo/'], { 
+      queryParams: { cpf: this.usuario.cpf } 
+    });
   }
 
   private preencherFormulario(dadosBanco: any) {
