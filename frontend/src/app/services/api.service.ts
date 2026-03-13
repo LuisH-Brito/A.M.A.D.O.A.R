@@ -59,4 +59,32 @@ export class ApiService {
       payload,
     );
   }
+  searchEmailByCpf(cpf: string) {
+    return this.http.get<{ email: string }>(
+      `${this.baseUrl}usuarios/search-email-by-cpf/`,
+      { params: { cpf } },
+    );
+  }
+  requestCodePasswordReset(cpf: string) {
+    return this.http.post<{ mensagem: string }>(
+      `${this.baseUrl}usuarios/request-code-password-reset/`,
+      { cpf },
+    );
+  }
+  confirmPasswordReset(cpf: string, codigo: string, novaSenha: string) {
+    return this.http.post<{ mensagem: string }>(
+      `${this.baseUrl}usuarios/confirm-password-reset/`,
+      {
+        cpf,
+        codigo,
+        nova_senha: novaSenha,
+      },
+    );
+  }
+  validatePasswordResetCode(cpf: string, codigo: string) {
+    return this.http.post<{ mensagem: string }>(
+      `${this.baseUrl}usuarios/validate-password-reset-code/`,
+      { cpf, codigo },
+    );
+  }
 }

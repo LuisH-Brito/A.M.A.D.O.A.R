@@ -1,0 +1,49 @@
+<main>
+  <div class="codigo-container">
+    <div class="codigo-left">
+      <img src="images/logo-hemoacre.png" alt="HEMO ACRE" class="logo" />
+      <h2>Comece a salvar vidas agora.</h2>
+
+      <button type="button" class="btn-voltar-left" (click)="voltar()">
+        Voltar
+      </button>
+    </div>
+
+    <div class="codigo-right">
+      <h2>Inserir Código</h2>
+
+      <p class="descricao">Enviamos um código de verificação para:</p>
+      <p class="email">{{ emailDestinoMascarado }}</p>
+
+      <form (ngSubmit)="continuar()">
+        <div class="form-group">
+          
+          <input
+            type="text"
+            id="codigo"
+            name="codigo"
+            [(ngModel)]="codigo"
+            maxlength="6"
+            placeholder="6 dígitos"
+            required
+            [disabled]="validandoCodigo"
+          />
+        </div>
+
+        <div class="acoes">
+            <button
+              type="button"
+              class="btn-codigo"
+              (click)="reenviarCodigo()"
+              [disabled]="!podeReenviar || validandoCodigo"
+            >
+              {{ podeReenviar ? 'Enviar código novamente' : 'Reenviar em ' + tempoRestanteFormatado }}
+            </button>
+          <button type="submit" class="btn-continuar" [disabled]="validandoCodigo">
+            {{ validandoCodigo ? 'Validando...' : 'Continuar' }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</main>

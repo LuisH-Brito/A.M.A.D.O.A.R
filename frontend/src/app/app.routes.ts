@@ -22,11 +22,17 @@ import { ProcessoDoacaoMedComponent } from './pages/processo-doacao-med/processo
 import { authGuard } from './auth.guard';
 import { ListaDoadoresComponent } from './pages/lista-doadores/lista-doadores.component';
 import { CarteiraDoacaoComponent } from './pages/carteira-doacao/carteira-doacao.component';
+import { RedefinirSenhaComponent } from './pages/senha/redefinir-senha/redefinir-senha.component';
+import { CodigoSenhaComponent } from './pages/senha/codigo-senha/codigo-senha.component';
+import { NovaSenhaComponent } from './pages/senha/nova-senha/nova-senha.component';
 
 export const routes: Routes = [
   { path: '', component: HomeComponent }, // Define Home como padrão
   { path: 'login', component: LoginComponent },
   { path: 'cadastro', component: CadastroComponent },
+  { path: 'redefinir-senha', component: RedefinirSenhaComponent },
+  { path: 'redefinir-senha/codigo', component: CodigoSenhaComponent },
+  { path: 'redefinir-senha/nova-senha', component: NovaSenhaComponent },
   {
     path: 'gestao-pessoal',
     component: GestaoPessoalComponent,

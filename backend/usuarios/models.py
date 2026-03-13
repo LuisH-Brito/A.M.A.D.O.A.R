@@ -2,6 +2,16 @@ from django.contrib.auth.models import AbstractUser, BaseUserManager
 from django.db import models
 
 class UsuarioManager(BaseUserManager):
+
+    def search_email_by_cpf(self, cpf: str):
+        cpf_sem_mascara = ''.join(ch for ch in (cpf or '') if ch.isdigit())
+
+        if len(cpf_sem_mascara) != 11:
+            raise ValueError('O CPF está incorreto.')
+
+        usuario = self.get_queryset().filter(cpf=cpf_sem_mascara).only('email').first()
+        return usuario.email if usuario else None
+
     def create_user(self, cpf, password=None, **extra_fields):
         if not cpf:
             raise ValueError('O CPF é obrigatório')

@@ -99,6 +99,13 @@ export class CadastroComponent implements OnInit {
 
   concluirCadastro() {
     if (this.dados.senha || this.dados.confirmarSenha) {
+      if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(this.dados.senha)) {
+        alert(
+          'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.',
+        );
+        return;
+      }
+
       if (this.dados.senha !== this.dados.confirmarSenha) {
         alert('As senhas não coincidem!');
         return;
