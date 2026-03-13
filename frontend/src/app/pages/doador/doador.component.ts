@@ -1,19 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { DoadorService } from '../../services/doador.service';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { ExameDoadorService } from '../../services/exame-doador.service';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-doador',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ToastNotificacaoComponent],
   templateUrl: './doador.component.html',
   styleUrl: './doador.component.scss',
 })
 export class DoadorComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   modoEdicao = false;
   idUsuario!: number;
   cargoAtual = '';
@@ -67,14 +69,30 @@ export class DoadorComponent implements OnInit {
       this.doadorService.obterDoador().subscribe({
         next: (res: any) => {
           this.preencherFormulario(res);
-          this.usuario.tipoSanguineo =
+
+          // Lógica do Tipo Sanguíneo e Notificação
+          const sangueNovo =
             (res.tipo_sanguineo_declarado || '') + (res.fator_rh || '');
+          const sangueCache = localStorage.getItem('sangue_cache');
+          if (
+            sangueCache !== null &&
+            sangueCache !== sangueNovo &&
+            sangueNovo !== ''
+          ) {
+            setTimeout(() => {
+              this.toastComponente.exibir(
+                `Seu tipo sanguíneo foi validado pelo médico como ${sangueNovo}!`,
+              );
+            }, 800);
+          }
+          localStorage.setItem('sangue_cache', sangueNovo);
+          this.usuario.tipoSanguineo = sangueNovo;
+
           this.usuario.telefone = res.telefone;
           this.carteiraUrl = res.carteira_doador;
         },
         error: (err) => console.error('Erro ao carregar dados do doador', err),
       });
-
       // Busca a lista de exames do doador
       this.exameDoadorService.listarMeusExames().subscribe({
         next: (resposta: any) => {
@@ -150,7 +168,7 @@ export class DoadorComponent implements OnInit {
       dadosAtualizados.telefone = this.usuario.telefone;
       this.doadorService.atualizarDoador(dadosAtualizados).subscribe({
         next: () => {
-          alert('Dados atualizados com sucesso!');
+          this.toastComponente.exibir('Dados atualizados com sucesso!');
           this.modoEdicao = false;
         },
         error: (err) => console.error(err),
@@ -160,7 +178,7 @@ export class DoadorComponent implements OnInit {
         .atualizarPerfilPessoal(this.cargoAtual, dadosAtualizados)
         .subscribe({
           next: () => {
-            alert('Dados atualizados com sucesso!');
+            this.toastComponente.exibir('Dados atualizados com sucesso!');
             this.modoEdicao = false;
           },
           error: (err) => console.error(err),
