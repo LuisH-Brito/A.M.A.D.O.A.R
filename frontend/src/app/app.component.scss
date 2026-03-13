@@ -1,0 +1,12 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh; /* Faz a página ter a altura total da janela */
+  background-color: #f4f4f4;
+}
+
+
+
+main {
+  flex: 1; /* empurra o  footer lá para o fundo */
+}
