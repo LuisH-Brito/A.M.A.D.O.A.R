@@ -69,7 +69,7 @@ export class FuncionariosService {
     if (dados.cargo === 'Médico') payload.crm = dados.registro;
     if (dados.cargo === 'Enfermeiro') payload.coren = dados.registro;
 
-    return this.http.put(url, payload);
+    return this.http.patch(url, payload);
   }
 
   obterPerfilPessoal(cargo: string): Observable<any> {

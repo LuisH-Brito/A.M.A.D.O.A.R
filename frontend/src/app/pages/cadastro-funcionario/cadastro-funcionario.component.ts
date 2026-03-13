@@ -107,6 +107,27 @@ export class CadastroFuncionarioComponent {
   toggleSenha() {
     this.mostrarSenha = !this.mostrarSenha;
   }
+  ativarValidacaoSenha() {
+    this.form
+      .get('senha')
+      ?.setValidators([
+        Validators.required,
+        Validators.pattern(/^(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/),
+      ]);
+
+    this.form.get('confirmarSenha')?.setValidators([Validators.required]);
+
+    this.form.get('senha')?.updateValueAndValidity();
+    this.form.get('confirmarSenha')?.updateValueAndValidity();
+  }
+
+  removerValidacaoSenha() {
+    this.form.get('senha')?.clearValidators();
+    this.form.get('confirmarSenha')?.clearValidators();
+
+    this.form.get('senha')?.updateValueAndValidity();
+    this.form.get('confirmarSenha')?.updateValueAndValidity();
+  }
 
   toggleConfirmarSenha() {
     this.mostrarConfirmarSenha = !this.mostrarConfirmarSenha;
@@ -121,6 +142,14 @@ export class CadastroFuncionarioComponent {
       this.idFuncionario = f.id;
       this.somenteVisualizar = !!estado.visualizar;
 
+      this.removerValidacaoSenha();
+
+      if (this.somenteVisualizar) {
+        this.tituloPagina = 'Visualizar Funcionário';
+      } else {
+        this.tituloPagina = 'Editar Funcionário';
+      }
+
       this.form.patchValue({
         nomeCompleto: f.nome_completo,
         cargo: f.cargo,
@@ -130,15 +159,8 @@ export class CadastroFuncionarioComponent {
         endereco: f.endereco || '',
         registro: f.crm || f.coren || '',
       });
-
-      if (this.somenteVisualizar) {
-        this.form.disable();
-      }
-
-      this.form.get('senha')?.clearValidators();
-      this.form.get('confirmarSenha')?.clearValidators();
-      this.form.get('senha')?.updateValueAndValidity();
-      this.form.get('confirmarSenha')?.updateValueAndValidity();
+    } else {
+      this.ativarValidacaoSenha();
     }
 
     this.form.get('cargo')?.valueChanges.subscribe((cargo) => {
@@ -179,29 +201,45 @@ export class CadastroFuncionarioComponent {
       return;
     }
 
-    this.funcionarioService.cadastrar(this.form.value).subscribe({
-      next: () => {
-        this.router.navigate(['/gestao-pessoal']);
-      },
+    const dados = this.form.value;
 
-      error: (erro) => {
-        this.carregando = false;
+    if (this.modoEdicao && this.idFuncionario) {
+      this.funcionarioService.editar(this.idFuncionario, dados).subscribe({
+        next: () => {
+          this.router.navigate(['/gestao-crud']);
+        },
+        error: (erro) => {
+          console.error('Erro ao editar:', erro);
+        },
+      });
+    } else {
+      this.funcionarioService.cadastrar(dados).subscribe({
+        next: () => {
+          this.router.navigate(['/gestao-pessoal']);
+        },
+        error: (erro) => {
+          this.carregando = false;
 
-        if (erro.status === 400) {
-          this.erroApi =
-            'Dados inválidos. CPF, CRM, COREN ou e-mail já cadastrado..';
-        } else if (erro.status === 409) {
-          this.erroApi = 'CPF ou e-mail já cadastrado.';
-        } else if (erro.status === 500) {
-          this.erroApi = 'Erro interno do servidor.';
-        } else {
-          this.erroApi = 'Erro ao cadastrar funcionário.';
-        }
-      },
-    });
+          if (erro.status === 400) {
+            this.erroApi =
+              'Dados inválidos. CPF, CRM, COREN ou e-mail já cadastrado.';
+          } else if (erro.status === 409) {
+            this.erroApi = 'CPF ou e-mail já cadastrado.';
+          } else if (erro.status === 500) {
+            this.erroApi = 'Erro interno do servidor.';
+          } else {
+            this.erroApi = 'Erro ao cadastrar funcionário.';
+          }
+        },
+      });
+    }
   }
 
   voltar() {
-    this.router.navigate(['/gestao-pessoal']);
+    if (this.modoEdicao) {
+      this.router.navigate(['/gestao-crud']);
+    } else {
+      this.router.navigate(['/gestao-pessoal']);
+    }
   }
 }

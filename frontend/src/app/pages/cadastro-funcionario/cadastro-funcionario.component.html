@@ -140,7 +140,7 @@
 
       <div class="linha">
         <div class="campo">
-          <label>Senha</label>
+          <label>{{ modoEdicao ? "Nova senha (Opcional)" : "Senha" }}</label>
 
           <div class="input-senha">
             <input
@@ -156,7 +156,7 @@
 
           <small class="erro" *ngIf="form.get('senha')?.touched">
             <span *ngIf="form.get('senha')?.errors?.['required']">
-              Senha é obrigatória
+              {{ modoEdicao ? "Nova senha inválida" : "Senha é obrigatória" }}
             </span>
 
             <span *ngIf="form.get('senha')?.errors?.['pattern']">
@@ -166,7 +166,9 @@
         </div>
 
         <div class="campo">
-          <label>Confirmar senha</label>
+          <label>{{
+            modoEdicao ? "Confirmar nova senha" : "Confirmar senha"
+          }}</label>
 
           <div class="input-senha">
             <input
@@ -186,7 +188,11 @@
 
           <small class="erro" *ngIf="form.get('confirmarSenha')?.touched">
             <span *ngIf="form.get('confirmarSenha')?.errors?.['required']">
-              Confirmar Senha é obrigatória
+              {{
+                modoEdicao
+                  ? "Confirmação de nova senha é obrigatória"
+                  : "Confirmar senha é obrigatório"
+              }}
             </span>
 
             <small
