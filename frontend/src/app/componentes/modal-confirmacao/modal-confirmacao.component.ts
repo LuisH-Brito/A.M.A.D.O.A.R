@@ -12,7 +12,7 @@ export class ModalConfirmacaoComponent {
   @Input() visivel: boolean = false;
   @Input() titulo: string = 'Confirmação';
   @Input() mensagem: string = 'Tem certeza que deseja continuar?';
-  @Input() tipo: 'descartar' | 'usar' | 'padrao' = 'padrao';
+  @Input() tipo: 'descartar' | 'usar' | 'notificar' | 'padrao' = 'padrao';
   @Input() textoConfirmar: string = 'Confirmar';
   @Output() confirmado = new EventEmitter<void>();
   @Output() cancelado = new EventEmitter<void>();
