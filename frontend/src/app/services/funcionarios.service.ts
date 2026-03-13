@@ -94,7 +94,6 @@ export class FuncionariosService {
     return this.http.patch(`${this.baseUrl}/${endpoint}/me/`, dados);
   }
 
-
   /**
    * Remove um funcionário do sistema.
    * Requer o ID e o Cargo para saber qual tabela do banco de dados acessar.
@@ -121,6 +120,7 @@ export class FuncionariosService {
     const url = `${this.baseUrl}/${endpoint}/`;
 
     const payload: any = {
+      cpf: dados.cpf,
       username: dados.cpf,
       nome_completo: dados.nomeCompleto,
       email: dados.email,

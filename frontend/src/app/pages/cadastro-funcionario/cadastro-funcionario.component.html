@@ -1,11 +1,34 @@
 <div class="pagina-funcionario">
+  <button class="btn-icone" (click)="voltar()">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+  </button>
   <div class="container">
     <h2 class="titulo">{{ tituloPagina }}</h2>
+
     <form [formGroup]="form" (ngSubmit)="salvar()" class="formulario">
       <div class="linha">
         <div class="campo grande">
           <label>Nome Completo</label>
           <input type="text" formControlName="nomeCompleto" />
+          <small
+            class="erro"
+            *ngIf="
+              form.get('nomeCompleto')?.touched &&
+              form.get('nomeCompleto')?.invalid
+            "
+          >
+            Nome é obrigatório
+          </small>
         </div>
 
         <div class="campo pequeno">
@@ -16,18 +39,29 @@
             <option value="Enfermeiro">Enfermeiro</option>
             <option value="Recepcionista">Recepcionista</option>
           </select>
+          <small
+            class="erro"
+            *ngIf="form.get('cargo')?.touched && form.get('cargo')?.invalid"
+          >
+            Cargo é obrigatório
+          </small>
         </div>
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>E-mail</label>
-          <input type="email" formControlName="email" />
-        </div>
-
-        <div class="campo">
-          <label>Telefone</label>
-          <input type="text" formControlName="telefone" />
+          <input
+            type="email"
+            placeholder="Formato: email@gmail.com"
+            formControlName="email"
+          />
+          <small
+            class="erro"
+            *ngIf="form.get('email')?.touched && form.get('email')?.invalid"
+          >
+            E-mail é obrigatório
+          </small>
         </div>
       </div>
 
@@ -35,11 +69,31 @@
         <div class="campo pequeno">
           <label>Data de nascimento</label>
           <input type="date" formControlName="dataNascimento" />
+          <small
+            class="erro"
+            *ngIf="
+              form.get('dataNascimento')?.touched &&
+              form.get('dataNascimento')?.invalid
+            "
+          >
+            Data de nascimento é obrigatória
+          </small>
         </div>
 
         <div class="campo grande">
           <label>CPF</label>
-          <input type="text" formControlName="cpf" />
+          <input
+            type="text"
+            formControlName="cpf"
+            placeholder="Formato: 00000000000"
+          />
+
+          <small
+            class="erro"
+            *ngIf="form.get('cpf')?.touched && form.get('cpf')?.invalid"
+          >
+            CPF é obrigatório e deve conter apenas letras e números
+          </small>
         </div>
       </div>
 
@@ -47,32 +101,119 @@
         <div class="campo">
           <label>Endereço</label>
           <input type="text" formControlName="endereco" />
+          <small
+            class="erro"
+            *ngIf="
+              form.get('endereco')?.touched && form.get('endereco')?.invalid
+            "
+          >
+            Endereço é obrigatório
+          </small>
         </div>
 
-        <div class="campo">
-          <label>CRM/COREN</label>
-          <input type="text" formControlName="registro" />
+        <div class="campo" *ngIf="mostrarCRM || mostrarCOREN">
+          <label>{{ mostrarCRM ? "CRM" : "COREN" }}</label>
+
+          <input
+            type="text"
+            formControlName="registro"
+            placeholder="{{
+              mostrarCRM ? 'Formato: CRM-AC-12345' : 'Formato: COREN-AC-12345'
+            }}"
+            (input)="formatarRegistro($event)"
+          />
+
+          <small
+            class="erro"
+            *ngIf="
+              form.get('registro')?.touched && form.get('registro')?.invalid
+            "
+          >
+            {{
+              mostrarCRM
+                ? "CRM é obrigatório e deve seguir o formato: CRM-AC-12345"
+                : "COREN é obrigatório e deve seguir o formato: COREN-AC-12345"
+            }}
+          </small>
         </div>
       </div>
 
       <div class="linha">
         <div class="campo">
           <label>Senha</label>
-          <input type="password" formControlName="senha" />
+
+          <div class="input-senha">
+            <input
+              [type]="mostrarSenha ? 'text' : 'password'"
+              formControlName="senha"
+            />
+
+            <button type="button" class="btn-olho" (click)="toggleSenha()">
+              <i *ngIf="!mostrarSenha" class="bi bi-eye-slash"></i>
+              <i *ngIf="mostrarSenha" class="bi bi-eye"></i>
+            </button>
+          </div>
+
+          <small class="erro" *ngIf="form.get('senha')?.touched">
+            <span *ngIf="form.get('senha')?.errors?.['required']">
+              Senha é obrigatória
+            </span>
+
+            <span *ngIf="form.get('senha')?.errors?.['pattern']">
+              Mínimo 8 caracteres, 1 letra maiúscula e 1 número
+            </span>
+          </small>
         </div>
 
         <div class="campo">
           <label>Confirmar senha</label>
-          <input type="password" formControlName="confirmarSenha" />
+
+          <div class="input-senha">
+            <input
+              [type]="mostrarConfirmarSenha ? 'text' : 'password'"
+              formControlName="confirmarSenha"
+            />
+
+            <button
+              type="button"
+              class="btn-olho"
+              (click)="toggleConfirmarSenha()"
+            >
+              <i *ngIf="!mostrarConfirmarSenha" class="bi bi-eye"></i>
+              <i *ngIf="mostrarConfirmarSenha" class="bi bi-eye-slash"></i>
+            </button>
+          </div>
+
+          <small class="erro" *ngIf="form.get('confirmarSenha')?.touched">
+            <span *ngIf="form.get('confirmarSenha')?.errors?.['required']">
+              Confirmar Senha é obrigatória
+            </span>
+
+            <small
+              class="erro"
+              *ngIf="
+                form.get('confirmarSenha')?.touched &&
+                form.hasError('senhasDiferentes')
+              "
+            >
+              As senhas não coincidem
+            </small>
+          </small>
         </div>
       </div>
 
+      <div class="erro-api" *ngIf="erroApi">
+        {{ erroApi }}
+      </div>
       <div class="acoes">
         <ng-container *ngIf="!somenteVisualizar">
           <button type="button" class="btn-cancelar" (click)="voltar()">
             Cancelar
           </button>
-          <button type="submit" class="btn-concluir">Concluir</button>
+
+          <button type="submit" class="btn-concluir" [disabled]="form.invalid">
+            Concluir
+          </button>
         </ng-container>
 
         <ng-container *ngIf="somenteVisualizar">
