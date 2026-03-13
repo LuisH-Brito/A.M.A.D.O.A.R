@@ -5,17 +5,34 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 import { ExameDoadorService } from '../../services/exame-doador.service';
 import { DoadorService } from '../../services/doador.service';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-validacao-bolsa',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    ModalConfirmacaoComponent,
+    ToastNotificacaoComponent,
+  ],
   templateUrl: './validacao-bolsa.component.html',
   styleUrl: './validacao-bolsa.component.scss',
 })
 export class ValidacaoBolsaComponent implements OnInit {
   @ViewChild('fileInput') fileInput!: ElementRef;
   @ViewChild('fileInputExameDoador') fileInputExameDoador!: ElementRef;
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
+
+  modalVisivel = false;
+  modalDados = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'padrao' as any,
+    textoBtn: '',
+  };
+  acaoConfirmacao!: () => void;
 
   bolsaId!: number;
   bolsaDados: any = null;
@@ -130,11 +147,13 @@ export class ValidacaoBolsaComponent implements OnInit {
     if (file && file.type === 'application/pdf') {
       this.arquivoLaudo = file;
     } else {
-      alert('Por favor, selecione apenas arquivos PDF.');
+      this.toastComponente.exibir(
+        'Por favor, selecione apenas arquivos PDF.',
+        false,
+      );
       this.arquivoLaudo = null;
     }
   }
-
   acionarInputExameDoador() {
     if (this.fileInputExameDoador) {
       this.fileInputExameDoador.nativeElement.click();
@@ -146,7 +165,10 @@ export class ValidacaoBolsaComponent implements OnInit {
     if (file && file.type === 'application/pdf') {
       this.arquivoExameDoador = file;
     } else {
-      alert('Por favor, selecione apenas arquivos PDF para o exame do doador.');
+      this.toastComponente.exibir(
+        'Por favor, selecione apenas arquivos PDF para o exame do doador.',
+        false,
+      );
       this.arquivoExameDoador = null;
     }
   }
@@ -211,94 +233,117 @@ export class ValidacaoBolsaComponent implements OnInit {
   }
 
   liberarParaEstoque() {
-    if (
-      !this.tipoSanguineoSelecionado ||
-      !this.arquivoLaudo ||
-      !this.arquivoExameDoador
-    ) {
-      alert(
-        'Atenção: Selecione o tipo sanguíneo e anexe TANTO o laudo da bolsa QUANTO o exame do doador.',
-      );
-      return;
-    }
+    this.abrirModalConfirmacao(
+      'Liberar para Estoque',
+      `Confirma a validação da bolsa #${this.bolsaId} com o tipo sanguíneo ${this.tiposSanguineos.find((t) => t.id === Number(this.tipoSanguineoSelecionado))?.tipo}${this.tiposSanguineos.find((t) => t.id === Number(this.tipoSanguineoSelecionado))?.fator_rh}? Esta ação alimentará o estoque principal.`,
+      'usar',
+      'Sim, Liberar',
+      () => {
+        this.carregando = true;
+        const formData = new FormData();
+        formData.append(
+          'tipo_sanguineo',
+          this.tipoSanguineoSelecionado!.toString(),
+        );
+        formData.append('arquivo_laudo', this.arquivoLaudo!);
 
-    if (confirm('Tem certeza que deseja liberar a bolsa para o estoque?')) {
-      this.carregando = true;
-      const formData = new FormData();
-      formData.append(
-        'tipo_sanguineo',
-        this.tipoSanguineoSelecionado.toString(),
-      );
-      formData.append('arquivo_laudo', this.arquivoLaudo);
+        const medicoId = localStorage.getItem('usuario_id');
+        if (medicoId) formData.append('medico_validacao', medicoId);
 
-      const medicoId = localStorage.getItem('usuario_id');
-      if (medicoId) formData.append('medico_validacao', medicoId);
-
-      this.estoqueService.validarBolsa(this.bolsaId, formData).subscribe({
-        next: (res) => {
-          this.salvarExameDoador(() => {
-            this.atualizarSangueDoador(() => {
-              alert('Bolsa validada e enviada para o estoque com sucesso!');
-              this.router.navigate(['/aguardando-validacao-bolsa']);
+        this.estoqueService.validarBolsa(this.bolsaId, formData).subscribe({
+          next: (res) => {
+            this.salvarExameDoador(() => {
+              this.atualizarSangueDoador(() => {
+                this.toastComponente.exibir(
+                  'Bolsa validada e enviada para o estoque com sucesso!',
+                );
+                setTimeout(() => {
+                  this.router.navigate(['/aguardando-validacao-bolsa']);
+                }, 2000);
+              });
             });
-          });
-        },
-        error: (err) => {
-          alert(err.error?.erro || 'Erro ao validar a bolsa.');
-          this.carregando = false;
-        },
-      });
-    }
+          },
+          error: (err) => {
+            this.toastComponente.exibir(
+              err.error?.erro || 'Erro ao validar a bolsa.',
+              false,
+            );
+            this.carregando = false;
+          },
+        });
+      },
+    );
   }
 
   marcarComoInapto() {
-    if (
-      !this.tipoSanguineoSelecionado ||
-      !this.arquivoLaudo ||
-      !this.arquivoExameDoador
-    ) {
-      alert(
-        'Para descartar, é obrigatório selecionar o tipo sanguíneo e anexar ambos os laudos (da bolsa e do doador) como evidência.',
-      );
-      return;
-    }
+    this.abrirModalConfirmacao(
+      'Descartar Bolsa',
+      `ATENÇÃO: Tem certeza que deseja marcar esta bolsa como Inapta? O laudo será salvo como evidência e ela não irá para o estoque útil.`,
+      'descartar',
+      'Sim, Marcar Inapto',
+      () => {
+        this.carregando = true;
+        const formData = new FormData();
+        formData.append(
+          'tipo_sanguineo',
+          this.tipoSanguineoSelecionado!.toString(),
+        );
+        formData.append('arquivo_laudo', this.arquivoLaudo!);
 
-    if (
-      confirm(
-        'Tem certeza que deseja marcar esta bolsa como Inapta? O laudo será salvo como evidência do descarte.',
-      )
-    ) {
-      this.carregando = true;
-      const formData = new FormData();
-      formData.append(
-        'tipo_sanguineo',
-        this.tipoSanguineoSelecionado.toString(),
-      );
-      formData.append('arquivo_laudo', this.arquivoLaudo);
-
-      const medicoId = localStorage.getItem('usuario_id');
-      if (medicoId) {
-        formData.append('medico_validacao', medicoId);
-      } else {
-        alert('Acesso negado: Médico não identificado.');
-        this.carregando = false;
-        return;
-      }
-
-      this.estoqueService.descartar(this.bolsaId, formData).subscribe({
-        next: () => {
-          this.salvarExameDoador(() => {
-            alert('Bolsa descartada e evidências salvas com sucesso.');
-            this.router.navigate(['/aguardando-validacao-bolsa']);
-          });
-        },
-        error: (err) => {
-          alert(err.error?.erro || 'Erro ao descartar a bolsa.');
+        const medicoId = localStorage.getItem('usuario_id');
+        if (medicoId) {
+          formData.append('medico_validacao', medicoId);
+        } else {
+          this.toastComponente.exibir(
+            'Acesso negado: Médico não identificado.',
+            false,
+          );
           this.carregando = false;
-        },
-      });
+          return;
+        }
+
+        this.estoqueService.descartar(this.bolsaId, formData).subscribe({
+          next: () => {
+            this.salvarExameDoador(() => {
+              this.toastComponente.exibir(
+                'Bolsa descartada e evidências salvas com sucesso.',
+              );
+              setTimeout(() => {
+                this.router.navigate(['/aguardando-validacao-bolsa']);
+              }, 2000);
+            });
+          },
+          error: (err) => {
+            this.toastComponente.exibir(
+              err.error?.erro || 'Erro ao descartar a bolsa.',
+              false,
+            );
+            this.carregando = false;
+          },
+        });
+      },
+    );
+  }
+
+  abrirModalConfirmacao(
+    titulo: string,
+    mensagem: string,
+    tipo: 'descartar' | 'usar' | 'padrao',
+    textoBtn: string,
+    acao: () => void,
+  ) {
+    this.modalDados = { titulo, mensagem, tipo, textoBtn };
+    this.acaoConfirmacao = acao;
+    this.modalVisivel = true;
+  }
+
+  executarAcaoModal() {
+    this.modalVisivel = false;
+    if (this.acaoConfirmacao) {
+      this.acaoConfirmacao();
     }
   }
+
   voltar() {
     this.router.navigate(['/aguardando-validacao-bolsa']);
   }
