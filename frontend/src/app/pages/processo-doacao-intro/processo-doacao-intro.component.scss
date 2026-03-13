@@ -68,10 +68,11 @@ $borda-card: #b5b5b5;
       font-size: 1.1rem;
       outline: none;
 
-      &::placeholder { color: #888; }
+      &::placeholder {
+        color: #888;
+      }
     }
   }
-
 }
 
 // Card do Usuário (Direita)
@@ -83,7 +84,7 @@ $borda-card: #b5b5b5;
     border: 1.5px solid $borda-card;
     border-radius: 45px;
     padding: 35px 25px;
-    box-shadow: 0 8px 15px rgba(0,0,0,0.08);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
 
     .avatar-wrapper {
       display: flex;
@@ -113,8 +114,10 @@ $borda-card: #b5b5b5;
         margin: 10px 0;
         font-size: 1.05rem;
         color: #444;
-        
-        strong { font-weight: 600; }
+
+        strong {
+          font-weight: 600;
+        }
       }
     }
   }
@@ -139,10 +142,19 @@ $borda-card: #b5b5b5;
   font-weight: bold;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(45, 164, 94, 0.3);
-  transition: transform 0.2s, background 0.2s;
+  transition:
+    transform 0.2s,
+    background 0.2s;
 
   &:hover {
     background-color: darken($cor-verde-botao, 5%);
     transform: translateY(-2px);
   }
+}
+
+.btn-iniciar:disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  opacity: 0.7;
 }
