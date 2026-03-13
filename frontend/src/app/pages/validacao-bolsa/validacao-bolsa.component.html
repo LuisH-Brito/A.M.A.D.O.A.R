@@ -125,9 +125,10 @@
           class="btn-inapt"
           type="button"
           (click)="marcarComoInapto()"
-          [disabled]="carregando"
+          [disabled]="carregando || formularioInvalido"
         >
-          Marcar como Inapto
+          <span *ngIf="!carregando">Marcar como Inapto</span>
+          <span *ngIf="carregando">Processando...</span>
         </button>
         <button
           class="btn-liberar"
@@ -141,4 +142,17 @@
       </div>
     </div>
   </div>
+
+  <app-modal-confirmacao
+    [visivel]="modalVisivel"
+    [titulo]="modalDados.titulo"
+    [mensagem]="modalDados.mensagem"
+    [tipo]="modalDados.tipo"
+    [textoConfirmar]="modalDados.textoBtn"
+    (confirmado)="executarAcaoModal()"
+    (cancelado)="modalVisivel = false"
+  >
+  </app-modal-confirmacao>
+
+  <app-toast-notificacao #toast></app-toast-notificacao>
 </div>
