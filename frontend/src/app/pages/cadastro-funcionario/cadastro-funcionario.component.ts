@@ -27,6 +27,7 @@ export class CadastroFuncionarioComponent {
   mostrarConfirmarSenha = false;
   erroApi: string = '';
   carregando: boolean = false;
+  origem: string = '';
 
   constructor(
     private fb: FormBuilder,
@@ -134,7 +135,10 @@ export class CadastroFuncionarioComponent {
   }
   ngOnInit() {
     const estado = window.history.state;
+    this.origem = estado.origem || '';
 
+    console.log('STATE COMPLETO:', estado);
+    console.log('FUNCIONARIO:', estado.funcionario);
     if (estado && estado.funcionario) {
       const f = estado.funcionario;
 
@@ -146,6 +150,8 @@ export class CadastroFuncionarioComponent {
 
       if (this.somenteVisualizar) {
         this.tituloPagina = 'Visualizar Funcionário';
+      } else if (this.origem == 'perfil') {
+        this.tituloPagina = 'Editar Perfil';
       } else {
         this.tituloPagina = 'Editar Funcionário';
       }
@@ -203,7 +209,16 @@ export class CadastroFuncionarioComponent {
 
     const dados = this.form.value;
 
-    if (this.modoEdicao && this.idFuncionario) {
+    if (this.modoEdicao && this.idFuncionario && this.origem == 'perfil') {
+      this.funcionarioService.editar(this.idFuncionario, dados).subscribe({
+        next: () => {
+          this.router.navigate(['/pagina-doador']);
+        },
+        error: (erro) => {
+          console.error('Erro ao editar:', erro);
+        },
+      });
+    } else if (this.modoEdicao && this.idFuncionario) {
       this.funcionarioService.editar(this.idFuncionario, dados).subscribe({
         next: () => {
           this.router.navigate(['/gestao-crud']);
@@ -236,7 +251,10 @@ export class CadastroFuncionarioComponent {
   }
 
   voltar() {
-    if (this.modoEdicao) {
+    if (this.origem === 'perfil') {
+      this.router.navigate(['/pagina-doador']);
+      return;
+    } else if (this.modoEdicao) {
       this.router.navigate(['/gestao-crud']);
     } else {
       this.router.navigate(['/gestao-pessoal']);
