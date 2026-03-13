@@ -2,22 +2,58 @@
   <div class="container">
     <h2 class="titulo">Pré-triagem</h2>
 
-    <form class="formulario" (ngSubmit)="salvarEAvancarTriagem()">
+    <form
+      class="formulario"
+      #formPre="ngForm"
+      (ngSubmit)="salvarEAvancarTriagem()"
+    >
       <div class="layout-duplo">
         <div class="grupo-inputs">
           <div class="campo">
             <label>Altura(m):</label>
-            <input type="number" step="0.01" name="altura" [(ngModel)]="form.altura" placeholder="Ex: 1.75" />
+            <input
+              type="number"
+              step="0.01"
+              name="altura"
+              #alt="ngModel"
+              [(ngModel)]="form.altura"
+              placeholder="Ex: 1.75"
+              required
+            />
+            <small class="msg-erro" *ngIf="alt.invalid && alt.touched">
+              Altura é obrigatória.
+            </small>
           </div>
 
           <div class="campo">
             <label>Peso(kg):</label>
-            <input type="number" step="0.1" name="peso" [(ngModel)]="form.peso" placeholder="Ex: 89.2" />
+            <input
+              type="number"
+              step="0.1"
+              name="peso"
+              #ps="ngModel"
+              [(ngModel)]="form.peso"
+              placeholder="Ex: 89.2"
+              required
+            />
+            <small class="msg-erro" *ngIf="ps.invalid && ps.touched">
+              Peso é obrigatório.
+            </small>
           </div>
 
           <div class="campo">
             <label>Teste de Hemoglobina:</label>
-            <input type="number" step="0.1" name="hemoglobina" [(ngModel)]="form.hemoglobina" />
+            <input
+              type="number"
+              step="0.1"
+              #hemo="ngModel"
+              name="hemoglobina"
+              [(ngModel)]="form.hemoglobina"
+              required
+            />
+            <small class="msg-erro" *ngIf="hemo.invalid && hemo.touched">
+              Hemoglobina é obrigatória.
+            </small>
           </div>
         </div>
 
@@ -33,8 +69,12 @@
       </div>
 
       <div class="acoes">
-        <button type="button" class="btn-cancelar" (click)="marcarInapto()">Inapto</button>
-        <button type="submit" class="btn-concluir">Apto</button>
+        <button type="button" class="btn-cancelar" (click)="marcarInapto()">
+          Inapto
+        </button>
+        <button type="submit" class="btn-concluir" [disabled]="formPre.invalid">
+          Apto
+        </button>
       </div>
     </form>
   </div>
