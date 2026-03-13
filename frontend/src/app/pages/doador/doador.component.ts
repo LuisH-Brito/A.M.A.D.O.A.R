@@ -45,6 +45,7 @@ export class DoadorComponent implements OnInit {
     crm: '',
     coren: '',
     cargo: '',
+    apto: false,
   };
 
   exames: any[] = [];
@@ -89,12 +90,29 @@ export class DoadorComponent implements OnInit {
           }
           localStorage.setItem('sangue_cache', sangueNovo);
           this.usuario.tipoSanguineo = sangueNovo;
+          // Lógica pra ve se ta apto e a proxima doação
+          this.usuario.ultimaDoacao = res.data_ultima_doacao || '';
+          this.usuario.proximaDoacao = res.data_proxima_doacao || '';
+          this.usuario.apto = res.apto_para_doacao;
 
+          const aptoCache = localStorage.getItem('apto_cache');
+          if (this.usuario.apto === true && aptoCache !== 'true') {
+            setTimeout(() => {
+              this.toastComponente.exibir(
+                'Boas notícias! Você já está apto para realizar uma nova doação de sangue.',
+              );
+            }, 1600);
+          }
+          localStorage.setItem(
+            'apto_cache',
+            this.usuario.apto ? 'true' : 'false',
+          );
           this.usuario.telefone = res.telefone;
           this.carteiraUrl = res.carteira_doador;
         },
         error: (err) => console.error('Erro ao carregar dados do doador', err),
       });
+
       // Busca a lista de exames do doador
       this.exameDoadorService.listarMeusExames().subscribe({
         next: (resposta: any) => {

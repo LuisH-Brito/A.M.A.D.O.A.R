@@ -28,43 +28,95 @@
   </div>
 
   <div class="retangulo-interno">
-    <p>
-      A <strong>triagem online</strong> é uma etapa fundamental e obrigatória
-      para todos os candidatos à doação. Através deste questionário, avaliamos
-      seu histórico de saúde, estilo de vida e possíveis situações de risco
-      recentes.
-    </p>
-
-    <p>
-      O objetivo destas perguntas é garantir duas coisas essenciais: a
-      <strong>sua segurança e bem-estar</strong> durante a coleta, e a
-      <strong>segurança do paciente</strong> que receberá a transfusão.
-    </p>
-
-    <p>
-      Por favor, responda a todas as questões com absoluta franqueza. Lembre-se
-      que este preenchimento visa adiantar o seu atendimento, mas
-      <strong
-        >todas as suas respostas serão revisadas e validadas presencialmente por
-        um médico</strong
-      >
-      no dia da doação. O profissional poderá fazer perguntas adicionais para
-      confirmar sua aptidão clínica.
-    </p>
-
-    <div class="acoes-regras">
-      <label class="checkbox-regras">
-        <input type="checkbox" [(ngModel)]="aceitoRegras" /> Li, compreendi e
-        concordo em responder o questionário com sinceridade.
-      </label>
-
-      <button
-        class="btn-iniciar"
-        [disabled]="!aceitoRegras"
-        (click)="iniciar()"
-      >
-        Iniciar Questionário
-      </button>
+    <div
+      *ngIf="carregando"
+      style="text-align: center; padding: 20px; color: #666"
+    >
+      <i class="bi bi-hourglass-split"></i> Carregando suas informações...
     </div>
+
+    <ng-container *ngIf="!carregando">
+      <p>
+        A <strong>triagem online</strong> é uma etapa fundamental e obrigatória
+        para todos os candidatos à doação. Através deste questionário, avaliamos
+        seu histórico de saúde, estilo de vida e possíveis situações de risco
+        recentes.
+      </p>
+
+      <p>
+        O objetivo destas perguntas é garantir duas coisas essenciais: a
+        <strong>sua segurança e bem-estar</strong> durante a coleta, e a
+        <strong>segurança do paciente</strong> que receberá a transfusão.
+      </p>
+
+      <p>
+        Por favor, responda a todas as questões com absoluta franqueza.
+        Lembre-se que este preenchimento visa adiantar o seu atendimento, mas
+        <strong
+          >todas as suas respostas serão revisadas e validadas presencialmente
+          por um médico</strong
+        >
+        no dia da doação.
+      </p>
+
+      <div
+        *ngIf="doadorLogado && !doadorLogado.apto_para_doacao"
+        class="alerta-inapto"
+        style="
+          margin: 20px 0;
+          padding: 15px;
+          background-color: #fff3f3;
+          color: #d32f2f;
+          border-left: 4px solid #d32f2f;
+          border-radius: 4px;
+        "
+      >
+        <i
+          class="bi bi-exclamation-triangle-fill"
+          style="margin-right: 8px"
+        ></i>
+        <strong>Ação Bloqueada:</strong> Identificamos que você possui um
+        processo em andamento ou ainda não cumpriu o prazo de descanso
+        obrigatório desde a sua última doação.
+        <br />
+        <span
+          *ngIf="doadorLogado.data_proxima_doacao"
+          style="display: block; margin-top: 8px"
+        >
+          Você estará liberado para iniciar um novo questionário a partir de:
+          <strong>{{
+            doadorLogado.data_proxima_doacao | date: "dd/MM/yyyy"
+          }}</strong>
+        </span>
+      </div>
+
+      <div class="acoes-regras">
+        <label
+          class="checkbox-regras"
+          [style.opacity]="
+            doadorLogado && !doadorLogado.apto_para_doacao ? '0.5' : '1'
+          "
+        >
+          <input
+            type="checkbox"
+            [(ngModel)]="aceitoRegras"
+            [disabled]="doadorLogado && !doadorLogado.apto_para_doacao"
+          />
+          Li, compreendi e concordo em responder o questionário com sinceridade.
+        </label>
+
+        <button
+          class="btn-iniciar"
+          [disabled]="
+            !aceitoRegras || (doadorLogado && !doadorLogado.apto_para_doacao)
+          "
+          (click)="iniciar()"
+        >
+          Iniciar Questionário
+        </button>
+      </div>
+    </ng-container>
   </div>
 </div>
+
+<app-toast-notificacao #toast></app-toast-notificacao>
