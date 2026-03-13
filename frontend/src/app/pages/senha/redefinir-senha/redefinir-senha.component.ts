@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-redefinir-senha',
@@ -13,15 +14,36 @@ import { Router, RouterLink } from '@angular/router';
 export class RedefinirSenhaComponent {
   cpf = '';
 
-  constructor(private router: Router) {}
+  constructor(
+    private router: Router,
+    private api: ApiService,
+  ) {}
 
-  continuar() {
-    if (!this.cpf.trim()) {
-      alert('Informe o CPF.');
+  private limparCpf(valor: string): string {
+    return (valor || '').replace(/\D/g, '');
+  }
+
+  continuar(): void {
+    const cpfSemMascara = this.limparCpf(this.cpf);
+
+    if (cpfSemMascara.length !== 11) {
+      alert('CPF deve conter 11 dígitos.');
       return;
     }
 
-    // Deve encontrar o email do usuário com base no CPF 
-    // e enviar para página /redefinir-senha/codigo-senha
+    this.api.searchEmailByCpf(cpfSemMascara).subscribe({
+      next: (res) => {
+        this.router.navigate(['/redefinir-senha/codigo'], {
+          queryParams: {
+            cpf: cpfSemMascara,
+            email: res.email,
+          },
+        });
+      },
+      error: (err) => {
+        const mensagem = err?.error?.erro || 'Não foi possível localizar o email para este CPF.';
+        alert(mensagem);
+      },
+    });
   }
 }

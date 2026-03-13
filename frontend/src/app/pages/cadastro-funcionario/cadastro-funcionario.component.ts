@@ -10,6 +10,9 @@ import { FuncionariosService } from '../../services/funcionarios.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
+const senhaValida = (senha: string) =>
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test((senha || '').trim());
+
 @Component({
   selector: 'app-cadastro-funcionario',
   standalone: true,
@@ -89,9 +92,18 @@ export class CadastroFuncionarioComponent {
       if (!dados.senha || dados.senha.trim() === '') {
         delete dados.senha;
         delete dados.confirmarSenha;
-      } else if (dados.senha !== dados.confirmarSenha) {
-        alert('As senhas novas não coincidem!');
-        return;
+      } else {
+        if (!senhaValida(dados.senha)) {
+          alert(
+            'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.',
+          );
+          return;
+        }
+
+        if (dados.senha !== dados.confirmarSenha) {
+          alert('As senhas novas não coincidem!');
+          return;
+        }
       }
 
       this.funcionarioService.editar(this.idFuncionario, dados).subscribe({
@@ -102,6 +114,18 @@ export class CadastroFuncionarioComponent {
         error: (err) => alert('Erro ao atualizar funcionário.'),
       });
     } else {
+      if (!senhaValida(dados.senha)) {
+        alert(
+          'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.',
+        );
+        return;
+      }
+
+      if (dados.senha !== dados.confirmarSenha) {
+        alert('As senhas novas não coincidem!');
+        return;
+      }
+
       this.funcionarioService.cadastrar(dados).subscribe({
         next: () => this.router.navigate(['/gestao-pessoal']),
         error: () => alert('Erro ao cadastrar'),

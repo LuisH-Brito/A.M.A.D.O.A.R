@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
+import { ApiService } from '../../../services/api.service';
 
 @Component({
   selector: 'app-codigo-senha',
@@ -12,26 +13,46 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 })
 export class CodigoSenhaComponent implements OnInit {
   codigo = '';
-  emailDestino = 'sabrina.carpenter@gmail.com';
+  emailDestino = '';
+  cpf = '';
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-  ) { }
+    private api: ApiService,
+  ) {}
 
   ngOnInit(): void {
     this.route.queryParamMap.subscribe((params) => {
-      const email = params.get('email');
-      if (email) {
-        this.emailDestino = email;
+      const cpf = (params.get('cpf') || '').trim();
+      const email = (params.get('email') || '').trim();
+
+      if (!cpf || !email) {
+        alert('Dados inválidos para recuperação de senha.');
+        this.router.navigate(['/redefinir-senha']);
+        return;
       }
+
+      this.cpf = cpf;
+      this.emailDestino = email;
+      this.solicitarCodigo();
+    });
+  }
+
+  private solicitarCodigo(): void {
+    this.api.requestCodePasswordReset(this.cpf).subscribe({
+      next: () => {},
+      error: (err) => {
+        const mensagem =
+          err?.error?.erro || 'Não foi possível enviar o código de verificação.';
+        alert(mensagem);
+        this.router.navigate(['/redefinir-senha']);
+      },
     });
   }
 
   reenviarCodigo(): void {
-    // Próximo passo: chamar endpoint de reenviar código
-    // Ex.: this.http.post('/api/password-reset/request/', { cpf: ... })
-    alert('Código reenviado para ' + this.emailDestino);
+    this.solicitarCodigo();
   }
 
   voltar(): void {
@@ -43,10 +64,11 @@ export class CodigoSenhaComponent implements OnInit {
       alert('Informe o código recebido por email.');
       return;
     }
+
     this.router.navigate(['/redefinir-senha/nova-senha'], {
       queryParams: {
-        codigo: this.codigo,
-        email: this.emailDestino,
+        codigo: this.codigo.trim(),
+        cpf: this.cpf,
       },
     });
   }

@@ -1,19 +1,103 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import MyTokenObtainPairSerializer # Importe o seu serializer
+from .serializers import MyTokenObtainPairSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Usuario
+from django.core.mail import send_mail
+from django.conf import settings
+from django.core.cache import cache
+import random, re
+
 
 class MyTokenObtainPairView(TokenObtainPairView):
-    """
-    View de Autenticação customizada baseada em SimpleJWT.
-    
-    Esta classe substitui a View padrão do JWT para utilizar o 
-    MyTokenObtainPairSerializer, permitindo que a resposta do login 
-    contenha dados extras como 'nome' e 'tipo' de usuário.
-    """
     serializer_class = MyTokenObtainPairSerializer
-    """
-    Nota de Funcionamento:
-    - Quando o Angular faz um POST para esta View com 'cpf' e 'password',
-      ela chama o MyTokenObtainPairSerializer.
-    - Se as credenciais estiverem corretas, ela retorna um status 200 OK 
-      com o Access Token, Refresh Token e os campos customizados.
-    """
+
+
+@api_view(['GET'])
+@permission_classes([AllowAny])
+def search_email_by_cpf(request):
+    cpf = request.query_params.get('cpf', '')
+
+    try:
+        email = Usuario.objects.search_email_by_cpf(cpf)
+    except ValueError as exc:
+        return Response({'erro': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not email:
+        return Response(
+            {'erro': 'Usuário não encontrado.'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    return Response({'email': email}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def request_code_password_reset(request):
+    cpf = request.data.get('cpf', '')
+    cpf_sem_mascara = ''.join(ch for ch in (cpf or '') if ch.isdigit())
+
+    mensagem_padrao = 'Se os dados informados estiverem corretos, você receberá um código por e-mail.'
+
+    # Não revela se CPF é inválido/inexistente
+    if len(cpf_sem_mascara) != 11:
+        return Response({'mensagem': mensagem_padrao}, status=status.HTTP_200_OK)
+
+    email = None
+    try:
+        email = Usuario.objects.search_email_by_cpf(cpf_sem_mascara)
+    except ValueError:
+        email = None
+
+    # Só envia e salva código se usuário existir, mas resposta é sempre a mesma
+    if email:
+        codigo = f'{random.randint(0, 999999):06d}'
+        cache.set(f'password_reset_code:{cpf_sem_mascara}', codigo, timeout=600)
+        send_mail(
+            subject='Código de recuperação de senha',
+            message=f'Seu código de recuperação é: {codigo}',
+            from_email=settings.DEFAULT_FROM_EMAIL,
+            recipient_list=[email],
+            fail_silently=True,
+        )
+
+    return Response({'mensagem': mensagem_padrao}, status=status.HTTP_200_OK)
+
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def confirm_password_reset(request):
+    cpf = request.data.get('cpf', '')
+    codigo = (request.data.get('codigo', '') or '').strip()
+    nova_senha = (request.data.get('nova_senha', '') or '').strip()
+
+    cpf_sem_mascara = ''.join(ch for ch in (cpf or '') if ch.isdigit())
+
+    if len(cpf_sem_mascara) != 11:
+        return Response({'erro': 'Código inválido ou expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if not codigo:
+        return Response({'erro': 'Código inválido ou expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if len(nova_senha) < 8 or not re.search(r'[a-z]', nova_senha) or not re.search(r'[A-Z]', nova_senha) or not re.search(r'\d', nova_senha):
+        return Response(
+            {'erro': 'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    codigo_salvo = cache.get(f'password_reset_code:{cpf_sem_mascara}')
+    if not codigo_salvo or codigo != codigo_salvo:
+        return Response({'erro': 'Código inválido ou expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    usuario = Usuario.objects.filter(cpf=cpf_sem_mascara).first()
+    if not usuario:
+        return Response({'erro': 'Código inválido ou expirado.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    usuario.set_password(nova_senha)
+    usuario.save(update_fields=['password'])
+    cache.delete(f'password_reset_code:{cpf_sem_mascara}')
+
+    return Response({'mensagem': 'Senha redefinida com sucesso.'}, status=status.HTTP_200_OK)

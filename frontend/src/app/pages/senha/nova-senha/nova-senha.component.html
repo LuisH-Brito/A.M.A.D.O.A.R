@@ -8,29 +8,37 @@
 
     <div class="login-right">
       <h2>Digite a Nova Senha</h2>
-      <form>
+
+      <form (ngSubmit)="redefinirSenha()">
         <div class="form-group">
           <label for="novaSenha">Nova Senha</label>
           <input
-            type="text"
+            type="password"
             id="novaSenha"
-            name="username"
+            name="novaSenha"
+            [(ngModel)]="novaSenha"
             placeholder="Digite a senha"
             required
+            [disabled]="carregando"
           />
         </div>
 
         <div class="form-group">
           <label for="confirmarNovaSenha">Confirmar Nova Senha</label>
           <input
+            type="password"
             id="confirmarNovaSenha"
-            name="password"
+            name="confirmarNovaSenha"
+            [(ngModel)]="confirmarNovaSenha"
             placeholder="Digite a senha novamente"
             required
+            [disabled]="carregando"
           />
         </div>
 
-        <button type="submit" class="btn-redefinir">Redefinir senha</button>
+        <button type="submit" class="btn-redefinir" [disabled]="carregando">
+          {{ carregando ? 'Redefinindo...' : 'Redefinir senha' }}
+        </button>
       </form>
     </div>
   </div>
