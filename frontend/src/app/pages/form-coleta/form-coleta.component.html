@@ -2,16 +2,24 @@
   <div class="container">
     <h2 class="titulo">Coleta</h2>
 
-    <form class="formulario" (ngSubmit)="finalizarColeta()">
+    <form
+      class="formulario"
+      #formColeta="ngForm"
+      (ngSubmit)="finalizarColeta()"
+    >
       <div class="layout-duplo">
         <div class="grupo-inputs">
           <div class="campo">
             <select
               name="responsavel"
               class="select-borda"
+              #responsavel="ngModel"
               [(ngModel)]="responsavelSelecionado"
+              required
             >
-              <option [ngValue]="null">Selecionar Responsavel pela coleta</option>
+              <option [ngValue]="null">
+                Selecionar Responsavel pela coleta
+              </option>
               <option
                 *ngFor="let responsavel of responsaveis"
                 [ngValue]="responsavel.id"
@@ -19,6 +27,11 @@
                 {{ responsavel.nome_completo }}
               </option>
             </select>
+            <small
+              class="msg-erro"
+              *ngIf="responsavel.invalid && responsavel.touched"
+              >Responsavel é obrigatório</small
+            >
           </div>
           <div class="campo-puncao">
             <label class="titulo-puncao"
@@ -65,7 +78,11 @@
         </div>
       </div>
       <div class="acoes">
-        <button type="submit" class="btn-concluir btn-coleta" [disabled]="enviando">
+        <button
+          type="submit"
+          class="btn-concluir btn-coleta"
+          [disabled]="enviando || formColeta.invalid"
+        >
           Finalizar Coleta
         </button>
       </div>
