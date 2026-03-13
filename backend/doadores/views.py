@@ -75,6 +75,29 @@ class DoadorViewSet(viewsets.ModelViewSet):
                 return Response(serializer.data)
 
             return Response(serializer.errors, status=400)
+        
+    @action(detail=True, methods=['patch'], permission_classes=[IsAuthenticated])
+    def atualizar_tipo_sanguineo(self, request, pk=None):
+        """
+        Atualiza o tipo sanguíneo do doador a partir da validação médica da bolsa.
+        """
+        doador = self.get_object()
+        novo_tipo = request.data.get('tipo_sanguineo')
+        novo_fator = request.data.get('fator_rh')
+
+        if not novo_tipo or not novo_fator:
+            return Response({'erro': 'Tipo sanguíneo e Fator RH são obrigatórios.'}, status=400)
+
+        mudou = False
+        
+        if doador.tipo_sanguineo_declarado != novo_tipo or doador.fator_rh != novo_fator:
+            doador.tipo_sanguineo_declarado = novo_tipo
+            doador.fator_rh = novo_fator
+            doador.save()
+            mudou = True   
+
+        mensagem = 'Tipo sanguíneo do doador atualizado com sucesso.' if mudou else 'O doador já possuía este tipo sanguíneo.'
+        return Response({'mensagem': mensagem, 'atualizado': mudou})
 
     def perform_create(self, serializer):
         """

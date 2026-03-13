@@ -1,0 +1,17 @@
+<div class="toast-notificacao" [class.show]="visivel" [class.erro]="!sucesso">
+  <div class="toast-icone">
+    <i
+      class="bi"
+      [ngClass]="
+        sucesso ? 'bi-check-circle-fill' : 'bi-exclamation-circle-fill'
+      "
+    ></i>
+  </div>
+  <div class="toast-conteudo">
+    <h4>{{ sucesso ? "Sucesso" : "Atenção" }}</h4>
+    <p>{{ mensagem }}</p>
+  </div>
+  <button class="toast-fechar" (click)="fechar()">
+    <i class="bi bi-x"></i>
+  </button>
+</div>

@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-estoque-bolsas',
@@ -14,18 +15,17 @@ import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/m
     FormsModule,
     PaginacaoComponent,
     ModalConfirmacaoComponent,
+    ToastNotificacaoComponent,
   ],
   templateUrl: './estoque-bolsas.component.html',
   styleUrl: './estoque-bolsas.component.scss',
 })
 export class EstoqueBolsasComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   abaAtiva: string = 'Todos';
   tipoAtivo: string = 'Todos';
   busca: string = '';
   menuFiltroAberto: boolean = false;
-  notificacaoAtiva: boolean = false;
-  notificacaoMensagem: string = '';
-  notificacaoTimeout: any;
   modalVisivel = false;
   modalDados = {
     titulo: '',
@@ -190,7 +190,6 @@ export class EstoqueBolsasComponent implements OnInit {
       this.acaoConfirmacao();
     }
   }
-
   registrarUso(bolsa: any) {
     this.abrirModalConfirmacao(
       'Registrar Uso',
@@ -200,10 +199,14 @@ export class EstoqueBolsasComponent implements OnInit {
       () => {
         this.EstoqueService.registrarUso(bolsa.idOriginal).subscribe({
           next: (res) => {
-            this.exibirNotificacao(res.mensagem);
+            this.toastComponente.exibir(res.mensagem);
             this.atualizarTudo();
           },
-          error: (err) => alert(err.error?.erro || 'Erro ao registrar uso.'),
+          error: (err) => {
+            const msgErro =
+              err.error?.erro || 'Erro ao registrar uso da bolsa.';
+            this.toastComponente.exibir(msgErro, false);
+          },
         });
       },
     );
@@ -218,10 +221,13 @@ export class EstoqueBolsasComponent implements OnInit {
       () => {
         this.EstoqueService.descartar(bolsa.idOriginal).subscribe({
           next: (res) => {
-            this.exibirNotificacao(res.mensagem);
+            this.toastComponente.exibir(res.mensagem);
             this.atualizarTudo();
           },
-          error: (err) => alert(err.error?.erro || 'Erro ao descartar bolsa.'),
+          error: (err) => {
+            const msgErro = err.error?.erro || 'Erro ao descartar bolsa.';
+            this.toastComponente.exibir(msgErro, false);
+          },
         });
       },
     );
@@ -232,28 +238,19 @@ export class EstoqueBolsasComponent implements OnInit {
     this.enviandoNotificacao[tipo] = true;
     this.EstoqueService.notificarDoadoresCritico(tipo).subscribe({
       next: (res) => {
-        this.exibirNotificacao(res.mensagem);
+        this.toastComponente.exibir(res.mensagem);
         this.enviandoNotificacao[tipo] = false;
       },
       error: (err) => {
-        alert(err.error?.erro || 'Erro ao enviar notificação.');
+        this.toastComponente.exibir(err.error?.erro || 'Erro ao enviar notificação.', false);
         this.enviandoNotificacao[tipo] = false;
       }
     });
   }
-
   private atualizarTudo() {
     this.carregarBolsas();
     this.carregarDashboard();
   }
 
-  exibirNotificacao(mensagem: string) {
-    this.notificacaoMensagem = mensagem;
-    this.notificacaoAtiva = true;
 
-    clearTimeout(this.notificacaoTimeout);
-    this.notificacaoTimeout = setTimeout(() => {
-      this.notificacaoAtiva = false;
-    }, 6000);
-  }
 }

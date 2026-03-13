@@ -235,19 +235,6 @@
   </div>
 </div>
 
-<div class="toast-notificacao" [class.show]="notificacaoAtiva">
-  <div class="toast-icone">
-    <i class="bi bi-check-circle-fill"></i>
-  </div>
-  <div class="toast-conteudo">
-    <h4>Operação Concluída</h4>
-    <p>{{ notificacaoMensagem }}</p>
-  </div>
-  <button class="toast-fechar" (click)="notificacaoAtiva = false">
-    <i class="bi bi-x"></i>
-  </button>
-</div>
-
 <app-modal-confirmacao
   [visivel]="modalVisivel"
   [titulo]="modalDados.titulo"
@@ -258,3 +245,4 @@
   (cancelado)="modalVisivel = false"
 >
 </app-modal-confirmacao>
+<app-toast-notificacao #toast></app-toast-notificacao>
