@@ -44,6 +44,7 @@ export class DoadorComponent implements OnInit {
     proximaDoacao: '',
     crm: '',
     coren: '',
+    cargo: '',
   };
 
   exames: any[] = [];
@@ -53,7 +54,6 @@ export class DoadorComponent implements OnInit {
     private funcionariosService: FuncionariosService,
     private exameDoadorService: ExameDoadorService,
     private router: Router,
-    
   ) {}
 
   ngOnInit(): void {
@@ -124,6 +124,38 @@ export class DoadorComponent implements OnInit {
     }
   }
 
+  navegarComDados(apenasVisualizar: boolean = false) {
+    let cargoFormatado = '';
+
+    if (this.cargoAtual === 'medico') {
+      cargoFormatado = 'Médico';
+    } else if (this.cargoAtual === 'enfermeiro') {
+      cargoFormatado = 'Enfermeiro';
+    } else if (this.cargoAtual === 'recepcionista') {
+      cargoFormatado = 'Recepcionista';
+    }
+
+    const funcionario = {
+      id: this.idUsuario,
+      nome_completo: this.usuario.nome,
+      cargo: cargoFormatado,
+      email: this.usuario.email,
+      data_nascimento: this.usuario.dataNascimento,
+      cpf: this.usuario.cpf,
+      endereco: this.usuario.rua,
+      crm: this.usuario.crm,
+      coren: this.usuario.coren,
+    };
+
+    this.router.navigate(['/cadastro-funcionario'], {
+      state: {
+        funcionario: funcionario,
+        visualizar: apenasVisualizar,
+        origem: 'perfil',
+      },
+    });
+  }
+
   visualizarCarteira() {
     if (this.carteiraUrl) {
       window.open(this.carteiraUrl, '_blank');
@@ -142,8 +174,8 @@ export class DoadorComponent implements OnInit {
       alert('Doador não encontrado.');
       return;
     }
-    this.router.navigate(['/questionario-processo/'], { 
-      queryParams: { cpf: this.usuario.cpf } 
+    this.router.navigate(['/questionario-processo/'], {
+      queryParams: { cpf: this.usuario.cpf },
     });
   }
 

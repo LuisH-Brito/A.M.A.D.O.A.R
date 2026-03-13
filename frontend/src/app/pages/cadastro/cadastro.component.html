@@ -1,220 +1,261 @@
 <main class="cadastro-page">
-  <div class="cadastro-container">
-    <div class="cadastro-left">
-      <div class="avatar">
-        <i class="bi bi-person-fill"></i>
-      </div>
-
-      <div class="grupo">
-        <h4>Tipo Sanguíneo</h4>
-
-        <div class="radio-grid">
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="A+"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            A+
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="A-"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            A-
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="B+"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            B+
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="B-"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            B-
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="AB+"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            AB+
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="AB-"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            AB-
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="O+"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            O+
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="O-"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            O-
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="tipo"
-              value="Não sei"
-              [(ngModel)]="dados.tipoCompleto"
-              [disabled]="modoEdicao"
-            />
-            Não sei
-          </label>
-        </div>
-      </div>
-
-      <div class="grupo">
-        <h4>Sexo</h4>
-
-        <div class="radio-column">
-          <label>
-            <input
-              type="radio"
-              name="sexo"
-              value="Masculino"
-              [(ngModel)]="dados.sexo"
-              [disabled]="modoEdicao"
-            />
-            Masculino
-          </label>
-
-          <label>
-            <input
-              type="radio"
-              name="sexo"
-              value="Feminino"
-              [(ngModel)]="dados.sexo"
-              [disabled]="modoEdicao"
-            />
-            Feminino
-          </label>
-        </div>
-      </div>
-    </div>
-
-    <div class="cadastro-right">
-      <form (ngSubmit)="concluirCadastro()">
-        <div class="form-group">
-          <label>Nome Completo</label>
-          <input type="text" name="nome" [(ngModel)]="dados.nome_completo" />
-        </div>
-
-        <div class="form-group">
-          <label>E-mail</label>
-          <input type="email" name="email" [(ngModel)]="dados.email" />
-        </div>
-
-        <div class="form-group">
-          <label>CPF</label>
-          <input
-            type="text"
-            name="cpf"
-            [(ngModel)]="dados.cpf"
-            [disabled]="modoEdicao"
-          />
-        </div>
-
-        <div class="form-group">
-          <label>Endereço</label>
-          <input type="text" name="endereco" [(ngModel)]="dados.endereco" />
-        </div>
-
-        <div class="form-row">
-          <div class="form-group">
-            <label>Data de nascimento</label>
-            <input
-              type="date"
-              name="data"
-              [(ngModel)]="dados.data_nascimento"
-              [readonly]="modoEdicao"
-            />
+  <button class="btn-icone" (click)="voltar()">
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2"
+    >
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+  </button>
+  <div class="tudo">
+    <h2 class="titulo">{{ tituloPagina }}</h2>
+    <div class="cadastro-container">
+      <form #formCadastro="ngForm" (ngSubmit)="concluirCadastro()">
+        <div class="lado-esquerdo">
+          <div class="avatar">
+            <i class="bi bi-person-fill"></i>
           </div>
 
-          <div class="form-group">
-            <label>Telefone</label>
-            <input type="text" name="telefone" [(ngModel)]="dados.telefone" />
+          <div class="grupo">
+            <h4>Tipo Sanguíneo</h4>
+            <div class="radio-grid">
+              <label *ngFor="let tipo of tiposSanguineos">
+                <input
+                  type="radio"
+                  name="tipoCompleto"
+                  [(ngModel)]="dados.tipoCompleto"
+                  [value]="tipo"
+                  required
+                  [disabled]="modoEdicao"
+                />
+                {{ tipo }}
+              </label>
+            </div>
+            <small
+              class="erro"
+              *ngIf="!dados.tipoCompleto && formCadastro.submitted"
+            >
+              Selecione um tipo sanguíneo
+            </small>
+          </div>
+
+          <div class="grupo">
+            <h4>Sexo</h4>
+            <div class="radio-column">
+              <label>
+                <input
+                  type="radio"
+                  name="sexo"
+                  [(ngModel)]="dados.sexo"
+                  value="Masculino"
+                  required
+                  [disabled]="modoEdicao"
+                />
+                Masculino
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  name="sexo"
+                  [(ngModel)]="dados.sexo"
+                  value="Feminino"
+                  required
+                  [disabled]="modoEdicao"
+                />
+                Feminino
+              </label>
+            </div>
+            <small class="erro" *ngIf="!dados.sexo && formCadastro.submitted">
+              Selecione o sexo
+            </small>
           </div>
         </div>
 
-        <div class="form-group">
-          <label>
-            {{ modoEdicao ? "Nova senha" : "Senha" }}
-          </label>
+        <div class="lado-direito">
+          <div class="form-group">
+            <label>Nome Completo</label>
+            <input
+              type="text"
+              name="nome"
+              [(ngModel)]="dados.nome_completo"
+              required
+              #nome="ngModel"
+            />
+            <small class="erro" *ngIf="nome.invalid && nome.touched"
+              >Nome é obrigatório</small
+            >
+          </div>
 
-          <input type="password" name="senha" [(ngModel)]="dados.senha" />
+          <div class="form-group">
+            <label>E-mail</label>
+            <input
+              type="email"
+              name="email"
+              [(ngModel)]="dados.email"
+              required
+              placeholder="Formato: email@gamil.com"
+              email
+              #email="ngModel"
+            />
+            <small class="erro" *ngIf="email.invalid && email.touched"
+              >E-mail inválido</small
+            >
+          </div>
 
-          <small *ngIf="modoEdicao">
-            Deixe em branco para manter a senha atual
-          </small>
-        </div>
+          <div class="form-group">
+            <label>CPF</label>
+            <input
+              type="text"
+              name="cpf"
+              [(ngModel)]="dados.cpf"
+              required
+              [disabled]="modoEdicao"
+              #cpf="ngModel"
+              placeholder="Formato: 00000000000"
+            />
+            <small class="erro" *ngIf="cpf.invalid && cpf.touched"
+              >CPF é obrigatório</small
+            >
+          </div>
 
-        <div class="form-group">
-          <label>
-            {{ modoEdicao ? "Confirmar nova senha" : "Confirmar senha" }}
-          </label>
+          <div class="form-group">
+            <label>Endereço</label>
+            <input
+              type="text"
+              name="endereco"
+              [(ngModel)]="dados.endereco"
+              required
+              #endereco="ngModel"
+            />
+            <small class="erro" *ngIf="endereco.invalid && endereco.touched"
+              >Endereço é obrigatório</small
+            >
+          </div>
 
-          <input
-            type="password"
-            name="confirmar"
-            [(ngModel)]="dados.confirmarSenha"
-          />
-        </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Data de nascimento</label>
+              <input
+                type="date"
+                name="data"
+                [(ngModel)]="dados.data_nascimento"
+                [readonly]="modoEdicao"
+                required
+                #data="ngModel"
+              />
+              <small class="erro" *ngIf="data.invalid && data.touched"
+                >Data obrigatória</small
+              >
+            </div>
 
-        <div class="buttons">
-          <button type="button" class="btn-cancelar" (click)="cancelar()">
-            Cancelar
-          </button>
+            <div class="form-group">
+              <label>Telefone</label>
+              <input
+                type="text"
+                name="telefone"
+                [(ngModel)]="dados.telefone"
+                required
+                pattern="^\(\d{2}\) \d{5}-\d{4}$"
+                #telefone="ngModel"
+                placeholder="Formato: (DD) 99999-9999"
+              />
+              <small class="erro" *ngIf="telefone.invalid && telefone.touched"
+                >Formato de telefone inválido</small
+              >
+            </div>
+          </div>
 
-          <button type="submit" class="btn-concluir">
-            {{ modoEdicao ? "Salvar Alterações" : "Concluir" }}
-          </button>
+          <div class="form-group">
+            <label>{{ modoEdicao ? "Nova senha" : "Senha" }}</label>
+            <div class="input-com-icone">
+              <input
+                [type]="mostrarSenha ? 'text' : 'password'"
+                name="senha"
+                [(ngModel)]="dados.senha"
+                [required]="!modoEdicao"
+                #senha="ngModel"
+                pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              />
+              <button
+                type="button"
+                class="btn-olho"
+                (click)="mostrarSenha = !mostrarSenha"
+              >
+                <i
+                  class="bi"
+                  [ngClass]="mostrarSenha ? 'bi-eye' : 'bi-eye-slash'"
+                ></i>
+              </button>
+            </div>
+            <div
+              *ngIf="senha.invalid && (senha.touched || formCadastro.submitted)"
+            >
+              <small class="erro" *ngIf="senha.errors?.['required']"
+                >Senha é obrigatória</small
+              >
+
+              <small class="erro" *ngIf="senha.errors?.['pattern']">
+                A senha deve ter: 8+ caracteres, maiúscula, minúscula e número.
+              </small>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>{{
+              modoEdicao ? "Confirmar nova senha" : "Confirmar senha"
+            }}</label>
+            <div class="input-com-icone">
+              <input
+                [type]="mostrarConfirmarSenha ? 'text' : 'password'"
+                name="confirmar"
+                [(ngModel)]="dados.confirmarSenha"
+                [required]="dados.senha ? true : false"
+                #confirmar="ngModel"
+                [class.senha-diferente]="
+                  dados.senha !== dados.confirmarSenha && confirmar.touched
+                "
+              />
+              <button
+                type="button"
+                class="btn-olho"
+                (click)="mostrarConfirmarSenha = !mostrarConfirmarSenha"
+              >
+                <i
+                  class="bi"
+                  [ngClass]="mostrarConfirmarSenha ? 'bi-eye' : 'bi-eye-slash'"
+                ></i>
+              </button>
+            </div>
+            <small
+              class="erro"
+              *ngIf="
+                dados.senha !== dados.confirmarSenha &&
+                (confirmar.touched || formCadastro.submitted)
+              "
+            >
+              As senhas não coincidem
+            </small>
+          </div>
+
+          <div class="buttons">
+            <button type="button" class="btn-cancelar" (click)="cancelar()">
+              Cancelar
+            </button>
+            <button
+              type="submit"
+              class="btn-concluir"
+              [disabled]="
+                formCadastro.invalid || dados.senha !== dados.confirmarSenha
+              "
+            >
+              {{ modoEdicao ? "Salvar Alterações" : "Concluir" }}
+            </button>
+          </div>
         </div>
       </form>
     </div>

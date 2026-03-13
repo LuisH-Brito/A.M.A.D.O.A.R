@@ -69,7 +69,7 @@ export class FuncionariosService {
     if (dados.cargo === 'Médico') payload.crm = dados.registro;
     if (dados.cargo === 'Enfermeiro') payload.coren = dados.registro;
 
-    return this.http.put(url, payload);
+    return this.http.patch(url, payload);
   }
 
   obterPerfilPessoal(cargo: string): Observable<any> {
@@ -93,7 +93,6 @@ export class FuncionariosService {
 
     return this.http.patch(`${this.baseUrl}/${endpoint}/me/`, dados);
   }
-
 
   /**
    * Remove um funcionário do sistema.
@@ -121,6 +120,7 @@ export class FuncionariosService {
     const url = `${this.baseUrl}/${endpoint}/`;
 
     const payload: any = {
+      cpf: dados.cpf,
       username: dados.cpf,
       nome_completo: dados.nomeCompleto,
       email: dados.email,

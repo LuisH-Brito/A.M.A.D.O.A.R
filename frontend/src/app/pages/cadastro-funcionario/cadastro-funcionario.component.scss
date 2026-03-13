@@ -53,7 +53,7 @@ input,
 select {
   height: 44px;
   border-radius: 12px;
-  border: none;
+  border: 2px solid transparent;
   padding: 0 14px;
   background: #e9e9e9;
   font-size: 15px;
@@ -119,4 +119,93 @@ select {
     background-color: #5a6268;
     color: white;
   }
+}
+
+.erro {
+  color: #c40000;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+input.ng-touched.ng-invalid,
+select.ng-touched.ng-invalid {
+  border: 2px solid #c40000;
+  background: #e9e9e9;
+}
+
+input.ng-touched.ng-valid,
+select.ng-touched.ng-valid {
+  border: 2px solid #12a150;
+  background: #e9e9e9;
+}
+
+.btn-concluir:disabled {
+  background: #9e9e9e;
+  box-shadow: none;
+  cursor: not-allowed;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.input-senha {
+  display: flex;
+  align-items: center;
+}
+
+.input-senha {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.input-senha input {
+  width: 100%;
+  padding-right: 40px;
+}
+
+.btn-olho {
+  position: absolute;
+  right: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 18px;
+  color: #555;
+}
+
+.btn-icone {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #000;
+  display: flex;
+  margin-left: 100px;
+  margin-bottom: 10px;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    opacity: 0.7;
+  }
+}
+
+.erro-api {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  background: #fdecea;
+  border-left: 5px solid #c40000;
+
+  color: #a30000;
+  padding: 12px 15px;
+  border-radius: 8px;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  margin-bottom: 20px;
+}
+
+.erro-api i {
+  font-size: 18px;
 }

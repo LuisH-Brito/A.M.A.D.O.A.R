@@ -14,8 +14,7 @@
       </div>
       <div
         class="editar-perfil"
-        routerLink="/cadastro-funcionario"
-        [queryParams]="{ modo: 'editar' }"
+        (click)="navegarComDados(false)"
         *ngIf="isEnfermeiro || isMedico || isRecepcionista"
       >
         <span>Editar perfil</span>
@@ -51,6 +50,17 @@
           <label>Endereço</label>
           <input type="text" [(ngModel)]="usuario.rua" disabled />
         </div>
+        <div
+          class="campo pequeno"
+          *ngIf="isMedico || isEnfermeiro || isRecepcionista"
+        >
+          <label>Cargo</label>
+          <select [(ngModel)]="this.cargoAtual" disabled>
+            <option value="enfermeiro">Enfermeiro</option>
+            <option value="recepcionista">Recepcionista</option>
+            <option value="medico">Médico</option>
+          </select>
+        </div>
       </div>
 
       <div class="linha">
@@ -71,7 +81,7 @@
           <input type="date" [(ngModel)]="usuario.dataNascimento" disabled />
         </div>
 
-        <div class="campo pequeno">
+        <div class="campo pequeno" *ngIf="isDoador">
           <label>Sexo</label>
           <select [(ngModel)]="usuario.sexo" disabled>
             <option value="F">Feminino</option>
@@ -106,7 +116,9 @@
       >
         Visualizar Carteira Digital
       </button>
-      <button class="btn-principal" (click)="abrirQuestionario()">Visualizar Questionário Online</button>
+      <button class="btn-principal" (click)="abrirQuestionario()">
+        Visualizar Questionário Online
+      </button>
     </div>
 
     <div class="historico" *ngIf="isDoador">

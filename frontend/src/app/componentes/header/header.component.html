@@ -89,14 +89,6 @@
         >
 
         <a
-          *ngIf="temAcesso(['doador', 'administrador'])"
-          routerLink="/pagina-doador"
-          class="menu-item"
-          (click)="toggleMenu()"
-          >Página do Doador</a
-        >
-
-        <a
           *ngIf="temAcesso(['recepcionista', 'administrador'])"
           routerLink="/processo-doacao-REC"
           class="menu-item"

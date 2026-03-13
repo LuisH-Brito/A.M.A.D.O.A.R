@@ -9,6 +9,29 @@
   margin: 0 auto;
 }
 
+.msg-erro {
+  color: #c40000;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+input.ng-invalid.ng-touched {
+  border: 1px solid #c40000;
+}
+
 .titulo {
   font-size: 26px;
   font-weight: 700;
@@ -208,23 +231,33 @@
       font-size: 16px;
       cursor: pointer;
       transition: all 0.2s;
-    }
 
-    .btn-inapt {
-      background-color: #f8d7da;
-      color: #842029;
-      &:hover {
-        background-color: #f1b0b7;
+      &:disabled {
+        background-color: #e0e0e0 !important;
+        color: #a0a0a0 !important;
+        box-shadow: none !important;
+        cursor: not-allowed;
+        transform: none !important;
       }
-    }
 
-    .btn-liberar {
-      background-color: #28a745;
-      color: white;
-      box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
-      &:hover {
-        background-color: #218838;
-        transform: translateY(-2px);
+      &.btn-inapt {
+        background-color: #f8d7da;
+        color: #842029;
+
+        &:hover:not(:disabled) {
+          background-color: #f1b0b7;
+        }
+      }
+
+      &.btn-liberar {
+        background-color: #28a745;
+        color: white;
+        box-shadow: 0 4px 12px rgba(40, 167, 69, 0.2);
+
+        &:hover:not(:disabled) {
+          background-color: #218838;
+          transform: translateY(-2px);
+        }
       }
     }
   }
