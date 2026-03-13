@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 import { ExameDoadorService } from '../../services/exame-doador.service';
+import { DoadorService } from '../../services/doador.service';
 
 @Component({
   selector: 'app-validacao-bolsa',
@@ -25,11 +26,16 @@ export class ValidacaoBolsaComponent implements OnInit {
   arquivoExameDoador: File | null = null;
   carregando: boolean = false;
 
+  sangueRegistradoDoador: string | null = null;
+  doadorFatorRh: string | null = null;
+  doadorTipoSanguineo: string | null = null;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private estoqueService: EstoqueBolsaService,
     private exameDoadorService: ExameDoadorService,
+    private doadorService: DoadorService,
   ) {}
 
   ngOnInit(): void {
@@ -45,7 +51,10 @@ export class ValidacaoBolsaComponent implements OnInit {
 
   carregarDadosBolsa() {
     this.estoqueService.obterBolsa(this.bolsaId).subscribe({
-      next: (res) => (this.bolsaDados = res),
+      next: (res) => {
+        this.bolsaDados = res;
+        this.carregarSanguePrevioDoador();
+      },
       error: () => {
         alert('Erro ao carregar os dados da bolsa.');
         this.voltar();
@@ -57,9 +66,51 @@ export class ValidacaoBolsaComponent implements OnInit {
     this.estoqueService.obterTiposSanguineos().subscribe({
       next: (res) => {
         this.tiposSanguineos = Array.isArray(res) ? res : res.results;
+        this.tentarPreSelecionarSangue();
       },
       error: () => console.error('Erro ao buscar tipos sanguíneos.'),
     });
+  }
+
+  carregarSanguePrevioDoador() {
+    const doadorId =
+      this.bolsaDados?.doador_id ||
+      this.bolsaDados?.doador?.id ||
+      this.bolsaDados?.doador;
+
+    if (doadorId) {
+      this.doadorService.obterDoadorPorId(doadorId).subscribe({
+        next: (doador: any) => {
+          if (doador.tipo_sanguineo_declarado && doador.fator_rh) {
+            this.doadorTipoSanguineo = doador.tipo_sanguineo_declarado;
+            this.doadorFatorRh = doador.fator_rh;
+            this.sangueRegistradoDoador = `${this.doadorTipoSanguineo}${this.doadorFatorRh}`;
+
+            this.tentarPreSelecionarSangue();
+          }
+        },
+        error: (err) =>
+          console.log('Doador não possui sangue registrado ou erro ao buscar.'),
+      });
+    }
+  }
+
+  tentarPreSelecionarSangue() {
+    if (
+      this.tiposSanguineos.length > 0 &&
+      this.sangueRegistradoDoador &&
+      !this.tipoSanguineoSelecionado
+    ) {
+      const tipoEncontrado = this.tiposSanguineos.find(
+        (t) =>
+          t.tipo === this.doadorTipoSanguineo &&
+          t.fator_rh === this.doadorFatorRh,
+      );
+
+      if (tipoEncontrado) {
+        this.tipoSanguineoSelecionado = tipoEncontrado.id;
+      }
+    }
   }
 
   acionarInputArquivo() {
@@ -117,11 +168,52 @@ export class ValidacaoBolsaComponent implements OnInit {
       callbackConclusao();
     }
   }
+
+  private atualizarSangueDoador(callbackConclusao: () => void) {
+    const doadorId =
+      this.bolsaDados?.doador_id ||
+      this.bolsaDados?.doador?.id ||
+      this.bolsaDados?.doador;
+
+    const tipoSelecionadoObj = this.tiposSanguineos.find(
+      (t) => t.id === Number(this.tipoSanguineoSelecionado),
+    );
+
+    if (doadorId && tipoSelecionadoObj) {
+      const dadosSangue = {
+        tipo_sanguineo: tipoSelecionadoObj.tipo,
+        fator_rh: tipoSelecionadoObj.fator_rh,
+      };
+
+      this.doadorService
+        .atualizarTipoSanguineo(doadorId, dadosSangue)
+        .subscribe({
+          next: (res) => {
+            console.log(res.mensagem);
+            callbackConclusao();
+          },
+          error: (err) => {
+            console.error('Erro ao atualizar sangue do doador', err);
+            callbackConclusao();
+          },
+        });
+    } else {
+      callbackConclusao();
+    }
+  }
+
   liberarParaEstoque() {
-    if (!this.tipoSanguineoSelecionado || !this.arquivoLaudo) {
-      alert('Selecione o tipo sanguíneo e anexe o laudo laboratorial.');
+    if (
+      !this.tipoSanguineoSelecionado ||
+      !this.arquivoLaudo ||
+      !this.arquivoExameDoador
+    ) {
+      alert(
+        'Atenção: Selecione o tipo sanguíneo e anexe TANTO o laudo da bolsa QUANTO o exame do doador.',
+      );
       return;
     }
+
     if (confirm('Tem certeza que deseja liberar a bolsa para o estoque?')) {
       this.carregando = true;
       const formData = new FormData();
@@ -137,8 +229,10 @@ export class ValidacaoBolsaComponent implements OnInit {
       this.estoqueService.validarBolsa(this.bolsaId, formData).subscribe({
         next: (res) => {
           this.salvarExameDoador(() => {
-            alert('Bolsa validada e enviada para o estoque com sucesso!');
-            this.router.navigate(['/aguardando-validacao-bolsa']);
+            this.atualizarSangueDoador(() => {
+              alert('Bolsa validada e enviada para o estoque com sucesso!');
+              this.router.navigate(['/aguardando-validacao-bolsa']);
+            });
           });
         },
         error: (err) => {
@@ -150,9 +244,13 @@ export class ValidacaoBolsaComponent implements OnInit {
   }
 
   marcarComoInapto() {
-    if (!this.tipoSanguineoSelecionado || !this.arquivoLaudo) {
+    if (
+      !this.tipoSanguineoSelecionado ||
+      !this.arquivoLaudo ||
+      !this.arquivoExameDoador
+    ) {
       alert(
-        'Para descartar, é obrigatório selecionar o tipo sanguíneo e anexar o laudo comprovando a inaptidão.',
+        'Para descartar, é obrigatório selecionar o tipo sanguíneo e anexar ambos os laudos (da bolsa e do doador) como evidência.',
       );
       return;
     }
@@ -169,6 +267,7 @@ export class ValidacaoBolsaComponent implements OnInit {
         this.tipoSanguineoSelecionado.toString(),
       );
       formData.append('arquivo_laudo', this.arquivoLaudo);
+
       const medicoId = localStorage.getItem('usuario_id');
       if (medicoId) {
         formData.append('medico_validacao', medicoId);
@@ -177,6 +276,7 @@ export class ValidacaoBolsaComponent implements OnInit {
         this.carregando = false;
         return;
       }
+
       this.estoqueService.descartar(this.bolsaId, formData).subscribe({
         next: () => {
           this.salvarExameDoador(() => {

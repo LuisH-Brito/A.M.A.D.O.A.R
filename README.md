@@ -37,7 +37,7 @@ Para rodar o servidor
 Comandos do angular para criar
 
 -> Um componente
--> ng g c components/nome-do-componente
+-> ng g c componentes/nome-do-componente
 -> esse comando vai criar um componente novo dentro da pasta componentes
 
 -> Uma pagina

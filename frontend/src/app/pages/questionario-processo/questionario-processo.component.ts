@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionarioService } from '../../services/questionario.service';
 import { PerguntasComponent } from '../../componentes/perguntas/perguntas.component';
@@ -13,7 +13,7 @@ import { PerguntasComponent } from '../../componentes/perguntas/perguntas.compon
 })
 export class QuestionarioProcessoComponent implements OnInit {
   carregando: boolean = true;
-  cpfDoador: string | null = '';
+  cpfDoador: string | null = null;
   processoId: number | null = null;
   perguntas: any[] = [];
   modoEdicao: boolean = false;
@@ -21,13 +21,26 @@ export class QuestionarioProcessoComponent implements OnInit {
   constructor(
     private route: ActivatedRoute,
     private router: Router,
-    private questionarioService: QuestionarioService
+    private questionarioService: QuestionarioService,
+    private location: Location
   ) {}
 
   ngOnInit() {
     const processoIdParam = this.route.snapshot.paramMap.get('processoId');
+    const cpfParam = this.route.snapshot.paramMap.get('cpf');
+    
+    const cpfQuery = this.route.snapshot.queryParamMap.get('cpf');
+
+    // Associa o CPF 
+    this.cpfDoador = cpfQuery || cpfParam;
     this.processoId = processoIdParam ? Number(processoIdParam) : null;
-    this.cpfDoador = this.route.snapshot.paramMap.get('cpf');
+
+    if (this.processoId && this.processoId.toString().length >= 11) {
+      this.cpfDoador = this.processoId.toString();
+      this.processoId = null;
+    }
+
+    console.log("Diagnóstico de Rota -> CPF:", this.cpfDoador, "| Processo ID:", this.processoId);
 
     this.questionarioService.getPerguntas().subscribe({
       next: (todasPerguntas) => {
@@ -53,11 +66,15 @@ export class QuestionarioProcessoComponent implements OnInit {
 
   carregarUltimoQuestionarioPorCpf() {
     this.questionarioService.getQuestionariosPorCpf(this.cpfDoador!).subscribe({
-      next: (questionarios) => {
+      next: (resposta: any) => {
+        const questionarios = Array.isArray(resposta) ? resposta : (resposta.results || []);
+
         if (questionarios && questionarios.length > 0) {
-          // O backend (views.py) já manda ordenado pelo mais recente
           const ultimoQuestionario = questionarios[0];
-          ultimoQuestionario.respostas.forEach((respBackend: any) => {
+          
+          const listaRespostas = ultimoQuestionario.respostas || ultimoQuestionario.resposta_set || [];
+
+          listaRespostas.forEach((respBackend: any) => {
             const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
             if (perguntaEncontrada) {
               perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
@@ -77,8 +94,13 @@ export class QuestionarioProcessoComponent implements OnInit {
 
   carregarQuestionarioPorProcesso() {
     this.questionarioService.getQuestionarioPorProcesso(this.processoId!).subscribe({
-      next: (q) => {
-        (q?.respostas || []).forEach((respBackend: any) => {
+      next: (q: any) => {
+        console.log('Resposta bruta API (Triagem):', q);
+
+        const dadosProcesso = Array.isArray(q) ? q[0] : (q.results ? q.results[0] : q);
+        const listaRespostas = dadosProcesso?.respostas || dadosProcesso?.resposta_set || [];
+
+        listaRespostas.forEach((respBackend: any) => {
           const perguntaEncontrada = this.perguntas.find(p => p.texto === respBackend.pergunta_texto);
           if (perguntaEncontrada) {
             perguntaEncontrada.resposta_dada = respBackend.resposta_dada;
@@ -152,6 +174,13 @@ export class QuestionarioProcessoComponent implements OnInit {
   }
 
   voltar() {
+    const cargo = localStorage.getItem('cargo');
+    
+    if (cargo === 'doador') {
+      this.location.back(); 
+      return;
+    }
+
     if (this.processoId) {
       this.router.navigate(['/form-triagem', this.processoId]);
       return;

@@ -20,35 +20,49 @@
 
     <div class="kpi-container">
       <div class="kpi-card valida">
-        <span class="titulo"> Bolsas<br />validas</span
-        ><span class="numero">{{ resumoGeral.validas }} </span>
-      </div>
-      <div class="kpi-card vencendo">
-        <span class="titulo"> Bolsas<br />vencendo</span
-        ><span class="numero">{{ resumoGeral.vencendo }} </span>
+        <span class="titulo"> Bolsas<br />validas</span>
+        <span class="numero">{{ resumoGeral.validas }} </span>
       </div>
       <div class="kpi-card vencida">
-        <span class="titulo">Bolsas<br />vencidas</span
-        ><span class="numero">{{ resumoGeral.vencidas }}</span>
-      </div>
-      <div class="kpi-card utilizada">
-        <span class="titulo">Bolsas<br />utilizadas</span
-        ><span class="numero">{{ resumoGeral.utilizadas }}</span>
-      </div>
-      <div class="kpi-card descartada">
-        <span class="titulo">Bolsas<br />descartadas</span
-        ><span class="numero">{{ resumoGeral.descartadas }}</span>
+        <span class="titulo">Bolsas<br />vencidas</span>
+        <span class="numero">{{ resumoGeral.vencidas }}</span>
       </div>
       <div class="kpi-card total">
-        <span class="titulo">Bolsas<br />Total no Estoque</span
-        ><span class="numero">{{ resumoGeral.total }}</span>
+        <span class="titulo">Bolsas<br />Armazenadas</span>
+        <span class="numero">{{ resumoGeral.total }}</span>
+      </div>
+      <div class="kpi-card vencendo">
+        <span class="titulo"> Bolsas<br />a vencer</span>
+        <span class="numero">{{ resumoGeral.vencendo }} </span>
+      </div>
+      <div class="kpi-card utilizada">
+        <span class="titulo">Bolsas<br />utilizadas</span>
+        <span class="numero">{{ resumoGeral.utilizadas }}</span>
+      </div>
+      <div class="kpi-card descartada">
+        <span class="titulo">Bolsas<br />descartadas</span>
+        <span class="numero">{{ resumoGeral.descartadas }}</span>
       </div>
     </div>
 
     <div class="tags-sangue">
-      <div class="tag-item" *ngFor="let item of tiposSanguineos">
-        <span class="tipo">{{ item.tipo }}</span
-        ><span class="contagem">{{ item.contagem }}</span>
+      <div class="tag-item" *ngFor="let item of tiposSanguineos" [class.critico]="item.contagem < 2">
+        
+        <div class="tag-info">
+          <span class="tipo">{{ item.tipo }}</span>
+          <span class="contagem">{{ item.contagem }}</span>
+        </div>
+
+        <button 
+          class="btn-notificar" 
+          *ngIf="item.contagem < 2" 
+          (click)="notificarDoadores(item.tipo)"
+          [disabled]="enviandoNotificacao[item.tipo]"
+          title="Solicitar doações urgentes"
+        >
+          <i class="bi" [ngClass]="enviandoNotificacao[item.tipo] ? 'bi-hourglass-split' : 'bi-bell-fill'"></i>
+        </button>
+
       </div>
     </div>
 
@@ -220,3 +234,15 @@
     </div>
   </div>
 </div>
+<app-toast-notificacao #toast></app-toast-notificacao>
+
+<app-modal-confirmacao
+  [visivel]="modalVisivel"
+  [titulo]="modalDados.titulo"
+  [mensagem]="modalDados.mensagem"
+  [tipo]="modalDados.tipo"
+  [textoConfirmar]="modalDados.textoBtn"
+  (confirmado)="executarAcaoModal()"
+  (cancelado)="modalVisivel = false"
+>
+</app-modal-confirmacao>

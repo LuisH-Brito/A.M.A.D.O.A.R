@@ -29,7 +29,16 @@
 
       <div class="conteudo-principal">
         <div class="secao-sangue">
-          <label class="label-destaque">Tipo Sanguíneo Confirmado</label>
+          <div class="cabecalho-sangue">
+            <label class="label-destaque">Tipo Sanguíneo Confirmado</label>
+
+            <span class="badge-aviso" *ngIf="sangueRegistradoDoador">
+              <i class="bi bi-info-circle-fill"></i>
+              Registrado no Doador:
+              <strong>{{ sangueRegistradoDoador }}</strong>
+            </span>
+          </div>
+
           <div class="grid-sangue">
             @for (tipo of tiposSanguineos; track tipo.id) {
               <label class="radio-card">
@@ -108,7 +117,7 @@
           class="btn-liberar"
           type="button"
           (click)="liberarParaEstoque()"
-          [disabled]="carregando || !tipoSanguineoSelecionado || !arquivoLaudo"
+          [disabled]="carregando"
         >
           <span *ngIf="!carregando">Liberar para o Estoque</span>
           <span *ngIf="carregando">Processando...</span>

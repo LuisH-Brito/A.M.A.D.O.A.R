@@ -1,22 +1,39 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-estoque-bolsas',
   standalone: true,
-  imports: [CommonModule, FormsModule, PaginacaoComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    PaginacaoComponent,
+    ModalConfirmacaoComponent,
+    ToastNotificacaoComponent,
+  ],
   templateUrl: './estoque-bolsas.component.html',
   styleUrl: './estoque-bolsas.component.scss',
 })
 export class EstoqueBolsasComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   abaAtiva: string = 'Todos';
   tipoAtivo: string = 'Todos';
   busca: string = '';
   menuFiltroAberto: boolean = false;
+  modalVisivel = false;
+  modalDados = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'padrao' as any,
+    textoBtn: '',
+  };
+  bolsaSelecionada: any;
 
   paginaAtual: number = 1;
   itensPorPagina: number = 10;
@@ -44,6 +61,9 @@ export class EstoqueBolsasComponent implements OnInit {
   tiposMenu = ['Todos', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'O-', 'O+'];
   private delayBusca: any;
 
+  // Controla o estado de 'carregamento' individual de cada botão de notificação
+  enviandoNotificacao: { [key: string]: boolean } = {}; 
+
   constructor(
     private router: Router,
     private EstoqueService: EstoqueBolsaService,
@@ -63,6 +83,7 @@ export class EstoqueBolsasComponent implements OnInit {
       error: (err) => console.error('Erro ao carregar KPIs:', err),
     });
   }
+
   carregarBolsas() {
     this.EstoqueService.listarBolsas(
       this.paginaAtual,
@@ -149,35 +170,95 @@ export class EstoqueBolsasComponent implements OnInit {
     bolsa.expandido = !bolsa.expandido;
   }
 
-  registrarUso(bolsa: any) {
-    if (
-      confirm(`Tem certeza que deseja REGISTRAR O USO da bolsa ${bolsa.id}?`)
-    ) {
-      this.EstoqueService.registrarUso(bolsa.idOriginal).subscribe({
-        next: (res) => {
-          alert(res.mensagem);
-          this.atualizarTudo();
-        },
-        error: (err) => alert(err.error?.erro || 'Erro ao registrar uso.'),
-      });
-    }
-  }
-  descartarBolsa(bolsa: any) {
-    if (
-      confirm(`ATENÇÃO! Tem certeza que deseja DESCARTAR a bolsa ${bolsa.id}?`)
-    ) {
-      this.EstoqueService.descartar(bolsa.idOriginal).subscribe({
-        next: (res) => {
-          alert(res.mensagem);
-          this.atualizarTudo();
-        },
-        error: (err) => alert(err.error?.erro || 'Erro ao descartar bolsa.'),
-      });
-    }
+  acaoConfirmacao!: () => void;
+
+  abrirModalConfirmacao(
+    titulo: string,
+    mensagem: string,
+    tipo: 'descartar' | 'usar' | 'notificar',
+    textoBtn: string,
+    acao: () => void,
+  ) {
+    this.modalDados = { titulo, mensagem, tipo, textoBtn };
+    this.acaoConfirmacao = acao;
+    this.modalVisivel = true;
   }
 
+  executarAcaoModal() {
+    this.modalVisivel = false;
+    if (this.acaoConfirmacao) {
+      this.acaoConfirmacao();
+    }
+  }
+  registrarUso(bolsa: any) {
+    this.abrirModalConfirmacao(
+      'Registrar Uso',
+      `Tem certeza que deseja registrar o uso da bolsa ${bolsa.id}? Esta ação dará baixa no estoque e não poderá ser desfeita.`,
+      'usar',
+      'Sim, Registrar Uso',
+      () => {
+        this.EstoqueService.registrarUso(bolsa.idOriginal).subscribe({
+          next: (res) => {
+            this.toastComponente.exibir(res.mensagem);
+            this.atualizarTudo();
+          },
+          error: (err) => {
+            const msgErro =
+              err.error?.erro || 'Erro ao registrar uso da bolsa.';
+            this.toastComponente.exibir(msgErro, false);
+          },
+        });
+      },
+    );
+  }
+
+  descartarBolsa(bolsa: any) {
+    this.abrirModalConfirmacao(
+      'Descartar Bolsa',
+      `ATENÇÃO! Tem certeza que deseja descartar a bolsa ${bolsa.id}? Este item será removido do estoque útil de forma irreversível.`,
+      'descartar',
+      'Sim, Descartar',
+      () => {
+        this.EstoqueService.descartar(bolsa.idOriginal).subscribe({
+          next: (res) => {
+            this.toastComponente.exibir(res.mensagem);
+            this.atualizarTudo();
+          },
+          error: (err) => {
+            const msgErro = err.error?.erro || 'Erro ao descartar bolsa.';
+            this.toastComponente.exibir(msgErro, false);
+          },
+        });
+      },
+    );
+  }
+
+  // Função que chama o backend para notificar os doadores de um tipo específico
+  notificarDoadores(tipo: string) {
+    this.abrirModalConfirmacao(
+      'Aviso de Estoque Crítico',
+      `Você deseja notificar os doadores do tipo ${tipo}? Esta ação enviará um e-mail para todos os doadores ativos deste grupo.`,
+      'notificar',
+      'Sim, Notificar',
+      () => {
+        this.enviandoNotificacao[tipo] = true;
+        this.EstoqueService.notificarDoadoresCritico(tipo).subscribe({
+          next: (res) => {
+            this.toastComponente.exibir(res.mensagem); 
+            this.enviandoNotificacao[tipo] = false;
+          },
+          error: (err) => {
+            this.toastComponente.exibir(err.error?.erro || 'Erro ao enviar notificação.', false);
+            this.enviandoNotificacao[tipo] = false;
+          }
+        });
+      }
+    );
+  }
   private atualizarTudo() {
     this.carregarBolsas();
     this.carregarDashboard();
   }
+
+
 }

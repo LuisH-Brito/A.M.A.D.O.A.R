@@ -106,7 +106,7 @@
       >
         Visualizar Carteira Digital
       </button>
-      <button class="btn-principal">Visualizar Questionário Online</button>
+      <button class="btn-principal" (click)="abrirQuestionario()">Visualizar Questionário Online</button>
     </div>
 
     <div class="historico" *ngIf="isDoador">
@@ -157,3 +157,5 @@
     </div>
   </div>
 </div>
+
+<app-toast-notificacao #toast></app-toast-notificacao>
