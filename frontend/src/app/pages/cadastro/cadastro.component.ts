@@ -14,6 +14,21 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class CadastroComponent implements OnInit {
   modoEdicao = false;
   idDoador!: number;
+  tituloPagina = 'Cadastro do Doador';
+  mostrarSenha = false;
+  mostrarConfirmarSenha = false;
+
+  tiposSanguineos = [
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-',
+    'Não sei',
+  ];
 
   dados = {
     nome_completo: '',
@@ -34,11 +49,20 @@ export class CadastroComponent implements OnInit {
     private route: ActivatedRoute,
   ) {}
 
+  voltar() {
+    if (this.modoEdicao) {
+      this.router.navigate(['/meu-perfil']);
+    } else {
+      this.router.navigate(['/login']);
+    }
+  }
+
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
       if (params['modo'] === 'editar') {
         this.modoEdicao = true;
         this.carregarDadosDoador();
+        this.tituloPagina = 'Editar Perfil do Doador';
       }
     });
   }
@@ -138,6 +162,10 @@ export class CadastroComponent implements OnInit {
   }
 
   cancelar() {
-    this.router.navigate(['/login']);
+    if (this.modoEdicao) {
+      this.router.navigate(['/meu-perfil']);
+    } else {
+      this.router.navigate(['/login']);
+    }
   }
 }

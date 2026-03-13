@@ -2,24 +2,111 @@
   background-color: #f3f3f3;
   padding: 40px 0;
   display: flex;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+}
+
+.input-com-icone {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding-right: 40px !important;
+  }
+}
+
+.btn-olho {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #757575;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  height: 100%;
+  padding: 0;
+
+  &:hover {
+    color: #000;
+    background: none !important;
+  }
+
+  i {
+    font-size: 18px;
+  }
+}
+
+.tudo {
+  background: white;
+  width: 1000px;
+  margin-top: 15px;
+  border-radius: 15px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+  padding: 40px;
+}
+
+.tudo h2 {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 20px;
+}
+
+.btn-icone {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #000;
+  display: flex;
+  position: absolute;
+  left: 80px;
+  top: 30px;
+  width: auto;
+  align-items: center;
+  justify-content: center;
+  transition: 0.3s;
+
+  &:hover {
+    opacity: 0.7;
+  }
 }
 
 .cadastro-container {
-  background: white;
-  width: 1000px;
-  border-radius: 15px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
   display: flex;
-  padding: 40px;
+  padding: 20px 40px;
   gap: 40px;
 }
 
-.cadastro-left {
-  width: 30%;
+form {
+  display: flex;
+  flex-direction: row;
+  gap: 40px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.lado-esquerdo {
+  flex: 0.7;
   display: flex;
   flex-direction: column;
   gap: 25px;
+  width: 30%;
+}
+
+.lado-direito {
+  flex: 2.3;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  width: 70%;
 }
 
 .avatar {
@@ -30,7 +117,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin: 0 auto 20px auto;
 
   i {
     font-size: 70px;
@@ -58,31 +145,18 @@
 label {
   font-size: 14px;
   cursor: pointer;
-
   input {
     margin-right: 5px;
   }
 }
 
-.cadastro-right {
-  width: 70%;
-}
-
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 15px;
-}
-
 .form-group {
   display: flex;
   flex-direction: column;
-
   label {
     margin-bottom: 5px;
     font-weight: 500;
   }
-
   input {
     height: 38px;
     border-radius: 8px;
@@ -90,7 +164,6 @@ form {
     background-color: #e5e5e5;
     padding: 0 12px;
     font-size: 14px;
-
     &:focus {
       outline: 2px solid #0f5c2e;
       background-color: white;
@@ -98,10 +171,14 @@ form {
   }
 }
 
+input::placeholder {
+  color: #757575;
+  opacity: 1;
+}
+
 .form-row {
   display: flex;
   gap: 15px;
-
   .form-group {
     flex: 1;
   }
@@ -127,7 +204,6 @@ button {
 .btn-cancelar {
   background-color: #c40000;
   color: white;
-
   &:hover {
     background-color: #a30000;
   }
@@ -136,24 +212,87 @@ button {
 .btn-concluir {
   background-color: #19a34a;
   color: white;
-
   &:hover {
     background-color: #14833b;
   }
 }
 
+.btn-concluir:disabled {
+  background-color: #ccc !important;
+  color: #666 !important;
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+input.ng-invalid.ng-touched {
+  border: 2px solid #c40000;
+}
+
+input.senha-diferente {
+  border: 2px solid #c40000 !important;
+}
+input.ng-valid.ng-touched {
+  border: 2px solid #12a150;
+}
+
+.erro {
+  color: #c40000;
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+@media (max-width: 1100px) {
+  .btn-icone {
+    left: 20px;
+  }
+}
+
+@media (max-width: 1020px) {
+  .tudo {
+    width: 95%;
+  }
+}
+
 @media (max-width: 900px) {
-  .cadastro-container {
+  form {
     flex-direction: column;
-    width: 90%;
+    align-items: center;
   }
 
-  .cadastro-left,
-  .cadastro-right {
+  .lado-esquerdo,
+  .lado-direito {
     width: 100%;
+  }
+
+  .cadastro-container {
+    padding: 20px;
+  }
+
+  .btn-icone {
+    position: static;
+    align-self: flex-start;
+    margin: 0 0 10px 20px;
   }
 
   .form-row {
     flex-direction: column;
+  }
+
+  .buttons {
+    flex-direction: column-reverse;
+    width: 100%;
+    button {
+      width: 100%;
+    }
+  }
+}
+
+@media (max-width: 900px) {
+  .input-com-icone {
+    width: 100%;
+  }
+
+  .btn-olho i {
+    font-size: 20px;
   }
 }
