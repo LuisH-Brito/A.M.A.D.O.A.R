@@ -61,6 +61,9 @@ export class EstoqueBolsasComponent implements OnInit {
   tiposMenu = ['Todos', 'A-', 'A+', 'B-', 'B+', 'AB-', 'AB+', 'O-', 'O+'];
   private delayBusca: any;
 
+  // Controla o estado de 'carregamento' individual de cada botão de notificação
+  enviandoNotificacao: { [key: string]: boolean } = {}; 
+
   constructor(
     private router: Router,
     private EstoqueService: EstoqueBolsaService,
@@ -80,6 +83,7 @@ export class EstoqueBolsasComponent implements OnInit {
       error: (err) => console.error('Erro ao carregar KPIs:', err),
     });
   }
+
   carregarBolsas() {
     this.EstoqueService.listarBolsas(
       this.paginaAtual,
@@ -171,7 +175,7 @@ export class EstoqueBolsasComponent implements OnInit {
   abrirModalConfirmacao(
     titulo: string,
     mensagem: string,
-    tipo: 'descartar' | 'usar',
+    tipo: 'descartar' | 'usar' | 'notificar',
     textoBtn: string,
     acao: () => void,
   ) {
@@ -228,8 +232,33 @@ export class EstoqueBolsasComponent implements OnInit {
       },
     );
   }
+
+  // Função que chama o backend para notificar os doadores de um tipo específico
+  notificarDoadores(tipo: string) {
+    this.abrirModalConfirmacao(
+      'Aviso de Estoque Crítico',
+      `Você deseja notificar os doadores do tipo ${tipo}? Esta ação enviará um e-mail para todos os doadores ativos deste grupo.`,
+      'notificar',
+      'Sim, Notificar',
+      () => {
+        this.enviandoNotificacao[tipo] = true;
+        this.EstoqueService.notificarDoadoresCritico(tipo).subscribe({
+          next: (res) => {
+            this.toastComponente.exibir(res.mensagem); 
+            this.enviandoNotificacao[tipo] = false;
+          },
+          error: (err) => {
+            this.toastComponente.exibir(err.error?.erro || 'Erro ao enviar notificação.', false);
+            this.enviandoNotificacao[tipo] = false;
+          }
+        });
+      }
+    );
+  }
   private atualizarTudo() {
     this.carregarBolsas();
     this.carregarDashboard();
   }
+
+
 }

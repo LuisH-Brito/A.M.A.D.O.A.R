@@ -63,4 +63,8 @@ export class EstoqueBolsaService {
   listarDoadoresAptosCarteirinha(): Observable<any> {
     return this.http.get(`${this.endpoint}/doadores_aptos_carteirinha/`);
   }
+
+  notificarDoadoresCritico(tipoSanguineo: string): Observable<any> {
+    return this.http.post(`${this.endpoint}/notificar-doadores/`, { tipo_sanguineo: tipoSanguineo });
+  }
 }
