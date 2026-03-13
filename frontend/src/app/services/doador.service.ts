@@ -14,6 +14,10 @@ export class DoadorService {
     return this.http.get(`${this.apiUrl}me/`);
   }
 
+  obterDoadorPorId(id: number): Observable<any> {
+    return this.http.get(`${this.apiUrl}${id}/`);
+  }
+
   cadastrar(dadosDoador: any): Observable<any> {
     return this.http.post(this.apiUrl, dadosDoador);
   }
@@ -28,5 +32,12 @@ export class DoadorService {
 
   enviarCarteirinha(doadorId: number, formData: FormData) {
     return this.http.patch(`${this.apiUrl}${doadorId}/`, formData);
+  }
+
+  atualizarTipoSanguineo(idDoador: number, dadosSangue: any): Observable<any> {
+    return this.http.patch(
+      `${this.apiUrl}${idDoador}/atualizar_tipo_sanguineo/`,
+      dadosSangue,
+    );
   }
 }
