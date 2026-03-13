@@ -100,4 +100,7 @@ export class GestaoPessoalCrudComponent {
       this.paginaAtual = maxPaginas;
     }
   }
+  voltar() {
+    this.router.navigate(['/gestao-pessoal']);
+  }
 }
