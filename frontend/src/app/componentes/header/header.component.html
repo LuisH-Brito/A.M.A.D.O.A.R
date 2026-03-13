@@ -81,11 +81,62 @@
 
       <ng-container *ngIf="isLogado()">
         <a
-          *ngIf="temAcesso(['doador', 'administrador'])"
-          routerLink="/questionario"
+          *ngIf="
+            temAcesso([
+              'doador',
+              'medico',
+              'recepcionista',
+              'enfermeiro',
+              'administrador',
+            ])
+          "
+          routerLink="/pagina-doador"
           class="menu-item"
           (click)="toggleMenu()"
-          >Questionário da triagem</a
+          >Meu Perfil</a
+        >
+
+        <a
+          *ngIf="
+            temAcesso([
+              'administrador',
+              'recepcionista',
+              'medico',
+              'enfermeiro',
+            ])
+          "
+          routerLink="/carteira-doacao"
+          class="menu-item"
+          (click)="toggleMenu()"
+          >Carteiras de Doadores</a
+        >
+        <a
+          *ngIf="temAcesso(['administrador', 'medico', 'enfermeiro'])"
+          routerLink="/estoque-bolsas"
+          class="menu-item"
+          (click)="toggleMenu()"
+          >Estoque de Bolsas</a
+        >
+        <a
+          *ngIf="temAcesso(['administrador'])"
+          routerLink="/gestao-pessoal"
+          class="menu-item"
+          (click)="toggleMenu()"
+          >Gestão de Pessoal</a
+        >
+        <a
+          *ngIf="
+            temAcesso([
+              'administrador',
+              'medico',
+              'enfermeiro',
+              'recepcionista',
+            ])
+          "
+          routerLink="/listar-doadores"
+          class="menu-item"
+          (click)="toggleMenu()"
+          >Lista de Doadores</a
         >
 
         <a
@@ -111,66 +162,14 @@
           (click)="toggleMenu()"
           >Processo de Doação - ENF</a
         >
-
         <a
-          *ngIf="temAcesso(['administrador'])"
-          routerLink="/gestao-pessoal"
+          *ngIf="temAcesso(['doador', 'administrador'])"
+          routerLink="/questionario"
           class="menu-item"
           (click)="toggleMenu()"
-          >Gestão de Pessoal</a
+          >Questionário da triagem</a
         >
 
-        <a
-          *ngIf="temAcesso(['administrador', 'medico', 'enfermeiro'])"
-          routerLink="/estoque-bolsas"
-          class="menu-item"
-          (click)="toggleMenu()"
-          >Estoque de Bolsas</a
-        >
-        <a
-          *ngIf="
-            temAcesso([
-              'administrador',
-              'medico',
-              'enfermeiro',
-              'recepcionista',
-            ])
-          "
-          routerLink="/listar-doadores"
-          class="menu-item"
-          (click)="toggleMenu()"
-          >Lista de Doadores</a
-        >
-
-        <a
-          *ngIf="
-            temAcesso([
-              'doador',
-              'medico',
-              'recepcionista',
-              'enfermeiro',
-              'administrador',
-            ])
-          "
-          routerLink="/pagina-doador"
-          class="menu-item"
-          (click)="toggleMenu()"
-          >Meu Perfil</a
-        >
-        <a
-          *ngIf="
-            temAcesso([
-              'administrador',
-              'recepcionista',
-              'medico',
-              'enfermeiro',
-            ])
-          "
-          routerLink="/carteira-doacao"
-          class="menu-item"
-          (click)="toggleMenu()"
-          >Carteiras de Doadores</a
-        >
         <a
           (click)="deslogar()"
           class="menu-item text-danger"
