@@ -50,3 +50,6 @@ Comandos do angular para criar
 
 EXTRA: -> ng g c components/botao --dry-run  
  -> Mostra o que será criado sem criar de verdade
+
+Comando para rodar o teste automatizado
+-> npx playwright test --headed
