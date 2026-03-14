@@ -1,17 +1,19 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionarioService } from '../../services/questionario.service';
 import { PerguntasComponent } from '../../componentes/perguntas/perguntas.component';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-questionario-processo',
   standalone: true,
-  imports: [CommonModule, PerguntasComponent],
+  imports: [CommonModule, PerguntasComponent, ToastNotificacaoComponent],
   templateUrl: './questionario-processo.component.html',
   styleUrl: './questionario-processo.component.scss'
 })
 export class QuestionarioProcessoComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   carregando: boolean = true;
   cpfDoador: string | null = null;
   processoId: number | null = null;
@@ -139,13 +141,13 @@ export class QuestionarioProcessoComponent implements OnInit {
   salvarQuestionarioEditado() {
     const cargo = localStorage.getItem('cargo'); 
     if (!this.cpfDoador && cargo !== 'doador') {
-      alert('O sistema precisa do CPF na URL para salvar as respostas.');
+      this.toastComponente.exibir('O sistema precisa do CPF na URL para salvar as respostas.', false);
       return;
     }
 
     const temPerguntaVazia = this.perguntas.some(p => p.resposta_dada === null);
     if (temPerguntaVazia) {
-      alert('Preencha todas as perguntas antes de salvar.');
+      this.toastComponente.exibir('Preencha todas as perguntas antes de salvar.', false); 
       return;
     }
 
@@ -166,13 +168,12 @@ export class QuestionarioProcessoComponent implements OnInit {
 
     this.questionarioService.salvarQuestionario(payload).subscribe({
       next: () => {
-        alert('Questionário revisado e salvo no banco com sucesso!');
+        this.toastComponente.exibir('Questionário revisado e salvo no banco com sucesso!');
         this.modoEdicao = false; 
       },
       error: (erro) => {
         console.error('Erro ao salvar questionário:', erro);
-        alert('Erro ao salvar as respostas. Verifique o console.');
-      }
+        this.toastComponente.exibir('Erro ao salvar as respostas. Verifique o terminal.', false);      }
     });
   }
 
