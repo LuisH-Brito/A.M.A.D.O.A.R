@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
+import { ToastNotificacaoComponent } from '../../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-codigo-senha',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ToastNotificacaoComponent],
   templateUrl: './codigo-senha.component.html',
   styleUrl: './codigo-senha.component.scss',
 })
 export class CodigoSenhaComponent implements OnInit, OnDestroy {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   codigo = '';
   emailDestino = '';
   cpf = '';
@@ -33,7 +35,7 @@ export class CodigoSenhaComponent implements OnInit, OnDestroy {
       const cpf = (params.get('cpf') || '').trim();
 
       if (!cpf) {
-        alert('Dados inválidos para recuperação de senha.');
+        this.toastComponente.exibir('Fluxo de recuperação inválido. Tente novamente.', false);
         this.router.navigate(['/redefinir-senha']);
         return;
       }
@@ -46,7 +48,7 @@ export class CodigoSenhaComponent implements OnInit, OnDestroy {
           this.enviarCodigo();
         },
         error: () => {
-          alert('Não foi possível localizar o email para este CPF.');
+          this.toastComponente.exibir('Não foi possível localizar o email para este CPF.', false);
           this.router.navigate(['/redefinir-senha']);
         },
       });
@@ -76,7 +78,7 @@ export class CodigoSenhaComponent implements OnInit, OnDestroy {
       error: (err) => {
         const mensagem =
           err?.error?.erro || 'Não foi possível enviar o código de verificação.';
-        alert(mensagem);
+        this.toastComponente.exibir(mensagem, false);
         this.router.navigate(['/redefinir-senha']);
       },
     });

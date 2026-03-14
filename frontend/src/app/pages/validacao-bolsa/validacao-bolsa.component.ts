@@ -81,7 +81,7 @@ export class ValidacaoBolsaComponent implements OnInit {
         this.carregarSanguePrevioDoador();
       },
       error: () => {
-        alert('Erro ao carregar os dados da bolsa.');
+        this.toastComponente.exibir('Erro ao carregar os dados da bolsa.', false);
         this.voltar();
       },
     });

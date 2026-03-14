@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -9,6 +9,7 @@ import {
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 const senhaValida = (senha: string) =>
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test((senha || '').trim());
@@ -16,11 +17,12 @@ const senhaValida = (senha: string) =>
 @Component({
   selector: 'app-cadastro-funcionario',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, ToastNotificacaoComponent],
   templateUrl: './cadastro-funcionario.component.html',
   styleUrl: './cadastro-funcionario.component.scss',
 })
 export class CadastroFuncionarioComponent {
+  @ViewChild('toast') toastComponent!: ToastNotificacaoComponent;
   form: FormGroup;
   modoEdicao = false;
   idFuncionario: number | null = null;
@@ -218,14 +220,18 @@ export class CadastroFuncionarioComponent {
         delete dados.confirmarSenha;
       } else {
         if (!senhaValida(dados.senha)) {
-          alert(
+          this.toastComponent.exibir(
             'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.',
+            false,
           );
           return;
         }
 
         if (dados.senha !== dados.confirmarSenha) {
-          alert('As senhas novas não coincidem!');
+          this.toastComponent.exibir(
+            'As senhas novas não coincidem!',
+            false,
+          );
           return;
         }
       }
@@ -251,14 +257,12 @@ export class CadastroFuncionarioComponent {
       });
     } else {
       if (!senhaValida(dados.senha)) {
-        alert(
-          'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.',
-        );
+        this.toastComponent.exibir('A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.', false);
         return;
       }
 
       if (dados.senha !== dados.confirmarSenha) {
-        alert('As senhas novas não coincidem!');
+        this.toastComponent.exibir('As senhas novas não coincidem!', false);
         return;
       }
 

@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild, viewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-bolsa-aguardando-validacao',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [FormsModule, CommonModule, ToastNotificacaoComponent],
   templateUrl: './bolsa-aguardando-validacao.component.html',
   styleUrl: './bolsa-aguardando-validacao.component.scss',
 })
 export class BolsaAguardandoValidacaoComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   bolsas: Array<{ id: number; dataColeta: string; doadorNome: string }> = [];
   ehMedico = localStorage.getItem('cargo') === 'medico';
 
@@ -31,7 +33,7 @@ export class BolsaAguardandoValidacaoComponent implements OnInit {
         }));
       },
       error: () => {
-        alert('Nao foi possivel carregar as bolsas aguardando validacao.');
+        this.toastComponente.exibir('Não foi possível carregar as bolsas aguardando validação.', false);
       },
     });
   }
