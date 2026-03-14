@@ -57,7 +57,7 @@ def request_code_password_reset(request):
     if email:
         codigo = f'{random.randint(0, 999999):06d}'
         cache_key = f'password_reset_code:{cpf_sem_mascara}'
-        cache.set(cache_key, codigo, timeout=60)
+        cache.set(cache_key, codigo, timeout=90)
 
         try:
             send_mail(
