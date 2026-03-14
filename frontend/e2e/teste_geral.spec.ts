@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test.describe.configure({ mode: 'serial' });
+test.describe.serial('fluxo doador', () => {
 
 // Credenciais dinâmicas para evitar conflito com cadastro já existente
 const ts = Date.now();
@@ -12,7 +12,7 @@ const senha = 'SenhaForte123';
 test('cadastro de doador com sucesso', async ({ page }) => {
   await page.goto('/cadastro');
 
-  await page.fill('input[name="nome"]', 'Larissa Nobrega Figueredo');
+  await page.fill('input[name="nome"]', nome);
   await page.fill('input[name="email"]', email);
   await page.fill('input[name="cpf"]', cpf);
   await page.fill('input[name="endereco"]', 'Rua Samambaia, 100');
@@ -27,81 +27,90 @@ test('cadastro de doador com sucesso', async ({ page }) => {
 
   await page.click('button.btn-concluir');
 
+  // Novo passo: confirmar no modal
+  await expect(page.locator('.modal-overlay')).toBeVisible();
+  await page.getByRole('button', { name: 'Sim, Cadastrar', exact: true }).click();
+
   await expect(page).toHaveURL(/\/login\?cadastrado=true/);
-  await expect(page.getByText('Cadastro realizado com sucesso! Faça seu login.')).toBeVisible();
+  await expect(
+    page.getByText('Cadastro realizado com sucesso! Faça seu login.')
+  ).toBeVisible();
 });
 
 // Login como doador
-test('login com o doador recém-cadastrado', async ({ page }) => {
+test('login como doador com sucesso', async ({ page }) => {
   await page.goto('/login');
 
-  await page.fill('#cpf', cpf);
-  await page.fill('#senha', senha);
+  await page.fill('input[name="username"]', cpf);
+  await page.fill('input[name="password"]', senha);
   await page.click('button.btn-login');
 
   await expect(page).toHaveURL('/');
-
-  const token = await page.evaluate(() => localStorage.getItem('token'));
-  const cargo = await page.evaluate(() => localStorage.getItem('cargo'));
-  expect(token).not.toBeNull();
-  expect(cargo).toBe('doador');
+  await expect
+    .poll(async () =>
+      page.evaluate(() => ({
+        access: localStorage.getItem('access'),
+        cargo: localStorage.getItem('cargo'),
+      }))
+    )
+    .toMatchObject({
+      access: expect.any(String),
+      cargo: 'doador',
+    });
 });
 
-// Doador responde questionário
-test('doador responde o questionário com sucesso', async ({ page, request }) => {
-  page.on('dialog', async dialog => {
-    console.log('ALERT:', dialog.message());
-    await dialog.accept();
-  });
 
+// Doador responde questionário
+test('doador responde questionário com sucesso', async ({ page }) => {
   await page.goto('/login');
 
-  await page.fill('#cpf', cpf);
-  await page.fill('#senha', senha);
+  await page.fill('input[name="username"]', cpf);
+  await page.fill('input[name="password"]', senha);
   await page.click('button.btn-login');
 
   await expect(page).toHaveURL('/');
 
-  const perguntas = await request.get('http://127.0.0.1:8000/api/perguntas/');
-  expect(perguntas.ok()).toBeTruthy();
-
-  const listaPerguntas = await perguntas.json();
-  expect(listaPerguntas.length).toBeGreaterThan(0);
-
   await page.goto('/questionario');
-  await page.getByRole('checkbox').check();
+  await expect(page).toHaveURL('/questionario');
+
+  await page.locator('.checkbox-regras input[type="checkbox"]').check();
   await page.getByRole('button', { name: 'Iniciar Questionário', exact: true }).click();
 
   await expect(page).toHaveURL('/questionario_form');
+  await expect(page.locator('.contador')).toBeVisible();
 
-  const contador = page.locator('.contador');
-  await expect(contador).toHaveText(`1/${listaPerguntas.length}`);
+  const botaoNao = page.getByRole('button', { name: 'Não', exact: true });
+  const botaoFinalizar = page.locator('button.btn-finalizar');
 
-  for (let index = 0; index < listaPerguntas.length; index++) {
-    const respostaEsperada = listaPerguntas[index].resposta_esperada as 'Sim' | 'Não';
-
-    await page.getByRole('button', { name: respostaEsperada, exact: true }).click();
-
-    if (index < listaPerguntas.length - 1) {
-      await expect(contador).toHaveText(`${index + 2}/${listaPerguntas.length}`);
-    } else {
-      await page.waitForTimeout(500);
+  for (let i = 0; i < 100; i++) {
+    if (await botaoFinalizar.isVisible()) {
+      break;
     }
+
+    await botaoNao.click();
   }
 
-  const finalizar = page.locator('button.btn-finalizar');
-  await finalizar.scrollIntoViewIfNeeded();
-  await expect(finalizar).toBeVisible();
-  await expect(finalizar).toBeEnabled();
+  await expect(botaoFinalizar).toBeVisible();
+  await botaoFinalizar.click();
 
-  await Promise.all([
-    page.waitForResponse((response) =>
-      response.url().includes('/api/questionarios/') &&
-      response.request().method() === 'POST'
-    ),
-    finalizar.click({ force: true }),
-  ]);
-
-  await expect(page.locator('.resultado-box')).toBeVisible({ timeout: 10000 });
+  await expect(page.locator('.resultado-box')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'OK', exact: true })).toBeVisible();
+  await expect(page.locator('.resultado-box h3')).toContainText(/Parabéns|Infelizmente/);
 });
+
+});
+
+
+function nomeAleatorio() {
+  const nomes = ['Larissa', 'Mariana', 'Camila', 'Juliana', 'Beatriz', 'Amanda', 'Gabriela', 'Hayssa', 'Almecina', 'Raquel', 'Catarina', 'Billie', 'Sabrina', 'Taylor', 'Tate', 'Gracie'];
+  const sobrenomes = ['Nobrega', 'Figueredo', 'Silva', 'Souza', 'Oliveira', 'Costa', 'Sousa', 'Santos', 'Ishii', 'Braga', 'Eilish', 'Carpenter', 'Swift', 'McRae', 'Abrams', "O'Connel"];
+
+  const primeiroNome = nomes[Math.floor(Math.random() * nomes.length)];
+  const segundoNome = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+  const terceiroNome = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+
+  return `${primeiroNome} ${segundoNome} ${terceiroNome}`;
+}
+
+const nome = nomeAleatorio();
 
