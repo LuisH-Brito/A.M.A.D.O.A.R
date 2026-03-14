@@ -19,7 +19,7 @@ export class HeaderComponent {
   }
 
   isLogado(): boolean {
-    return !!localStorage.getItem('token');
+    return !!localStorage.getItem('access');
   }
 
   temAcesso(cargos: string[]): boolean {
@@ -44,7 +44,7 @@ export class HeaderComponent {
   }
 
   irParaSecao(fragmento: string) {
-    this.isMenuOpen = false; 
+    this.isMenuOpen = false;
 
     if (this.router.url.split('#')[0] === '/') {
       this.fazerScrollSuave(fragmento);
@@ -59,12 +59,13 @@ export class HeaderComponent {
   private fazerScrollSuave(fragmento: string) {
     const element = document.getElementById(fragmento);
     if (element) {
-      const alturaHeader = 100;       
-      const posicaoElemento = element.getBoundingClientRect().top + window.scrollY;
-      
+      const alturaHeader = 100;
+      const posicaoElemento =
+        element.getBoundingClientRect().top + window.scrollY;
+
       window.scrollTo({
         top: posicaoElemento - alturaHeader,
-        behavior: 'smooth'
+        behavior: 'smooth',
       });
     }
   }

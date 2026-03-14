@@ -65,17 +65,20 @@ INSTALLED_APPS = [
     'dados_clinicos',
     'bolsas',
     'core',
-    'rest_framework_simplejwt'
+    'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist'
 ]
 
 from datetime import timedelta
 
 
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(days=1),  # Tempo que o token dura
-    'REFRESH_TOKEN_LIFETIME': timedelta(days=7), # Tempo para renovar o acesso sem logar
-    'ROTATE_REFRESH_TOKENS': False,
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=7),
+
+    'ROTATE_REFRESH_TOKENS': True,
     'BLACKLIST_AFTER_ROTATION': True,
+
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),

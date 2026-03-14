@@ -49,14 +49,12 @@ export class LoginComponent implements OnInit {
     this.http.post<any>(url, loginPayload).subscribe({
       next: (res) => {
         console.log('Dados vindos do Django:', res);
-        localStorage.setItem('token', res.access);
+        localStorage.setItem('access', res.access);
+        localStorage.setItem('refresh', res.refresh);
 
         localStorage.setItem('cargo', res.tipo);
-
         localStorage.setItem('nomeUsuario', res.nome);
-
         localStorage.setItem('usuario_id', res.usuario_id.toString());
-
         this.router.navigate(['/']);
       },
       error: (err) => {
