@@ -11,18 +11,32 @@
 
     <div class="card-right">
       <h2>Por que doar sangue?</h2>
+
+      <p><strong>Doar sangue é doar esperança.</strong></p>
+
       <p>
-        Doar sangue é doar esperança. Em algum hospital, neste exato momento,
-        alguém está lutando pela vida e depende da solidariedade de outra pessoa
-        para continuar vivendo. Uma bolsa de sangue pode ser a diferença entre a
-        vida e a morte para uma criança, uma mãe ou uma vítima de acidente. Ao
-        doar, você oferece mais do que sangue — você oferece tempo, esperança e
-        a chance de alguém voltar para casa e continuar sua história
+        Em algum hospital, neste exato momento, alguém está lutando pela vida e
+        depende exclusivamente da solidariedade de outra pessoa para continuar
+        vivendo.
+      </p>
+
+      <p>
+        Uma única bolsa de sangue pode ser a
+        <strong>diferença entre a vida e a morte</strong> para uma criança, uma
+        mãe ou uma vítima de acidente.
+      </p>
+
+      <p>
+        Ao doar, você oferece muito mais do que sangue — você oferece tempo,
+        esperança e a <strong>chance de alguém voltar para casa</strong> e
+        continuar sua própria história.
       </p>
     </div>
   </div>
 
-  <h2 id="secao-hemometro" class="titulo-estoque">Nosso Estoque - <span>Hemômetro</span></h2>
+  <h2 id="secao-hemometro" class="titulo-estoque">
+    Nosso Estoque - <span>Hemômetro</span>
+  </h2>
 
   <div class="container-estoque">
     <div class="grid-hemometros">
@@ -65,7 +79,7 @@
       ></app-hemometro>
     </div>
   </div>
-  
+
   <div id="secao-condicoes" class="accordion-card">
     <h2>Quem pode doar?</h2>
 
@@ -77,12 +91,19 @@
         </button>
         <div class="accordion-content">
           <p>
-            Para doar sangue é necessário ter entre 16 e 69 anos, pesar mais de
-            50 kg e estar em boas condições de saúde. No dia da doação, é
-            importante estar bem alimentado, descansado e apresentar um
-            documento oficial com foto. Essas condições ajudam a garantir a
-            segurança tanto do doador quanto de quem irá receber o sangue.
+            Para doar sangue e salvar vidas, você precisa atender a alguns
+            requisitos simples:
           </p>
+          <ul>
+            <li><strong>Idade:</strong> Ter entre 16 e 69 anos.</li>
+            <li><strong>Peso:</strong> Pesar mais de 50 kg.</li>
+            <li><strong>Saúde:</strong> Estar em boas condições gerais.</li>
+            <li>
+              <strong>No dia da doação:</strong> Estar descansado, bem
+              alimentado e apresentar um
+              <strong>documento oficial com foto</strong>.
+            </li>
+          </ul>
         </div>
       </div>
 
@@ -93,13 +114,29 @@
         </button>
         <div class="accordion-content">
           <p>
-            Alguns fatores podem impedir a doação de sangue temporariamente.
-            Situações como gripe, febre, gravidez, realização de tatuagem ou
-            piercing recente, consumo de bebidas alcoólicas nas últimas horas ou
-            cirurgias recentes podem exigir um período de espera antes da
-            doação. Esses impedimentos são temporários e, após o tempo
-            recomendado, a pessoa poderá doar normalmente caso esteja em boas
-            condições de saúde.
+            Algumas situações exigem apenas que você aguarde um período de
+            segurança antes de doar. Os casos mais comuns incluem:
+          </p>
+          <ul>
+            <li>
+              <strong>Sintomas virais:</strong> Gripe, resfriado ou febre
+              recentes.
+            </li>
+            <li>
+              <strong>Estética:</strong> Realização de tatuagem,
+              micropigmentação ou piercing.
+            </li>
+            <li>
+              <strong>Consumo:</strong> Ingestão de bebidas alcoólicas nas horas
+              que antecedem a doação.
+            </li>
+            <li>
+              <strong>Saúde e procedimentos:</strong> Gravidez, amamentação ou
+              cirurgias recentes.
+            </li>
+          </ul>
+          <p class="nota-informativa">
+            Após o tempo de espera recomendado, você poderá doar normalmente!
           </p>
         </div>
       </div>
@@ -111,13 +148,18 @@
         </button>
         <div class="accordion-content">
           <p>
-            Existem condições que impedem a doação de sangue de forma
-            permanente, pois podem representar riscos à segurança de quem
-            receberá o sangue. Entre esses casos estão pessoas que tiveram
-            determinadas doenças infecciosas transmissíveis pelo sangue, como
-            HIV ou hepatites virais após determinada idade. Esses critérios
-            seguem normas de segurança sanitária e existem para garantir que o
-            sangue coletado seja seguro para os pacientes que irão recebê-lo.
+            Para garantir a <strong>segurança absoluta</strong> dos pacientes
+            que receberão as transfusões, algumas condições impedem a doação de
+            forma permanente.
+          </p>
+          <p>
+            Isso inclui o diagnóstico de doenças infecciosas transmissíveis pelo
+            sangue, como
+            <strong>HIV, Hepatites virais, Doença de Chagas ou Sífilis</strong>.
+          </p>
+          <p class="nota-informativa">
+            *Estes critérios seguem normas rigorosas de segurança sanitária para
+            proteger tanto quem doa quanto quem recebe.
           </p>
         </div>
       </div>
@@ -135,9 +177,13 @@
       </div>
 
       <div class="faixa-botao">
-        <button class="btn-triagem" (click)="irParaTriagem()" routerLink="questionario">
+        <button
+          class="btn-triagem"
+          (click)="irParaTriagem()"
+          routerLink="questionario"
+        >
           Triagem Online
-        </button>      
+        </button>
       </div>
     </div>
   </div>
