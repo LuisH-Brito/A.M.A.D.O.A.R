@@ -249,13 +249,23 @@ class BolsaViewSet(viewsets.ModelViewSet):
     @action(detail=False, methods=['post'], url_path='notificar-doadores')
     def notificar_doadores(self, request):
         tipo_sangue = request.data.get('tipo_sanguineo')
+        apenas_aptos = request.data.get('apenas_aptos', True) 
+        
         if not tipo_sangue:
             return Response({"erro": "Tipo sanguíneo não informado."}, status=status.HTTP_400_BAD_REQUEST)
             
         try:
-            qtd_emails = notificar_doadores_por_tipo(tipo_sangue)
+            # Recebemos o número exato na hora!
+            qtd_emails = notificar_doadores_por_tipo(tipo_sangue, apenas_aptos) 
+            
             if qtd_emails == 0:
-                return Response({"mensagem": f"Nenhum doador com e-mail cadastrado para o tipo {tipo_sangue}."}, status=status.HTTP_200_OK)
-            return Response({"mensagem": f"Notificação de emergência enviada para {qtd_emails} doador(es) do tipo {tipo_sangue}."}, status=status.HTTP_200_OK)
+                return Response({
+                    "mensagem": f"Nenhum doador apto do tipo {tipo_sangue} foi encontrado no momento."
+                }, status=status.HTTP_200_OK)
+                
+            return Response({
+                "mensagem": f"Notificação de emergência enviada com sucesso para {qtd_emails} doador(es) apto(s) do tipo {tipo_sangue}!"
+            }, status=status.HTTP_200_OK)
+            
         except Exception as e:
             return Response({"erro": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

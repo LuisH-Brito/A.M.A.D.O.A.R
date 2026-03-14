@@ -17,6 +17,8 @@ load_dotenv()
 
 # Configurações de E-mail (Gmail)
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# para testes locais, pode usar o console para evitar enviar e-mails de verdade
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend' 
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
