@@ -77,7 +77,7 @@ export class HomeComponent implements OnInit {
   }
 
   irParaTriagem() {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('access');
 
     if (token) {
       this.router.navigate(['/questionario']);
