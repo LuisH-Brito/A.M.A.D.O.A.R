@@ -116,23 +116,31 @@ export class FormPreTriagemComponent implements OnInit {
       return;
     }
 
-    const enfermeiroId = localStorage.getItem('usuario_id');
-    if (!enfermeiroId) {
+    const usuarioId = localStorage.getItem('usuario_id');
+    const tipoUsuario = localStorage.getItem('tipo_usuario');
+
+    if (!usuarioId) {
       this.toast.exibir(
-        'Acesso negado: Não foi possível identificar o enfermeiro logado.',
+        'Acesso negado: Não foi possível identificar o profissional logado.',
         false,
       );
       return;
     }
 
-    const payload = {
+    const payload: any = {
       processo_id: this.processoId,
       altura: this.form.altura,
       peso: this.form.peso,
       hemoglobina: this.form.hemoglobina,
       status_clinico: 1,
-      enfermeiro_id: enfermeiroId,
     };
+
+    const tipoNormalizado = tipoUsuario ? tipoUsuario.toLowerCase().trim() : '';
+    if (tipoNormalizado === 'medico') {
+      payload.medico_id = usuarioId;
+    } else {
+      payload.enfermeiro_id = usuarioId;
+    }
 
     this.api.salvarDadosClinicos(payload).subscribe({
       next: () => {
@@ -162,23 +170,30 @@ export class FormPreTriagemComponent implements OnInit {
   }
 
   marcarInapto(): void {
-    const enfermeiroId = localStorage.getItem('usuario_id');
-    if (!enfermeiroId) {
+    const usuarioId = localStorage.getItem('usuario_id');
+    const tipoUsuario = localStorage.getItem('tipo_usuario');
+    if (!usuarioId) {
       this.toast.exibir(
-        'Acesso negado: Não foi possível identificar o enfermeiro logado.',
+        'Acesso negado: Não foi possível identificar o profissional logado.',
         false,
       );
       return;
     }
 
-    const payload = {
+    const payload: any = {
       processo_id: this.processoId,
       altura: this.form.altura || 0,
       peso: this.form.peso || 0,
       hemoglobina: this.form.hemoglobina || 0,
       status_clinico: 0,
-      enfermeiro_id: enfermeiroId,
     };
+
+    const tipoNormalizado = tipoUsuario ? tipoUsuario.toLowerCase().trim() : '';
+    if (tipoNormalizado === 'medico') {
+      payload.medico_id = usuarioId;
+    } else {
+      payload.enfermeiro_id = usuarioId;
+    }
 
     this.api.salvarDadosClinicos(payload).subscribe({
       next: () => {
