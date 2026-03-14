@@ -1,13 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DoadorService } from '../../services/doador.service';
 import { ActivatedRoute, Router } from '@angular/router';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 
 @Component({
   selector: 'app-cadastro',
   standalone: true,
-  imports: [FormsModule, CommonModule],
+  imports: [
+    FormsModule,
+    CommonModule,
+    ModalConfirmacaoComponent,
+    ToastNotificacaoComponent,
+  ],
   templateUrl: './cadastro.component.html',
   styleUrl: './cadastro.component.scss',
 })
@@ -17,6 +24,15 @@ export class CadastroComponent implements OnInit {
   tituloPagina = 'Cadastro do Doador';
   mostrarSenha = false;
   mostrarConfirmarSenha = false;
+
+  @ViewChild('toast') toast!: ToastNotificacaoComponent;
+  modalVisivel = false;
+  modalConfig = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'padrao' as 'padrao' | 'usar' | 'descartar',
+    textoConfirmar: '',
+  };
 
   tiposSanguineos = [
     'A+',
@@ -97,20 +113,40 @@ export class CadastroComponent implements OnInit {
     });
   }
 
-  concluirCadastro() {
+  abrirModalConfirmacao() {
     if (this.dados.senha || this.dados.confirmarSenha) {
       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(this.dados.senha)) {
-        alert(
+        this.toast.exibir(
           'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.',
+          false,
         );
         return;
       }
 
       if (this.dados.senha !== this.dados.confirmarSenha) {
-        alert('As senhas não coincidem!');
+        this.toast.exibir('As senhas não coincidem!', false);
         return;
       }
     }
+
+    this.modalConfig = {
+      titulo: this.modoEdicao ? 'Salvar Alterações' : 'Confirmar Cadastro',
+      mensagem: this.modoEdicao
+        ? 'Tem certeza que deseja salvar as alterações no seu perfil?'
+        : 'Confirma os dados informados para concluir o seu cadastro de doador?',
+      tipo: 'usar',
+      textoConfirmar: this.modoEdicao ? 'Sim, Salvar' : 'Sim, Cadastrar',
+    };
+
+    this.modalVisivel = true;
+  }
+
+  fecharModal() {
+    this.modalVisivel = false;
+  }
+
+  concluirCadastro() {
+    this.modalVisivel = false;
 
     const doadorParaEnviar: any = {
       email: this.dados.email,
@@ -139,12 +175,11 @@ export class CadastroComponent implements OnInit {
     if (this.modoEdicao) {
       this.doadorService.atualizarDoador(doadorParaEnviar).subscribe({
         next: () => {
-          alert('Dados atualizados com sucesso');
-          this.router.navigate(['/pagina-doador']);
+          this.toast.exibir('Dados atualizados com sucesso!', true);
+          setTimeout(() => this.router.navigate(['/pagina-doador']), 1500);
         },
-
         error: (err) => {
-          console.error('Erro ao atualizar', err);
+          this.toast.exibir('Erro ao atualizar os dados.', false);
         },
       });
     } else {
@@ -154,15 +189,11 @@ export class CadastroComponent implements OnInit {
             queryParams: { cadastrado: 'true' },
           });
         },
-
         error: (err) => {
-          console.error('Erro ao cadastrar', err);
-
           const erroBackend = err.error
             ? JSON.stringify(err.error)
             : 'Erro de conexão';
-
-          alert('Erro ao cadastrar: ' + erroBackend);
+          this.toast.exibir('Erro ao cadastrar: ' + erroBackend, false);
         },
       });
     }

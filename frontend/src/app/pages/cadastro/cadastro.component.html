@@ -15,7 +15,7 @@
   <div class="tudo">
     <h2 class="titulo">{{ tituloPagina }}</h2>
     <div class="cadastro-container">
-      <form #formCadastro="ngForm" (ngSubmit)="concluirCadastro()">
+      <form #formCadastro="ngForm" (ngSubmit)="abrirModalConfirmacao()">
         <div class="lado-esquerdo">
           <div class="avatar">
             <i class="bi bi-person-fill"></i>
@@ -261,3 +261,16 @@
     </div>
   </div>
 </main>
+
+<app-modal-confirmacao
+  [visivel]="modalVisivel"
+  [titulo]="modalConfig.titulo"
+  [mensagem]="modalConfig.mensagem"
+  [tipo]="modalConfig.tipo"
+  [textoConfirmar]="modalConfig.textoConfirmar"
+  (confirmado)="concluirCadastro()"
+  (cancelado)="fecharModal()"
+>
+</app-modal-confirmacao>
+
+<app-toast-notificacao #toast></app-toast-notificacao>

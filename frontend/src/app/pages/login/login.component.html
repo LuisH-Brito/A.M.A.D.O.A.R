@@ -26,14 +26,26 @@
 
         <div class="form-group">
           <label for="senha">Senha</label>
-          <input
-            [type]="showPassword ? 'text' : 'password'"
-            id="senha"
-            name="password"
-            [(ngModel)]="loginData.password"
-            placeholder="Digite sua senha"
-            required
-          />
+
+          <div class="password-wrapper">
+            <input
+              [type]="showPassword ? 'text' : 'password'"
+              id="senha"
+              name="password"
+              [(ngModel)]="loginData.password"
+              placeholder="Digite sua senha"
+              required
+            />
+
+            <button
+              type="button"
+              class="btn-toggle-password"
+              (click)="togglePassword()"
+              aria-label="Mostrar ou ocultar senha"
+            >
+              <i class="bi" [ngClass]="showPassword ? 'bi-eye' : 'bi-eye-slash'"></i>
+            </button>
+          </div>
         </div>
 
         <a routerLink="/redefinir-senha" href="#" class="forgot-link">Esqueceu sua senha?</a>

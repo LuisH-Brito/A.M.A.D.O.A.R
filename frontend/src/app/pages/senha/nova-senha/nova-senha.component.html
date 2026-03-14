@@ -12,28 +12,60 @@
       <form (ngSubmit)="redefinirSenha()">
         <div class="form-group">
           <label for="novaSenha">Nova Senha</label>
-          <input
-            type="password"
-            id="novaSenha"
-            name="novaSenha"
-            [(ngModel)]="novaSenha"
-            placeholder="Digite a senha"
-            required
-            [disabled]="carregando"
-          />
+
+          <div class="password-wrapper">
+            <input
+              [type]="showNovaSenha ? 'text' : 'password'"
+              id="novaSenha"
+              name="novaSenha"
+              [(ngModel)]="novaSenha"
+              placeholder="Digite a senha"
+              required
+              [disabled]="carregando"
+            />
+
+            <button
+              type="button"
+              class="btn-toggle-password"
+              (click)="toggleNovaSenha()"
+              [disabled]="carregando"
+              aria-label="Mostrar ou ocultar nova senha"
+            >
+              <i
+                class="bi"
+                [ngClass]="showNovaSenha ? 'bi-eye' : 'bi-eye-slash'"
+              ></i>
+            </button>
+          </div>
         </div>
 
         <div class="form-group">
           <label for="confirmarNovaSenha">Confirmar Nova Senha</label>
-          <input
-            type="password"
-            id="confirmarNovaSenha"
-            name="confirmarNovaSenha"
-            [(ngModel)]="confirmarNovaSenha"
-            placeholder="Digite a senha novamente"
-            required
-            [disabled]="carregando"
-          />
+
+          <div class="password-wrapper">
+            <input
+              [type]="showConfirmarNovaSenha ? 'text' : 'password'"
+              id="confirmarNovaSenha"
+              name="confirmarNovaSenha"
+              [(ngModel)]="confirmarNovaSenha"
+              placeholder="Digite a senha novamente"
+              required
+              [disabled]="carregando"
+            />
+
+            <button
+              type="button"
+              class="btn-toggle-password"
+              (click)="toggleConfirmarNovaSenha()"
+              [disabled]="carregando"
+              aria-label="Mostrar ou ocultar confirmação de senha"
+            >
+              <i
+                class="bi"
+                [ngClass]="showConfirmarNovaSenha ? 'bi-eye' : 'bi-eye-slash'"
+              ></i>
+            </button>
+          </div>
         </div>
 
         <button type="submit" class="btn-redefinir" [disabled]="carregando">
