@@ -28,7 +28,9 @@ class Doador(Usuario):
             return None
             
         dias_espera = 60 if self.sexo == 'M' else 90
-        return (ultimo_concluido.data_inicio + timedelta(days=dias_espera)).date()
+        data_inicio_local = timezone.localtime(ultimo_concluido.data_inicio)
+        return (data_inicio_local + timedelta(days=dias_espera)).date()
+    
 
     @property
     def apto_para_doacao(self):
@@ -48,7 +50,12 @@ class Doador(Usuario):
     @property
     def data_ultima_doacao(self):
         ultimo_concluido = self.processos.filter(status=StatusProcesso.CONCLUIDO).order_by('-data_inicio').first()
-        return ultimo_concluido.data_inicio.date() if ultimo_concluido else None
+        
+        if not ultimo_concluido:
+            return None
+            
+        data_inicio_local = timezone.localtime(ultimo_concluido.data_inicio)
+        return data_inicio_local.date()
 
 @receiver(post_delete, sender=Doador)
 def deletar_arquivo_carteira(sender, instance, **kwargs):
