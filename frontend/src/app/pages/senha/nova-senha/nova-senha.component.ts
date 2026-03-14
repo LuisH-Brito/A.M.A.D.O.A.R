@@ -19,6 +19,9 @@ export class NovaSenhaComponent implements OnInit {
   confirmarNovaSenha = '';
   carregando = false;
 
+  showNovaSenha = false;
+  showConfirmarNovaSenha = false;
+
   constructor(
     private route: ActivatedRoute,
     private router: Router,
@@ -77,5 +80,13 @@ export class NovaSenhaComponent implements OnInit {
         alert(mensagem);
       },
     });
+  }
+
+  toggleNovaSenha(): void {
+    this.showNovaSenha = !this.showNovaSenha;
+  }
+
+  toggleConfirmarNovaSenha(): void {
+    this.showConfirmarNovaSenha = !this.showConfirmarNovaSenha;
   }
 }
