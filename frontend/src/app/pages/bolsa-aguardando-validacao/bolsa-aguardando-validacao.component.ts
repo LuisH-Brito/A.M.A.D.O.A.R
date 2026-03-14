@@ -46,4 +46,8 @@ export class BolsaAguardandoValidacaoComponent implements OnInit {
   validarBolsa(id: number) {
     this.router.navigate(['/validar-bolsa', id]);
   }
+
+  voltar() {
+    this.router.navigate(['/processo-doacao-MED']);
+  }
 }

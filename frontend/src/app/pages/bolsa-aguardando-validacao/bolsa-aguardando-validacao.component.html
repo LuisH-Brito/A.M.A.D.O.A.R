@@ -1,30 +1,45 @@
 <div class="pagina">
   <div class="centralizando">
-    <h2 class="titulo">Validação das bolsas</h2>
+    <div class="container">
+      <button class="btn-icone" (click)="voltar()">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <h2 class="titulo">Validação das bolsas</h2>
 
-    <div class="lista-container">
-      <div class="lista-scroll">
-        @for (bolsa of bolsas; track bolsa.id) {
-          <div class="usuario-card">
-            <div class="info">
-              ID: {{ bolsa.id }} &nbsp;&nbsp;&nbsp; Data da Coleta:
-              {{ bolsa.dataColeta }} &nbsp;&nbsp;&nbsp; Doador:
-              {{ bolsa.doadorNome }}
+      <div class="lista-container">
+        <div class="lista-scroll">
+          @for (bolsa of bolsas; track bolsa.id) {
+            <div class="usuario-card">
+              <div class="info">
+                ID: {{ bolsa.id }} &nbsp;&nbsp;&nbsp; Data da Coleta:
+                {{ bolsa.dataColeta }} &nbsp;&nbsp;&nbsp; Doador:
+                {{ bolsa.doadorNome }}
+              </div>
+              <div class="acoes">
+                <button
+                  class="btn-acao"
+                  (click)="validarBolsa(bolsa.id)"
+                  *ngIf="ehMedico"
+                >
+                  Realizar Validação
+                </button>
+                <span *ngIf="!ehMedico">Aguardando validação médica</span>
+              </div>
             </div>
-            <div class="acoes">
-              <button
-                class="btn-acao"
-                (click)="validarBolsa(bolsa.id)"
-                *ngIf="ehMedico"
-              >
-                Realizar Validação
-              </button>
-              <span *ngIf="!ehMedico">Aguardando validação médica</span>
-            </div>
+          }
+          <div *ngIf="bolsas.length === 0">
+            Nenhuma bolsa aguardando validacao.
           </div>
-        }
-        <div *ngIf="bolsas.length === 0">
-          Nenhuma bolsa aguardando validacao.
         </div>
       </div>
     </div>

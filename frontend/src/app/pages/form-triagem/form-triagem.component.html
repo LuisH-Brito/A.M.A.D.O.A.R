@@ -1,12 +1,21 @@
 <div class="form-triagem">
   <div class="container">
+    <button class="btn-icone" (click)="voltar()">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
     <h2 class="titulo">Triagem Médica</h2>
 
-    <form
-      class="formulario"
-      #formTri="ngForm"
-      (ngSubmit)="$event.preventDefault()"
-    >
+    <form class="formulario" #formTri="ngForm" (ngSubmit)="abrirModal(true)">
       <div class="linha">
         <div class="campo grande">
           <label>Nome Completo:</label>
@@ -57,22 +66,26 @@
       </div>
 
       <div class="acoes">
-        <button
-          type="button"
-          class="btn-cancelar"
-          (click)="enviarDecisao(false)"
-        >
+        <button type="button" class="btn-cancelar" (click)="abrirModal(false)">
           Inapto
         </button>
-        <button
-          type="button"
-          class="btn-concluir"
-          (click)="enviarDecisao(true)"
-          [disabled]="formTri.invalid"
-        >
+        <button type="submit" class="btn-concluir" [disabled]="formTri.invalid">
           Apto
         </button>
       </div>
     </form>
   </div>
 </div>
+
+<app-modal-confirmacao
+  [visivel]="modalVisivel"
+  [titulo]="modalConfig.titulo"
+  [mensagem]="modalConfig.mensagem"
+  [tipo]="modalConfig.tipo"
+  [textoConfirmar]="modalConfig.textoConfirmar"
+  (confirmado)="confirmarAcaoModal()"
+  (cancelado)="fecharModal()"
+>
+</app-modal-confirmacao>
+
+<app-toast-notificacao #toast></app-toast-notificacao>

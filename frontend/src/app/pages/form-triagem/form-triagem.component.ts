@@ -1,14 +1,21 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { QuestionarioService } from '../../services/questionario.service';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-form-triagem',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ModalConfirmacaoComponent,
+    ToastNotificacaoComponent,
+  ],
   templateUrl: './form-triagem.component.html',
   styleUrl: './form-triagem.component.scss',
 })
@@ -17,6 +24,16 @@ export class FormTriagemComponent implements OnInit {
   doador = { nome: '', dataNascimento: '', cpf: '' };
   pressaoArterial = '';
   questionarioVinculado = false;
+
+  @ViewChild('toast') toast!: ToastNotificacaoComponent;
+  modalVisivel = false;
+  acaoPendente: boolean | null = null; // true = Apto, false = Inapto
+  modalConfig = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'padrao' as 'padrao' | 'usar' | 'descartar',
+    textoConfirmar: '',
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -76,18 +93,55 @@ export class FormTriagemComponent implements OnInit {
 
   private validarPressao(): boolean {
     if (!this.pressaoArterial?.trim()) {
-      alert('Informe a pressão arterial.');
+      this.toast.exibir('Informe a pressão arterial.', false);
       return false;
     }
     return true;
   }
 
-  enviarDecisao(aprovado: boolean): void {
-    if (!this.validarPressao()) return;
+  abrirModal(aprovado: boolean): void {
+    if (aprovado && !this.validarPressao()) return;
 
+    this.acaoPendente = aprovado;
+
+    if (aprovado) {
+      this.modalConfig = {
+        titulo: 'Confirmar Aptidão Clínica',
+        mensagem: `Deseja aprovar ${this.doador.nome || 'o doador'} na triagem médica e avançar para a coleta de sangue?`,
+        tipo: 'usar',
+        textoConfirmar: 'Sim, Aprovar',
+      };
+    } else {
+      this.modalConfig = {
+        titulo: 'Registrar Inaptidão Clínica',
+        mensagem: `Atenção: Deseja registrar que ${this.doador.nome || 'o doador'} está INAPTO? Esta ação encerrará o processo de doação.`,
+        tipo: 'descartar',
+        textoConfirmar: 'Sim, Reprovar',
+      };
+    }
+
+    this.modalVisivel = true;
+  }
+
+  fecharModal(): void {
+    this.modalVisivel = false;
+    this.acaoPendente = null;
+  }
+
+  confirmarAcaoModal(): void {
+    this.modalVisivel = false;
+    if (this.acaoPendente !== null) {
+      this.enviarDecisao(this.acaoPendente);
+    }
+  }
+
+  private enviarDecisao(aprovado: boolean): void {
     const medicoId = localStorage.getItem('usuario_id');
     if (!medicoId) {
-      alert('Erro: Não foi possível identificar o médico logado.');
+      this.toast.exibir(
+        'Erro: Não foi possível identificar o médico logado.',
+        false,
+      );
       return;
     }
 
@@ -99,27 +153,39 @@ export class FormTriagemComponent implements OnInit {
 
     this.api.decidirTriagem(this.processoId, payload as any).subscribe({
       next: () => {
-        const novoStatus = aprovado ? 4 : 0;
+        const novoStatus = aprovado ? 4 : 0; // 4 = Coleta, 0 = Cancelado/Inapto
 
         this.api
           .atualizarStatusProcesso(this.processoId, novoStatus)
           .subscribe({
             next: () => {
               const msg = aprovado
-                ? 'doador apto. Processo enviado para Coleta'
-                : 'doador inapto. Processo encerrado';
-              alert(`Triagem concluída: ${msg}.`);
-              this.router.navigate(['/processo-doacao-andamento']);
+                ? 'Doador Apto! Processo enviado para Coleta.'
+                : 'Doador Inapto. Processo encerrado.';
+
+              this.toast.exibir(msg, true);
+              setTimeout(
+                () => this.router.navigate(['/processo-doacao-andamento']),
+                1500,
+              );
             },
             error: () =>
-              alert(
+              this.toast.exibir(
                 'Os dados foram salvos, mas houve um erro ao mudar a etapa do processo.',
+                false,
               ),
           });
       },
       error: (err) => {
-        alert(err?.error?.erro || 'Erro ao registrar os dados da triagem.');
+        this.toast.exibir(
+          err?.error?.erro || 'Erro ao registrar os dados da triagem.',
+          false,
+        );
       },
     });
+  }
+
+  voltar() {
+    this.router.navigate(['/processo-doacao-andamento']);
   }
 }

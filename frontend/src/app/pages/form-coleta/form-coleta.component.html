@@ -1,11 +1,24 @@
 <div class="form-coleta">
   <div class="container">
+    <button class="btn-icone" (click)="voltar()">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
     <h2 class="titulo">Coleta</h2>
 
     <form
       class="formulario"
       #formColeta="ngForm"
-      (ngSubmit)="finalizarColeta()"
+      (ngSubmit)="abrirModalConfirmacao()"
     >
       <div class="layout-duplo">
         <div class="grupo-inputs">
@@ -83,9 +96,21 @@
           class="btn-concluir btn-coleta"
           [disabled]="enviando || formColeta.invalid"
         >
-          Finalizar Coleta
+          {{ enviando ? "Processando..." : "Finalizar Coleta" }}
         </button>
       </div>
     </form>
   </div>
 </div>
+<app-modal-confirmacao
+  [visivel]="modalVisivel"
+  [titulo]="modalConfig.titulo"
+  [mensagem]="modalConfig.mensagem"
+  [tipo]="modalConfig.tipo"
+  [textoConfirmar]="modalConfig.textoConfirmar"
+  (confirmado)="finalizarColeta()"
+  (cancelado)="fecharModal()"
+>
+</app-modal-confirmacao>
+
+<app-toast-notificacao #toast></app-toast-notificacao>

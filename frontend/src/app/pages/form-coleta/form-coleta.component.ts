@@ -1,13 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 
 @Component({
   selector: 'app-form-coleta',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ToastNotificacaoComponent,
+    ModalConfirmacaoComponent,
+  ],
   templateUrl: './form-coleta.component.html',
   styleUrl: './form-coleta.component.scss',
 })
@@ -23,6 +30,15 @@ export class FormColetaComponent implements OnInit {
   responsavelSelecionado: number | null = null;
   puncaoSucesso = 'true';
   enviando = false;
+
+  @ViewChild('toast') toast!: ToastNotificacaoComponent;
+  modalVisivel = false;
+  modalConfig = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'padrao' as 'padrao' | 'usar' | 'descartar',
+    textoConfirmar: '',
+  };
 
   constructor(
     private route: ActivatedRoute,
@@ -64,38 +80,76 @@ export class FormColetaComponent implements OnInit {
     });
   }
 
-  finalizarColeta(): void {
+  abrirModalConfirmacao(): void {
     if (!this.responsavelSelecionado) {
-      alert('Selecione o responsavel pela coleta.');
+      this.toast.exibir(
+        'Selecione o enfermeiro responsável pela coleta.',
+        false,
+      );
       return;
     }
 
+    if (this.puncaoSucesso === 'true') {
+      this.modalConfig = {
+        titulo: 'Finalizar Coleta',
+        mensagem: `Confirma a finalização da coleta de ${this.doador.nome || 'doador'} com SUCESSO? Uma nova bolsa será gerada e enviada para a fila de validação.`,
+        tipo: 'usar',
+        textoConfirmar: 'Sim, Finalizar',
+      };
+    } else {
+      this.modalConfig = {
+        titulo: 'Registrar Falha na Punção',
+        mensagem: `Atenção: Confirma que a punção venosa de ${this.doador.nome || 'doador'} FALHOU? O processo será cancelado e NENHUMA bolsa será gerada para estoque.`,
+        tipo: 'descartar',
+        textoConfirmar: 'Confirmar Falha',
+      };
+    }
+
+    this.modalVisivel = true;
+  }
+
+  fecharModal(): void {
+    this.modalVisivel = false;
+  }
+
+  finalizarColeta(): void {
+    this.modalVisivel = false;
     this.enviando = true;
+
     this.api
       .finalizarColeta(this.processoId, {
-        enfermeiro_id: this.responsavelSelecionado,
+        enfermeiro_id: this.responsavelSelecionado!,
         puncao_sucesso: this.puncaoSucesso === 'true',
       })
       .subscribe({
         next: (res: any) => {
           this.enviando = false;
           if (res?.bolsa_criada) {
-            alert(
-              'Coleta finalizada com sucesso. Bolsa enviada para validacao.',
+            this.toast.exibir(
+              'Coleta finalizada. Bolsa enviada para validação laboratorial.',
+              true,
             );
-            this.router.navigate(['/processo-doacao-andamento']);
-            return;
+          } else {
+            this.toast.exibir(
+              'Coleta falhou. Processo encerrado sem geração de bolsa.',
+              false,
+            );
           }
-
-          alert(
-            'Coleta finalizada sem sucesso. Processo encerrado sem geracao de bolsa.',
+          setTimeout(
+            () => this.router.navigate(['/processo-doacao-andamento']),
+            2000,
           );
-          this.router.navigate(['/processo-doacao-andamento']);
         },
         error: (err) => {
           this.enviando = false;
-          alert(err?.error?.erro || 'Erro ao finalizar coleta.');
+          this.toast.exibir(
+            err?.error?.erro || 'Erro ao finalizar coleta.',
+            false,
+          );
         },
       });
+  }
+  voltar() {
+    this.router.navigate(['/processo-doacao-andamento']);
   }
 }

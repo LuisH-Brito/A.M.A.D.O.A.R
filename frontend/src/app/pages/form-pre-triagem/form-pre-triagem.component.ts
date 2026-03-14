@@ -1,13 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-form-pre-triagem',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ModalConfirmacaoComponent,
+    ToastNotificacaoComponent,
+  ],
   templateUrl: './form-pre-triagem.component.html',
   styleUrl: './form-pre-triagem.component.scss',
 })
@@ -20,6 +27,16 @@ export class FormPreTriagemComponent implements OnInit {
     altura: null as number | null,
     peso: null as number | null,
     hemoglobina: null as number | null,
+  };
+
+  @ViewChild('toast') toast!: ToastNotificacaoComponent;
+  modalVisivel = false;
+  acaoPendente: 'apto' | 'inapto' | null = null;
+  modalConfig = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'padrao' as 'padrao' | 'usar' | 'descartar',
+    textoConfirmar: '',
   };
 
   constructor(
@@ -53,19 +70,58 @@ export class FormPreTriagemComponent implements OnInit {
     });
   }
 
+  abrirModal(acao: 'apto' | 'inapto'): void {
+    this.acaoPendente = acao;
+
+    if (acao === 'apto') {
+      this.modalConfig = {
+        titulo: 'Confirmar Aptidão',
+        mensagem: `Deseja aprovar ${this.doador.nome || 'o doador'} na pré-triagem e avançar para a próxima etapa?`,
+        tipo: 'usar',
+        textoConfirmar: 'Sim, Aprovar',
+      };
+    } else {
+      this.modalConfig = {
+        titulo: 'Registrar Inaptidão',
+        mensagem: `Atenção: Deseja registrar que ${this.doador.nome || 'o doador'} está INAPTO? Esta ação cancelará o processo de doação atual.`,
+        tipo: 'descartar',
+        textoConfirmar: 'Sim, Reprovar',
+      };
+    }
+
+    this.modalVisivel = true;
+  }
+
+  fecharModal(): void {
+    this.modalVisivel = false;
+    this.acaoPendente = null;
+  }
+
+  confirmarAcaoModal(): void {
+    this.modalVisivel = false;
+    if (this.acaoPendente === 'apto') {
+      this.salvarEAvancarTriagem();
+    } else if (this.acaoPendente === 'inapto') {
+      this.marcarInapto();
+    }
+  }
+
   salvarEAvancarTriagem(): void {
     if (
       this.form.altura == null ||
       this.form.peso == null ||
       this.form.hemoglobina == null
     ) {
-      alert('Preencha altura, peso e hemoglobina.');
+      this.toast.exibir('Preencha altura, peso e hemoglobina.', false);
       return;
     }
 
     const enfermeiroId = localStorage.getItem('usuario_id');
     if (!enfermeiroId) {
-      alert('Acesso negado: Não foi possível identificar o enfermeiro logado.');
+      this.toast.exibir(
+        'Acesso negado: Não foi possível identificar o enfermeiro logado.',
+        false,
+      );
       return;
     }
 
@@ -82,19 +138,25 @@ export class FormPreTriagemComponent implements OnInit {
       next: () => {
         this.api.atualizarStatusProcesso(this.processoId, 3).subscribe({
           next: () => {
-            alert('Pré-triagem concluída. Processo enviado para Triagem.');
-            this.router.navigate(['/processo-doacao-andamento']);
+            this.toast.exibir('Pré-triagem concluída! Redirecionando...', true);
+            setTimeout(
+              () => this.router.navigate(['/processo-doacao-andamento']),
+              1500,
+            );
           },
           error: () =>
-            alert('Dados salvos, mas falhou ao atualizar status para Triagem.'),
+            this.toast.exibir(
+              'Dados salvos, mas falhou ao atualizar status para Triagem.',
+              false,
+            ),
         });
       },
       error: (err) => {
         if (err?.error?.processo_id) {
-          alert(err.error.processo_id);
+          this.toast.exibir(err.error.processo_id, false);
           return;
         }
-        alert('Erro ao salvar dados clínicos.');
+        this.toast.exibir('Erro ao salvar dados clínicos.', false);
       },
     });
   }
@@ -102,7 +164,10 @@ export class FormPreTriagemComponent implements OnInit {
   marcarInapto(): void {
     const enfermeiroId = localStorage.getItem('usuario_id');
     if (!enfermeiroId) {
-      alert('Acesso negado: Não foi possível identificar o enfermeiro logado.');
+      this.toast.exibir(
+        'Acesso negado: Não foi possível identificar o enfermeiro logado.',
+        false,
+      );
       return;
     }
 
@@ -119,16 +184,30 @@ export class FormPreTriagemComponent implements OnInit {
       next: () => {
         this.api.atualizarStatusProcesso(this.processoId, 0).subscribe({
           next: () => {
-            alert('Processo marcado como cancelado/inapto com sucesso.');
-            this.router.navigate(['/processo-doacao-andamento']);
+            this.toast.exibir(
+              'Processo encerrado como Inapto. Redirecionando...',
+              true,
+            );
+            setTimeout(
+              () => this.router.navigate(['/processo-doacao-andamento']),
+              1500,
+            );
           },
           error: () =>
-            alert(
-              'Dados de inaptidão salvos, mas houve erro ao cancelar o processo.',
+            this.toast.exibir(
+              'Dados salvos, mas houve erro ao cancelar o processo.',
+              false,
             ),
         });
       },
-      error: () => alert('Erro ao registrar inaptidão nos dados clínicos.'),
+      error: () =>
+        this.toast.exibir(
+          'Erro ao registrar inaptidão nos dados clínicos.',
+          false,
+        ),
     });
+  }
+  voltar() {
+    this.router.navigate(['/processo-doacao-andamento']);
   }
 }

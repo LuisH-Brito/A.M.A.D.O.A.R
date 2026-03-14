@@ -1,158 +1,176 @@
 <div class="pagina">
   <div class="centralizando">
-    <h2 class="titulo">Validação Final e Estoque (Bolsa #{{ bolsaId }})</h2>
+    <div class="container">
+      <button class="btn-icone" (click)="voltar()">
+        <svg
+          width="24"
+          height="24"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+      </button>
+      <h2 class="titulo">Validação Final e Estoque (Bolsa #{{ bolsaId }})</h2>
 
-    <div class="card-validacao">
-      <div class="formulario-grid">
-        <div class="campo">
-          <label for="nome">Nome Completo</label>
-          <input
-            type="text"
-            id="nome"
-            [value]="bolsaDados?.doador_nome || 'Carregando...'"
-            readonly
-            class="input-bloqueado"
-          />
-        </div>
-
-        <div class="campo">
-          <label for="cpf">CPF</label>
-          <input
-            type="text"
-            id="cpf"
-            [value]="bolsaDados?.doador_cpf || 'Carregando...'"
-            readonly
-            class="input-bloqueado"
-          />
-        </div>
-      </div>
-
-      <div class="conteudo-principal">
-        <div class="secao-sangue">
-          <div class="cabecalho-sangue">
-            <label class="label-destaque">Tipo Sanguíneo Confirmado</label>
-
-            <span class="badge-aviso" *ngIf="sangueRegistradoDoador">
-              <i class="bi bi-info-circle-fill"></i>
-              Registrado no Doador:
-              <strong>{{ sangueRegistradoDoador }}</strong>
-            </span>
+      <div class="card-validacao">
+        <div class="formulario-grid">
+          <div class="campo">
+            <label for="nome">Nome Completo</label>
+            <input
+              type="text"
+              id="nome"
+              [value]="bolsaDados?.doador_nome || 'Carregando...'"
+              readonly
+              class="input-bloqueado"
+            />
           </div>
 
-          <div class="grid-sangue">
-            @for (tipo of tiposSanguineos; track tipo.id) {
-              <label class="radio-card">
+          <div class="campo">
+            <label for="cpf">CPF</label>
+            <input
+              type="text"
+              id="cpf"
+              [value]="bolsaDados?.doador_cpf || 'Carregando...'"
+              readonly
+              class="input-bloqueado"
+            />
+          </div>
+        </div>
+
+        <div class="conteudo-principal">
+          <div class="secao-sangue">
+            <div class="cabecalho-sangue">
+              <label class="label-destaque">Tipo Sanguíneo Confirmado</label>
+
+              <span class="badge-aviso" *ngIf="sangueRegistradoDoador">
+                <i class="bi bi-info-circle-fill"></i>
+                Registrado no Doador:
+                <strong>{{ sangueRegistradoDoador }}</strong>
+              </span>
+            </div>
+
+            <div class="grid-sangue">
+              @for (tipo of tiposSanguineos; track tipo.id) {
+                <label class="radio-card">
+                  <input
+                    type="radio"
+                    name="tipo-sangue"
+                    [value]="tipo.id"
+                    [(ngModel)]="tipoSanguineoSelecionado"
+                    required
+                  />
+                  <span class="radio-label"
+                    >{{ tipo.tipo }}{{ tipo.fator_rh }}</span
+                  >
+                </label>
+              }
+            </div>
+          </div>
+
+          <div class="grid-uploads">
+            <div class="secao-upload">
+              <label class="label-destaque">Exame Laboratorial</label>
+              <div
+                class="upload-container"
+                [class.borda-erro]="!arquivoLaudo"
+                (click)="acionarInputArquivo()"
+              >
+                <i class="bi bi-cloud-arrow-up-fill"></i>
+                <p *ngIf="!arquivoLaudo">Clique para enviar o Laudo (PDF)</p>
+                <p *ngIf="arquivoLaudo" class="arquivo-sucesso">
+                  <i class="bi bi-check-circle-fill"></i>
+                  {{ arquivoLaudo.name }}
+                </p>
+
+                <button class="btn-upload" type="button">
+                  {{ arquivoLaudo ? "Trocar Arquivo" : "Adicionar Laudo" }}
+                </button>
                 <input
-                  type="radio"
-                  name="tipo-sangue"
-                  [value]="tipo.id"
-                  [(ngModel)]="tipoSanguineoSelecionado"
-                  required
+                  type="file"
+                  hidden
+                  #fileInput
+                  accept=".pdf"
+                  (change)="aoSelecionarArquivo($event)"
                 />
-                <span class="radio-label"
-                  >{{ tipo.tipo }}{{ tipo.fator_rh }}</span
-                >
-              </label>
-            }
+              </div>
+              <small class="msg-erro" *ngIf="!arquivoLaudo">
+                O laudo laboratorial é obrigatório.
+              </small>
+            </div>
+
+            <div class="secao-upload">
+              <label class="label-destaque">Exame do Doador</label>
+              <div
+                class="upload-container"
+                [class.borda-erro]="!arquivoExameDoador"
+                (click)="acionarInputExameDoador()"
+              >
+                <i class="bi bi-file-earmark-medical-fill"></i>
+                <p *ngIf="!arquivoExameDoador">
+                  Clique para enviar o Exame (PDF)
+                </p>
+                <p *ngIf="arquivoExameDoador" class="arquivo-sucesso">
+                  <i class="bi bi-check-circle-fill"></i>
+                  {{ arquivoExameDoador.name }}
+                </p>
+                <button class="btn-upload btn-upload-secundario" type="button">
+                  {{
+                    arquivoExameDoador ? "Trocar Arquivo" : "Adicionar Exame"
+                  }}
+                </button>
+                <input
+                  type="file"
+                  hidden
+                  #fileInputExameDoador
+                  accept=".pdf"
+                  (change)="aoSelecionarExameDoador($event)"
+                />
+              </div>
+              <small class="msg-erro" *ngIf="!arquivoExameDoador">
+                O exame do doador é obrigatório.
+              </small>
+            </div>
           </div>
         </div>
 
-        <div class="grid-uploads">
-          <div class="secao-upload">
-            <label class="label-destaque">Exame Laboratorial</label>
-            <div
-              class="upload-container"
-              [class.borda-erro]="!arquivoLaudo"
-              (click)="acionarInputArquivo()"
-            >
-              <i class="bi bi-cloud-arrow-up-fill"></i>
-              <p *ngIf="!arquivoLaudo">Clique para enviar o Laudo (PDF)</p>
-              <p *ngIf="arquivoLaudo" class="arquivo-sucesso">
-                <i class="bi bi-check-circle-fill"></i> {{ arquivoLaudo.name }}
-              </p>
-
-              <button class="btn-upload" type="button">
-                {{ arquivoLaudo ? "Trocar Arquivo" : "Adicionar Laudo" }}
-              </button>
-              <input
-                type="file"
-                hidden
-                #fileInput
-                accept=".pdf"
-                (change)="aoSelecionarArquivo($event)"
-              />
-            </div>
-            <small class="msg-erro" *ngIf="!arquivoLaudo">
-              O laudo laboratorial é obrigatório.
-            </small>
-          </div>
-
-          <div class="secao-upload">
-            <label class="label-destaque">Exame do Doador</label>
-            <div
-              class="upload-container"
-              [class.borda-erro]="!arquivoExameDoador"
-              (click)="acionarInputExameDoador()"
-            >
-              <i class="bi bi-file-earmark-medical-fill"></i>
-              <p *ngIf="!arquivoExameDoador">
-                Clique para enviar o Exame (PDF)
-              </p>
-              <p *ngIf="arquivoExameDoador" class="arquivo-sucesso">
-                <i class="bi bi-check-circle-fill"></i>
-                {{ arquivoExameDoador.name }}
-              </p>
-              <button class="btn-upload btn-upload-secundario" type="button">
-                {{ arquivoExameDoador ? "Trocar Arquivo" : "Adicionar Exame" }}
-              </button>
-              <input
-                type="file"
-                hidden
-                #fileInputExameDoador
-                accept=".pdf"
-                (change)="aoSelecionarExameDoador($event)"
-              />
-            </div>
-            <small class="msg-erro" *ngIf="!arquivoExameDoador">
-              O exame do doador é obrigatório.
-            </small>
-          </div>
+        <div class="acoes-final">
+          <button
+            class="btn-inapt"
+            type="button"
+            (click)="marcarComoInapto()"
+            [disabled]="carregando || formularioInvalido"
+          >
+            <span *ngIf="!carregando">Marcar como Inapto</span>
+            <span *ngIf="carregando">Processando...</span>
+          </button>
+          <button
+            class="btn-liberar"
+            type="button"
+            (click)="liberarParaEstoque()"
+            [disabled]="carregando || formularioInvalido"
+          >
+            <span *ngIf="!carregando">Liberar para o Estoque</span>
+            <span *ngIf="carregando">Processando...</span>
+          </button>
         </div>
-      </div>
-
-      <div class="acoes-final">
-        <button
-          class="btn-inapt"
-          type="button"
-          (click)="marcarComoInapto()"
-          [disabled]="carregando || formularioInvalido"
-        >
-          <span *ngIf="!carregando">Marcar como Inapto</span>
-          <span *ngIf="carregando">Processando...</span>
-        </button>
-        <button
-          class="btn-liberar"
-          type="button"
-          (click)="liberarParaEstoque()"
-          [disabled]="carregando || formularioInvalido"
-        >
-          <span *ngIf="!carregando">Liberar para o Estoque</span>
-          <span *ngIf="carregando">Processando...</span>
-        </button>
       </div>
     </div>
+
+    <app-modal-confirmacao
+      [visivel]="modalVisivel"
+      [titulo]="modalDados.titulo"
+      [mensagem]="modalDados.mensagem"
+      [tipo]="modalDados.tipo"
+      [textoConfirmar]="modalDados.textoBtn"
+      (confirmado)="executarAcaoModal()"
+      (cancelado)="modalVisivel = false"
+    >
+    </app-modal-confirmacao>
+
+    <app-toast-notificacao #toast></app-toast-notificacao>
   </div>
-
-  <app-modal-confirmacao
-    [visivel]="modalVisivel"
-    [titulo]="modalDados.titulo"
-    [mensagem]="modalDados.mensagem"
-    [tipo]="modalDados.tipo"
-    [textoConfirmar]="modalDados.textoBtn"
-    (confirmado)="executarAcaoModal()"
-    (cancelado)="modalVisivel = false"
-  >
-  </app-modal-confirmacao>
-
-  <app-toast-notificacao #toast></app-toast-notificacao>
 </div>
