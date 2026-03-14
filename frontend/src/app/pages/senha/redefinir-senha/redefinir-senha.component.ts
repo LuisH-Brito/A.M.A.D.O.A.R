@@ -1,17 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { ApiService } from '../../../services/api.service';
+import { ToastNotificacaoComponent } from '../../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-redefinir-senha',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, ToastNotificacaoComponent],
   templateUrl: './redefinir-senha.component.html',
   styleUrl: './redefinir-senha.component.scss',
 })
 export class RedefinirSenhaComponent {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   cpf = '';
 
   constructor(
@@ -27,7 +29,7 @@ export class RedefinirSenhaComponent {
     const cpfSemMascara = this.limparCpf(this.cpf);
 
     if (cpfSemMascara.length !== 11) {
-      alert('CPF deve conter 11 dígitos.');
+      this.toastComponente.exibir('CPF deve conter 11 dígitos.', false);
       return;
     }
 
@@ -39,7 +41,7 @@ export class RedefinirSenhaComponent {
       },
       error: (err) => {
         const mensagem = err?.error?.erro || 'Não foi possível localizar o email para este CPF.';
-        alert(mensagem);
+        this.toastComponente.exibir(mensagem, false);
       },
     });
   }

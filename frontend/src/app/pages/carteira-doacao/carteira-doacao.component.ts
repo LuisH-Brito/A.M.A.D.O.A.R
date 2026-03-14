@@ -1,18 +1,20 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { DoadorService } from '../../services/doador.service';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-carteira-doacao',
   standalone: true,
-  imports: [PaginacaoComponent, FormsModule, CommonModule],
+  imports: [PaginacaoComponent, FormsModule, CommonModule, ToastNotificacaoComponent],
   templateUrl: './carteira-doacao.component.html',
   styleUrl: './carteira-doacao.component.scss',
 })
 export class CarteiraDoacaoComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   doadores: any[] = [];
   doadoresFiltrados: any[] = [];
   doadoresPaginados: any[] = [];
@@ -84,10 +86,10 @@ export class CarteiraDoacaoComponent implements OnInit {
 
         this.filtrar();
 
-        alert('Carteirinha enviada com sucesso!');
+        this.toastComponente.exibir('Carteirinha enviada com sucesso!', true);
       },
       error: () => {
-        alert('Erro ao enviar a carteirinha.');
+        this.toastComponente.exibir('Erro ao enviar a carteirinha.', false);
       },
     });
   }

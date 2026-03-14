@@ -45,7 +45,7 @@ export class FormTriagemComponent implements OnInit {
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('processoId'));
     if (!id) {
-      alert('Processo inválido.');
+      this.toast.exibir('Processo inválido.', false);
       this.router.navigate(['/processo-doacao-andamento']);
       return;
     }
@@ -73,7 +73,7 @@ export class FormTriagemComponent implements OnInit {
         }
       },
       error: () => {
-        alert('Não foi possível carregar a ficha de triagem.');
+        this.toast.exibir('Não foi possível carregar a ficha de triagem.', false);
         this.router.navigate(['/processo-doacao-andamento']);
       },
     });
