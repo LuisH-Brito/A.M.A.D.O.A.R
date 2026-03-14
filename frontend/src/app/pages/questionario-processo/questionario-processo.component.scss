@@ -121,3 +121,35 @@
   .esperada { display: block; color: #856404; font-size: 0.85rem; font-style: italic; margin-bottom: 5px; }
   .motivo-falha { margin: 0; color: #dc3545; font-weight: bold; font-size: 0.95rem; }
 }
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+  
+  .visualizacao-page {
+    padding: 20px 15px;
+  }
+
+  .card-principal {
+    padding: 15px; 
+    gap: 10px;
+  }
+
+  .header-simples {
+    margin-bottom: 10px;
+    
+    h2 { 
+      font-size: 1.25rem; 
+    }
+  }
+
+  .footer-botoes {
+    gap: 10px; 
+    margin-top: 15px;
+    
+    .btn-acao {
+      padding: 10px 0; 
+      font-size: 0.95rem; 
+      max-width: 80%; 
+    }
+  }
+}

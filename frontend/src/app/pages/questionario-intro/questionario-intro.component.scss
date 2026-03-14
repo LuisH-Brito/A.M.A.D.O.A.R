@@ -93,3 +93,29 @@
     cursor: not-allowed;
   }
 }
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+  
+  .retangulo-externo {
+    width: 95%; 
+    padding: 15px; 
+    margin-top: 30px; 
+    margin-bottom: 30px;
+  }
+
+  .retangulo-interno {
+    width: 100%; 
+    padding: 15px; 
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .header-secao h2 {
+    font-size: 1.2rem; 
+  }
+
+  p {
+    font-size: 0.95rem; 
+    text-align: justify; 
+  }
+}

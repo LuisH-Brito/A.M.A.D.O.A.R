@@ -193,7 +193,7 @@ export class DoadorComponent implements OnInit {
       return;
     }
     this.router.navigate(['/questionario-processo/'], {
-      queryParams: { cpf: this.usuario.cpf },
+      queryParams: { cpf: this.usuario.cpf, somenteLeitura: 'true' },
     });
   }
 

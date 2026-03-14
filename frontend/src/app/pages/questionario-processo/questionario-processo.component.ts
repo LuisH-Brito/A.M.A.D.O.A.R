@@ -17,6 +17,7 @@ export class QuestionarioProcessoComponent implements OnInit {
   processoId: number | null = null;
   perguntas: any[] = [];
   modoEdicao: boolean = false;
+  somenteLeitura: boolean = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -30,6 +31,8 @@ export class QuestionarioProcessoComponent implements OnInit {
     const cpfParam = this.route.snapshot.paramMap.get('cpf');
     
     const cpfQuery = this.route.snapshot.queryParamMap.get('cpf');
+    const leituraQuery = this.route.snapshot.queryParamMap.get('somenteLeitura');
+    this.somenteLeitura = leituraQuery === 'true';
 
     // Associa o CPF 
     this.cpfDoador = cpfQuery || cpfParam;
