@@ -1,4 +1,5 @@
 <div class="visualizacao-page">
+  <app-toast-notificacao #toast></app-toast-notificacao>
   
   <div *ngIf="carregando" class="loading">Carregando questionário do doador...</div>
   <div class="card-principal" *ngIf="!carregando" [class.editando]="modoEdicao">

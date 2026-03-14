@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HomeCarroselComponent } from '../../componentes/home-carrosel/home-carrosel.component';
 import { HemometroComponent } from '../../componentes/hemometro/hemometro.component';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
 import {  Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 
 @Component({
   selector: 'app-home',
@@ -13,12 +14,13 @@ import { RouterLink } from '@angular/router';
     CommonModule,
     HomeCarroselComponent,
     HemometroComponent,
-    RouterLink,
+    ToastNotificacaoComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   activeIndexes: number[] = [];
 
   niveisSanguineos: { [key: string]: number } = {
@@ -82,8 +84,9 @@ export class HomeComponent implements OnInit {
     if (token) {
       this.router.navigate(['/questionario']);
     } else {
-      alert('Para realizar a triagem online, é necessário iniciar sessão.');
-      this.router.navigate(['/login']);
-    }
+      this.toastComponente.exibir('Para realizar a triagem online, é necessário iniciar sessão.', false);
+      setTimeout(() => {
+        this.router.navigate(['/login']);
+      }, 1800);    }
   }
 }

@@ -1,17 +1,21 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core'; // <-- Importe o ViewChild
 import { CommonModule } from '@angular/common';
 import { PerguntasComponent } from '../../componentes/perguntas/perguntas.component';
 import { QuestionarioService } from '../../services/questionario.service';
 import { Router } from '@angular/router';
 import { QuestionarioResultadoComponent } from './questionario-resultado/questionario-resultado.component';
+import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component'; // <-- Importe o Toast
 
 @Component({
   selector: 'app-questionario',
   standalone: true,
-  imports: [CommonModule, PerguntasComponent, QuestionarioResultadoComponent],  templateUrl: './questionario.component.html',
+  imports: [CommonModule, PerguntasComponent, QuestionarioResultadoComponent, ToastNotificacaoComponent],  
+  templateUrl: './questionario.component.html',
   styleUrl: './questionario.component.scss'
 })
 export class QuestionarioComponent implements OnInit {
+  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
+
   passoAtual: number = 1;
   fraseMotivacional: string = 'Falta pouco para você salvar vidas!';
   carregando: boolean = true;
@@ -47,7 +51,7 @@ export class QuestionarioComponent implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao buscar as perguntas no backend:', erro);
-        alert('Erro ao carregar o questionário. Verifique se o backend está funcionando.');
+        this.toastComponente.exibir('Erro ao carregar o questionário. Verifique se o backend está funcionando.', false);
         this.carregando = false;
       }
     });
@@ -91,7 +95,7 @@ export class QuestionarioComponent implements OnInit {
 
     if (primeiraNaoRespondida !== -1) {
       this.passoAtual = primeiraNaoRespondida + 1;
-      alert(`Por favor, responda à pergunta ${this.passoAtual} antes de finalizar.`);
+      this.toastComponente.exibir(`Por favor, responda à pergunta ${this.passoAtual} antes de finalizar.`, false);
       return;
     }
 
@@ -115,7 +119,7 @@ export class QuestionarioComponent implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao salvar no banco:', erro);
-        alert('Ocorreu um erro ao enviar suas respostas.');
+        this.toastComponente.exibir('Ocorreu um erro ao enviar suas respostas.', false);
       }
     });
   }
