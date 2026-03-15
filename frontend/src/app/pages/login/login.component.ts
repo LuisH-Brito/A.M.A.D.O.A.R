@@ -33,6 +33,7 @@ export class LoginComponent implements OnInit {
       if (params['cadastrado'] === 'true') {
         this.mensagemSucesso =
           'Cadastro realizado com sucesso! Faça seu login.';
+        this.toastComponente.exibir(this.mensagemSucesso, true);
       }
     });
   }
