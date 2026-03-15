@@ -1,5 +1,4 @@
 <div class="pagina">
-
   <app-toast-notificacao #toast></app-toast-notificacao>
 
   <div class="centralizando">
@@ -24,9 +23,12 @@
           @for (bolsa of bolsas; track bolsa.id) {
             <div class="usuario-card">
               <div class="info">
-                ID: {{ bolsa.id }} &nbsp;&nbsp;&nbsp; Data da Coleta:
-                {{ bolsa.dataColeta }} &nbsp;&nbsp;&nbsp; Doador:
-                {{ bolsa.doadorNome }}
+                <div class="linha-superior">
+                  <span class="id">ID {{ bolsa.id }}</span>
+                  <span class="nome">{{ bolsa.doadorNome }}</span>
+                </div>
+
+                <div class="data">Coleta em {{ bolsa.dataColeta }}</div>
               </div>
               <div class="acoes">
                 <button

@@ -72,10 +72,36 @@
   }
 
   .info {
-    font-weight: 600;
-    font-size: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
   }
 
+  .linha-superior {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .id {
+    font-size: 14px;
+    color: #ffffff;
+    font-weight: 500;
+    background-color: #218838;
+    border-radius: 10px;
+    padding: 0px 10px;
+  }
+
+  .nome {
+    font-size: 16px;
+    font-weight: 600;
+    color: #222;
+  }
+
+  .data {
+    font-size: 13px;
+    color: #777;
+  }
   .acoes {
     display: flex;
     align-items: center;
