@@ -71,28 +71,51 @@
 
 .usuario-card {
   background-color: #fff;
-  padding: 15px 20px;
-  border-radius: 10px;
+  padding: 20px;
+  border-radius: 12px;
   margin-bottom: 15px;
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-  border: 1px solid transparent;
+  align-items: flex-start;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .usuario-card:hover {
-  background-color: #9fc7b2;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+  background-color: #f0fdf4;
 }
 
-.info {
-  font-weight: 600;
+.usuario-card .info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
   font-size: 16px;
+  font-weight: 500;
+  color: #8d8d8d;
+}
+
+.usuario-card .info .nome {
+  color: #292929;
+}
+
+.usuario-card .info .cargo {
+  font-size: 14px;
+  color: #777;
 }
 
 .acoes {
   display: flex;
   gap: 10px;
+}
+.cargo {
+  font-size: 14px;
+  color: #555;
+  display: flex;
+  align-items: center;
+  gap: 5px;
 }
 
 .btn-acao {

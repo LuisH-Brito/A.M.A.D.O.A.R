@@ -35,7 +35,11 @@
       <div class="lista-scroll">
         <div class="usuario-card" *ngFor="let usuario of usuariosPaginados">
           <div class="info">
-            Nome: {{ usuario.nome }} Cargo: {{ usuario.cargo }}
+            <span class="nome">{{ usuario.nome_completo }}</span>
+            <span class="cargo">
+              <i class="bi bi-briefcase"></i>
+              {{ usuario.cargo }}
+            </span>
           </div>
 
           <div class="acoes">
