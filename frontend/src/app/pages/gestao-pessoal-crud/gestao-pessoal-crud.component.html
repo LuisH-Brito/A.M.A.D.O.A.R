@@ -77,3 +77,14 @@
     </app-paginacao>
   </div>
 </div>
+
+<app-modal-confirmacao
+  [visivel]="modalVisivel"
+  [titulo]="modalConfig.titulo"
+  [mensagem]="modalConfig.mensagem"
+  [tipo]="modalConfig.tipo"
+  [textoConfirmar]="modalConfig.textoConfirmar"
+  (confirmado)="confirmarExclusao()"
+  (cancelado)="fecharModal()"
+>
+</app-modal-confirmacao>

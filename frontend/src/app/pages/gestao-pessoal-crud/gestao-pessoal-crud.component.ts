@@ -4,11 +4,17 @@ import { FormsModule } from '@angular/forms';
 import { PaginacaoComponent } from '../../componentes/paginacao/paginacao.component';
 import { FuncionariosService } from '../../services/funcionarios.service';
 import { Router } from '@angular/router';
+import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 
 @Component({
   selector: 'app-gestao-pessoal-crud',
   standalone: true,
-  imports: [FormsModule, CommonModule, PaginacaoComponent],
+  imports: [
+    FormsModule,
+    CommonModule,
+    PaginacaoComponent,
+    ModalConfirmacaoComponent,
+  ],
   templateUrl: './gestao-pessoal-crud.component.html',
   styleUrl: './gestao-pessoal-crud.component.scss',
 })
@@ -18,6 +24,16 @@ export class GestaoPessoalCrudComponent {
   paginaAtual = 1;
   itensPorPagina = 3;
   usuarios: any[] = [];
+  modalVisivel = false;
+
+  modalConfig = {
+    titulo: '',
+    mensagem: '',
+    tipo: 'descartar' as 'padrao' | 'usar' | 'descartar',
+    textoConfirmar: '',
+  };
+
+  usuarioParaExcluir: { id: number; cargo: string } | null = null;
 
   constructor(
     private funcionarioService: FuncionariosService,
@@ -47,15 +63,39 @@ export class GestaoPessoalCrudComponent {
   }
 
   excluir(id: number, cargo: string) {
-    if (confirm(`Deseja realmente excluir este ${cargo}?`)) {
-      this.funcionarioService.excluirFuncionario(id, cargo).subscribe({
-        next: () => {
-          this.usuarios = this.usuarios.filter((u) => u.id !== id);
-          this.verificarPaginacaoAposExclusao();
-        },
-        error: (err) => alert('Erro ao excluir no servidor.'),
-      });
-    }
+    this.usuarioParaExcluir = { id, cargo };
+
+    this.modalConfig = {
+      titulo: 'Desativar Funcionário',
+      mensagem: `Tem certeza que deseja desativar este ${cargo}? O funcionário não poderá mais acessar o sistema.`,
+      tipo: 'descartar',
+      textoConfirmar: 'Desativar',
+    };
+
+    this.modalVisivel = true;
+  }
+
+  confirmarExclusao() {
+    if (!this.usuarioParaExcluir) return;
+
+    const { id, cargo } = this.usuarioParaExcluir;
+
+    this.funcionarioService.excluirFuncionario(id, cargo).subscribe({
+      next: () => {
+        this.usuarios = this.usuarios.filter((u) => u.id !== id);
+        this.verificarPaginacaoAposExclusao();
+        this.fecharModal();
+      },
+      error: () => {
+        alert('Erro ao desativar funcionário.');
+        this.fecharModal();
+      },
+    });
+  }
+
+  fecharModal() {
+    this.modalVisivel = false;
+    this.usuarioParaExcluir = null;
   }
 
   irParaEditar(usuario: any) {
