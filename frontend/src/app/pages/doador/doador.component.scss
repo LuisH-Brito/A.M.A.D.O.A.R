@@ -255,13 +255,37 @@ select {
 
 .modal-conteudo {
   position: relative;
-  width: 500px;
-  max-width: 90%;
+  // width: 500px;
+  // max-width: 90%;
   margin: 80px auto;
   background: white;
   border-radius: 10px;
   padding: 20px;
   z-index: 1001;
+  max-width: 500px;
+  width: 90%;
+  max-height: 80vh;
+  overflow: auto;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #bababa;
+  border-radius: 10px;
+  transition: background 0.2s;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #888888;
 }
 
 .modal-topo {
