@@ -1,3 +1,10 @@
+$cor-fundo-externo: #d9d9d9;
+$cor-container: #e8e8e8;
+$cor-verde-input: #d1e7d8;
+$cor-verde-selecao: #c2e2cc;
+$cor-verde-botao: #2da45e;
+$cor-vinho-avatar: #702040;
+$borda-card: #b5b5b5;
 .form-pre-triagem {
   background: #f4f4f4;
   padding: 40px;
@@ -30,6 +37,29 @@
   box-shadow: none;
   cursor: not-allowed;
   transform: none;
+}
+
+.avatar-wrapper {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 25px;
+
+  .avatar {
+    width: 115px;
+    height: 115px;
+    border: 4px solid $cor-vinho-avatar;
+    border-radius: 50%;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    overflow: hidden;
+
+    i.bi-person-fill {
+      font-size: 100px;
+      color: $cor-vinho-avatar;
+      line-height: 0.9;
+    }
+  }
 }
 
 .msg-erro {

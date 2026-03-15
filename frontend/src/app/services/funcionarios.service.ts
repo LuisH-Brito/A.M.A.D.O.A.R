@@ -25,11 +25,13 @@ export class FuncionariosService {
     return forkJoin([medicos, enfermeiros, recepcionistas]).pipe(
       map(([m, e, r]) => {
         const mapear = (lista: any[], cargoNome: string) =>
-          lista.map((u) => ({
-            ...u,
-            nome: u.nome_completo,
-            cargo: cargoNome,
-          }));
+          lista
+            .filter((u) => u.is_active) // ← filtra apenas ativos
+            .map((u) => ({
+              ...u,
+              nome: u.nome_completo,
+              cargo: cargoNome,
+            }));
 
         return [
           ...mapear(m, 'Médico'),
@@ -104,7 +106,9 @@ export class FuncionariosService {
     else if (cargo === 'Enfermeiro') endpoint = 'enfermeiros';
     else if (cargo === 'Recepcionista') endpoint = 'recepcionistas';
 
-    return this.http.delete(`${this.baseUrl}/${endpoint}/${id}/`);
+    return this.http.patch(`${this.baseUrl}/${endpoint}/${id}/`, {
+      is_active: false,
+    });
   }
 
   /**
