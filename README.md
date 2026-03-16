@@ -25,6 +25,9 @@ MUITO IMPORTANTE
 -> venv\Scripts\activate
 Pra saber se ele ativou é so olhar no cantinho da linha de comando vai ter la (venv) verdinho
 NÃO ESQUEÇA DE JEITO NENHUM PLMDD
+
+Pro banco funcionar deve ser criado um schema chamado "amadoar"
+
 Além disso, para que as notificações por email funcionem é preciso abrir a pasta do BACKEND e criar
 um arquivo chamado ".env" e colocar 2 variaveis com o email e a chave de 16 digitos do mesmo sem aspas:
 EMAIL_USER=seuemail@exemplo.com
