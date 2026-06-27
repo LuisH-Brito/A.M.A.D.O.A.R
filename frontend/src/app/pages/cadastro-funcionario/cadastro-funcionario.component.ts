@@ -170,6 +170,7 @@ export class CadastroFuncionarioComponent {
         endereco: f.endereco || '',
         registro: f.crm || f.coren || '',
       });
+      this.form.get('cargo')?.disable();
     } else {
       this.ativarValidacaoSenha();
     }
