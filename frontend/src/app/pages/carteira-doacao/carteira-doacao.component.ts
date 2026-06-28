@@ -9,7 +9,12 @@ import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/t
 @Component({
   selector: 'app-carteira-doacao',
   standalone: true,
-  imports: [PaginacaoComponent, FormsModule, CommonModule, ToastNotificacaoComponent],
+  imports: [
+    PaginacaoComponent,
+    FormsModule,
+    CommonModule,
+    ToastNotificacaoComponent,
+  ],
   templateUrl: './carteira-doacao.component.html',
   styleUrl: './carteira-doacao.component.scss',
 })
@@ -69,6 +74,12 @@ export class CarteiraDoacaoComponent implements OnInit {
     const fim = inicio + this.itensPorPagina;
 
     this.doadoresPaginados = this.doadoresFiltrados.slice(inicio, fim);
+  }
+
+  formatarCPF(cpf: string): string {
+    if (!cpf) return '';
+    const numeros = cpf.replace(/\D/g, '');
+    return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
   uploadCarteirinha(event: any, doador: any) {

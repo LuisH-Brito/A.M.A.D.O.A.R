@@ -66,7 +66,12 @@
       <div class="linha">
         <div class="campo" *ngIf="isDoador">
           <label>Telefone</label>
-          <input type="text" [(ngModel)]="usuario.telefone" disabled />
+          <input
+            type="text"
+            [ngModel]="formatarTelefone(usuario.telefone)"
+            name="telefone_visualizacao"
+            disabled
+          />
         </div>
 
         <div class="campo">
@@ -91,7 +96,12 @@
 
         <div class="campo grande">
           <label>CPF</label>
-          <input type="text" [(ngModel)]="usuario.cpf" disabled />
+          <input
+            type="text"
+            [ngModel]="formatarCPF(usuario.cpf)"
+            name="cpf_visualizacao"
+            disabled
+          />
         </div>
       </div>
 
