@@ -80,6 +80,12 @@ export class FormColetaComponent implements OnInit {
     });
   }
 
+  formatarCPF(cpf: string): string {
+    if (!cpf) return '';
+    const numeros = cpf.replace(/\D/g, '');
+    return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
   abrirModalConfirmacao(): void {
     if (!this.responsavelSelecionado) {
       this.toast.exibir(

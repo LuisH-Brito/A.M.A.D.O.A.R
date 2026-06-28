@@ -1,5 +1,18 @@
 <div class="pagina">
   <div class="centralizando">
+    <button class="btn-icone" (click)="voltar()">
+      <svg
+        width="24"
+        height="24"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+      >
+        <line x1="19" y1="12" x2="5" y2="12"></line>
+        <polyline points="12 19 5 12 12 5"></polyline>
+      </svg>
+    </button>
     <h2 class="titulo">Iniciar Doação</h2>
 
     <div class="layout-grid">
@@ -9,8 +22,9 @@
           <input
             type="text"
             placeholder="000.000.000-00"
-            [(ngModel)]="cpfBusca"
-            (ngModelChange)="onCpfChange()"
+            [ngModel]="cpfBusca"
+            (ngModelChange)="aplicarMascaraCpf($event)"
+            maxlength="14"
           />
         </div>
       </div>
@@ -41,16 +55,21 @@
               <strong>Status:</strong>
               <span
                 class="status-aptidao"
-                [class.apto]="doadorEncontrado.apto_para_doacao"
-                [class.inapto]="!doadorEncontrado.apto_para_doacao"
+                [class.apto]="doadorTotalmenteApto"
+                [class.inapto]="!doadorTotalmenteApto"
               >
                 {{
-                  doadorEncontrado.apto_para_doacao
+                  doadorTotalmenteApto
                     ? "Apto para doação"
                     : "Inapto no momento"
                 }}
               </span>
             </p>
+
+            <div *ngIf="analiseEtaria.invalida" class="alerta-inapto">
+              <i class="bi bi-exclamation-octagon-fill"></i>
+              <strong>Impedimento Etário:</strong> {{ analiseEtaria.mensagem }}
+            </div>
 
             <div
               *ngIf="!doadorEncontrado.apto_para_doacao"
@@ -75,7 +94,7 @@
       <button
         class="btn-iniciar"
         (click)="iniciar()"
-        [disabled]="!doadorEncontrado || !doadorEncontrado.apto_para_doacao"
+        [disabled]="!doadorTotalmenteApto"
       >
         Iniciar
       </button>
