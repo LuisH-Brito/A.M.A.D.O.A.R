@@ -25,6 +25,8 @@ export class FormTriagemComponent implements OnInit {
   pressaoArterial = '';
   questionarioVinculado = false;
 
+  questionarioRevisado = false;
+
   @ViewChild('toast') toast!: ToastNotificacaoComponent;
   modalVisivel = false;
   acaoPendente: boolean | null = null; // true = Apto, false = Inapto
@@ -52,6 +54,10 @@ export class FormTriagemComponent implements OnInit {
 
     this.processoId = id;
 
+    if (sessionStorage.getItem(`q_visto_${this.processoId}`) === 'true') {
+      this.questionarioRevisado = true;
+    }
+
     this.api.getProcessoById(this.processoId).subscribe({
       next: (processo) => {
         this.doador = {
@@ -73,7 +79,10 @@ export class FormTriagemComponent implements OnInit {
         }
       },
       error: () => {
-        this.toast.exibir('Não foi possível carregar a ficha de triagem.', false);
+        this.toast.exibir(
+          'Não foi possível carregar a ficha de triagem.',
+          false,
+        );
         this.router.navigate(['/processo-doacao-andamento']);
       },
     });
@@ -84,6 +93,10 @@ export class FormTriagemComponent implements OnInit {
       alert('Processo inválido.');
       return;
     }
+
+    sessionStorage.setItem(`q_visto_${this.processoId}`, 'true');
+    this.questionarioRevisado = true;
+
     this.router.navigate([
       '/questionario-processo/proc',
       this.processoId,
@@ -91,11 +104,54 @@ export class FormTriagemComponent implements OnInit {
     ]);
   }
 
+  formatarCPF(cpf: string): string {
+    if (!cpf) return '';
+    const numeros = cpf.replace(/\D/g, '');
+    return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  aplicarMascaraPressao(valorDigitado: string): void {
+    if (!valorDigitado) {
+      this.pressaoArterial = '';
+      return;
+    }
+    const digitandoParaTras =
+      valorDigitado.length < this.pressaoArterial.length;
+    const apenasNumeros = valorDigitado.replace(/\D/g, '');
+    if (apenasNumeros.length <= 1) {
+      this.pressaoArterial = apenasNumeros;
+    } else if (apenasNumeros.length === 2) {
+      this.pressaoArterial = digitandoParaTras
+        ? apenasNumeros
+        : `${apenasNumeros}x`;
+    } else if (apenasNumeros.length === 3) {
+      this.pressaoArterial = `${apenasNumeros.slice(0, 2)}x${apenasNumeros.slice(2)}`;
+    } else {
+      this.pressaoArterial = `${apenasNumeros.slice(0, 2)}x${apenasNumeros.slice(2, 4)}`;
+    }
+  }
+
+  get pressaoIncompleta(): boolean {
+    return !this.pressaoArterial || this.pressaoArterial.trim().length < 4;
+  }
+
   private validarPressao(): boolean {
-    if (!this.pressaoArterial?.trim()) {
+    const pressaoLimpa = this.pressaoArterial?.trim();
+
+    if (!pressaoLimpa) {
       this.toast.exibir('Informe a pressão arterial.', false);
       return false;
     }
+    const regexPressao = /^\d{2,3}x\d{1,3}$/i;
+
+    if (!regexPressao.test(pressaoLimpa)) {
+      this.toast.exibir(
+        'Formato de pressão inválido. Digite apenas os números (Ex: 128 para 12x8).',
+        false,
+      );
+      return false;
+    }
+
     return true;
   }
 
@@ -153,6 +209,7 @@ export class FormTriagemComponent implements OnInit {
 
     this.api.decidirTriagem(this.processoId, payload as any).subscribe({
       next: () => {
+        sessionStorage.removeItem(`q_visto_${this.processoId}`);
         const novoStatus = aprovado ? 4 : 0; // 4 = Coleta, 0 = Cancelado/Inapto
 
         this.api

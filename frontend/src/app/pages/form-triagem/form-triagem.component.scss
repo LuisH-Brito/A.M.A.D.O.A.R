@@ -40,6 +40,12 @@
   animation: fadeIn 0.3s ease;
 }
 
+.msg-revisado-ok {
+  color: #12a150;
+  font-weight: 700;
+  margin-top: 4px;
+  display: block;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;

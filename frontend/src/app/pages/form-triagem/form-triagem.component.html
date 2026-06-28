@@ -31,7 +31,12 @@
 
         <div class="campo grande">
           <label>CPF:</label>
-          <input type="text" [value]="doador.cpf" disabled />
+          <input
+            type="text"
+            [ngModel]="formatarCPF(doador.cpf)"
+            name="cpf_visualizacao"
+            disabled
+          />
         </div>
       </div>
 
@@ -42,7 +47,9 @@
             type="text"
             name="pressao_arterial"
             [(ngModel)]="pressaoArterial"
-            placeholder="Ex: 12x8"
+            (ngModelChange)="aplicarMascaraPressao($event)"
+            placeholder="Ex: 128"
+            maxlength="5"
             #pressao="ngModel"
             required
           />
@@ -60,8 +67,11 @@
             Revisar Questionário
           </button>
           <small *ngIf="!questionarioVinculado"
-            >Este processo não possui questionário vinculado.</small
-          >
+            >Este processo não possui questionário vinculado.
+          </small>
+          <small class="msg-revisado-ok" *ngIf="questionarioRevisado">
+            <i class="bi bi-check-circle-fill"></i> Questionário verificado.
+          </small>
         </div>
       </div>
 
@@ -69,7 +79,13 @@
         <button type="button" class="btn-cancelar" (click)="abrirModal(false)">
           Inapto
         </button>
-        <button type="submit" class="btn-concluir" [disabled]="formTri.invalid">
+        <button
+          type="submit"
+          class="btn-concluir"
+          [disabled]="
+            formTri.invalid || pressaoIncompleta || !questionarioRevisado
+          "
+        >
           Apto
         </button>
       </div>
