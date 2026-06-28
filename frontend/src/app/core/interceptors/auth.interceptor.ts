@@ -1,9 +1,3 @@
-/**
- * auth.interceptor.ts (Formato Funcional)
- * * Este Interceptor é responsável por injetar o Token JWT em todas as
- * requisições HTTP enviadas para o backend automaticamente.
- */
-
 import { HttpErrorResponse, HttpInterceptorFn } from '@angular/common/http';
 import { AuthService } from '../../services/auth.service';
 import { inject } from '@angular/core';
@@ -21,9 +15,10 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
       },
     });
   }
+
   return next(authReq).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      if (error.status === 401 && !req.url.includes('/api/token/')) {
         return authService.refreshToken().pipe(
           switchMap((res) => {
             localStorage.setItem('access', res.access);
@@ -46,7 +41,6 @@ export const authInterceptor: HttpInterceptorFn = (req, next) => {
           }),
         );
       }
-
       return throwError(() => error);
     }),
   );

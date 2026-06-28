@@ -28,7 +28,9 @@ export class LoginComponent implements OnInit {
     private router: Router,
   ) {}
 
-  ngOnInit() {
+  ngOnInit() {}
+
+  ngAfterViewInit() {
     this.route.queryParams.subscribe((params) => {
       if (params['cadastrado'] === 'true') {
         this.mensagemSucesso =
@@ -61,7 +63,7 @@ export class LoginComponent implements OnInit {
         this.router.navigate(['/']);
       },
       error: (err) => {
-        this.toastComponente.exibir('CPF ou senha incorretos.', false);
+        this.toastComponente?.exibir('CPF ou senha incorretos.', false);
       },
     });
   }
