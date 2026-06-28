@@ -5,7 +5,7 @@
   .icone-circulo {
     width: 60px;
     height: 60px;
-    background-color: #FFE0E0;
+    background-color: #ffe0e0;
     color: #e63946;
     border-radius: 50%;
     display: flex;
@@ -14,15 +14,17 @@
     margin: 0 auto 15px auto;
   }
 
-  h2 { 
-    font-size: 1.4rem; 
-    font-weight: 800; 
-    color: #000; 
-    margin: 0 0 8px 0; }
-  .frase-motivacional { 
-    font-size: 1rem; 
-    color: #555; 
-    margin: 0; }
+  h2 {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #000;
+    margin: 0 0 8px 0;
+  }
+  .frase-motivacional {
+    font-size: 1rem;
+    color: #555;
+    margin: 0;
+  }
 }
 
 .retangulo-externo {
@@ -34,12 +36,12 @@
   padding: 32px;
   border-radius: 12px;
 
-//   display: flex;
+  //   display: flex;
   justify-content: center;
   align-items: center;
-  
+
   background-color: #ffffff;
-  border: 1px solid #ddd; 
+  border: 1px solid #ddd;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
@@ -51,16 +53,18 @@
   margin-bottom: 64px;
   padding: 32px;
   border-radius: 12px;
-  
-//   display: flex;
+
+  //   display: flex;
   justify-content: center;
   align-items: center;
-  
-  background-color: #E6F1E9;
-  border: 1px solid #ddd; 
+
+  background-color: #e6f1e9;
+  border: 1px solid #ddd;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  
-  p { margin-bottom: 16px; }
+
+  p {
+    margin-bottom: 16px;
+  }
 
   .acoes-regras {
     display: flex;
@@ -92,30 +96,53 @@
     background-color: #9ccaa3;
     cursor: not-allowed;
   }
+
+  .alerta-inapto {
+    margin: 20px 0;
+    padding: 15px;
+    background-color: #fff3f3;
+    color: #d32f2f;
+    border-left: 4px solid #d32f2f;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    line-height: 1.4;
+
+    i {
+      margin-right: 8px;
+    }
+
+    strong {
+      font-weight: 700;
+    }
+
+    .data-liberacao {
+      display: block;
+      margin-top: 8px;
+    }
+  }
 }
 /* RESPONSIVIDADE */
 @media (max-width: 768px) {
-  
   .retangulo-externo {
-    width: 95%; 
-    padding: 15px; 
-    margin-top: 30px; 
+    width: 95%;
+    padding: 15px;
+    margin-top: 30px;
     margin-bottom: 30px;
   }
 
   .retangulo-interno {
-    width: 100%; 
-    padding: 15px; 
+    width: 100%;
+    padding: 15px;
     margin-top: 20px;
     margin-bottom: 20px;
   }
 
   .header-secao h2 {
-    font-size: 1.2rem; 
+    font-size: 1.2rem;
   }
 
   p {
-    font-size: 0.95rem; 
-    text-align: justify; 
+    font-size: 0.95rem;
+    text-align: justify;
   }
 }

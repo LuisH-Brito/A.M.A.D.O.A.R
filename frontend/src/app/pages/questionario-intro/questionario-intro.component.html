@@ -59,30 +59,21 @@
         no dia da doação.
       </p>
 
+      <div *ngIf="analiseEtaria.invalida" class="alerta-inapto">
+        <i class="bi bi-exclamation-octagon-fill"></i>
+        <strong>Impedimento de Idade:</strong> {{ analiseEtaria.mensagem }}
+      </div>
+
       <div
         *ngIf="doadorLogado && !doadorLogado.apto_para_doacao"
         class="alerta-inapto"
-        style="
-          margin: 20px 0;
-          padding: 15px;
-          background-color: #fff3f3;
-          color: #d32f2f;
-          border-left: 4px solid #d32f2f;
-          border-radius: 4px;
-        "
       >
-        <i
-          class="bi bi-exclamation-triangle-fill"
-          style="margin-right: 8px"
-        ></i>
+        <i class="bi bi-exclamation-triangle-fill"></i>
         <strong>Ação Bloqueada:</strong> Identificamos que você possui um
         processo em andamento ou ainda não cumpriu o prazo de descanso
         obrigatório desde a sua última doação.
         <br />
-        <span
-          *ngIf="doadorLogado.data_proxima_doacao"
-          style="display: block; margin-top: 8px"
-        >
+        <span *ngIf="doadorLogado.data_proxima_doacao" class="data-liberacao">
           Você estará liberado para iniciar um novo questionário a partir de:
           <strong>{{
             doadorLogado.data_proxima_doacao | date: "dd/MM/yyyy"
@@ -93,23 +84,19 @@
       <div class="acoes-regras">
         <label
           class="checkbox-regras"
-          [style.opacity]="
-            doadorLogado && !doadorLogado.apto_para_doacao ? '0.5' : '1'
-          "
+          [style.opacity]="!podeResponderQuestionario ? '0.5' : '1'"
         >
           <input
             type="checkbox"
             [(ngModel)]="aceitoRegras"
-            [disabled]="doadorLogado && !doadorLogado.apto_para_doacao"
+            [disabled]="!podeResponderQuestionario"
           />
           Li, compreendi e concordo em responder o questionário com sinceridade.
         </label>
 
         <button
           class="btn-iniciar"
-          [disabled]="
-            !aceitoRegras || (doadorLogado && !doadorLogado.apto_para_doacao)
-          "
+          [disabled]="!aceitoRegras || !podeResponderQuestionario"
           (click)="iniciar()"
         >
           Iniciar Questionário
