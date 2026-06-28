@@ -70,6 +70,17 @@ $borda-card: #b5b5b5;
   animation: fadeIn 0.3s ease;
 }
 
+.msg-alerta-peso {
+  color: #b86b00;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  animation: fadeIn 0.3s ease;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;

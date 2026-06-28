@@ -106,7 +106,24 @@ export class FormPreTriagemComponent implements OnInit {
     }
   }
 
+  formatarCPF(cpf: string): string {
+    if (!cpf) return '';
+    const numeros = cpf.replace(/\D/g, '');
+    return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  }
+
+  get pesoInvalidoParaDoacao(): boolean {
+    return this.form.peso == null || this.form.peso < 50;
+  }
+
   salvarEAvancarTriagem(): void {
+    if (this.form.peso != null && this.form.peso < 50) {
+      this.toast.exibir(
+        'O doador não possui o peso mínimo de 50kg para doar.',
+        false,
+      );
+      return;
+    }
     if (
       this.form.altura == null ||
       this.form.peso == null ||
