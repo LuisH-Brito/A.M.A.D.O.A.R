@@ -6,24 +6,32 @@ def inserir_doadores(apps, schema_editor):
 
     # O primeiro é o nosso "teste" que já usámos no Front-end
     Doador.objects.get_or_create(
-        cpf="teste", 
+        cpf="11732693200", 
         defaults={
-            "nome_completo": "Usuário Teste",
-            "email": "teste@doador.com",
+            "nome_completo": "Giovanni Ruan Renato Alves",
+            "email": "giovanni_alves@live.ca",
             "password": make_password("senha123"), # Senha: senha123
             "sexo": "M",
-            "telefone": "68999999999"
+            "telefone": "68995372378",
+            "data_nascimento": "2002-04-16",
+            "endereco": "Rua Alameda Grécia, 67, Jardim Europa, Rio Branco, Acre.",
+            "tipo_sanguineo_declarado": "A",
+            "fator_rh": "+"
         }
     )
 
     Doador.objects.get_or_create(
-        cpf="11111111111",
+        cpf="78974427214",
         defaults={
-            "nome_completo": "Carlos Martins",
-            "email": "carlos@doador.com",
+            "nome_completo": "Louise Luzia Assunção",
+            "email": "louise_assuncao@europamotors.com.br",
             "password": make_password("senha123"),
-            "sexo": "M",
-            "telefone": "68988888888"
+            "sexo": "F",
+            "telefone": "68989669621",
+            "data_nascimento": "2003-06-04",
+            "endereco": "Rua Belém, 595, Conjunto Xavier Maia, Rio Branco, Acre.",
+            "tipo_sanguineo_declarado": "O",
+            "fator_rh": "-"
         }
     )
 
