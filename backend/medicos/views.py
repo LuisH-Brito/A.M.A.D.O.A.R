@@ -18,6 +18,12 @@ class MedicoViewSet(viewsets.ModelViewSet):
     serializer_class = MedicoSerializer
     permission_classes = [EhMedico | EhAdministrador]
 
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [EhAdministrador()]
+
+        return super().get_permissions()
+
     @action(detail=False, methods=['get', 'patch'], url_path='me')
     def me(self, request):
         medico = getattr(request.user, 'medico', None)

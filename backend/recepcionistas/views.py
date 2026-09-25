@@ -21,6 +21,12 @@ class RecepcionistaViewSet(viewsets.ModelViewSet):
     serializer_class = RecepcionistaSerializer
     permission_classes = [EhRecepcionista | EhAdministrador]
 
+    def get_permissions(self):
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [EhAdministrador()]
+
+        return super().get_permissions()
+
     @action(detail=False, methods=['get', 'patch'], url_path='me')
     def me(self, request):
         recepcionista = getattr(request.user, 'recepcionista', None)
@@ -40,4 +46,3 @@ class RecepcionistaViewSet(viewsets.ModelViewSet):
                 serializer.save()
                 return Response(serializer.data)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
