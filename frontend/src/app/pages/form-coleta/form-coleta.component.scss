@@ -242,13 +242,40 @@ select {
 }
 
 @media (max-width: 768px) {
-  .linha {
+  .form-coleta {
+    padding: 20px 16px;
+  }
+
+  .container {
+    padding: 24px 20px;
+  }
+
+  .layout-duplo {
     flex-direction: column;
+    gap: 24px;
+  }
+
+  .grupo-inputs,
+  .coluna-info {
+    width: 100%;
+    min-width: 0;
+  }
+
+  select.select-borda {
+    width: 100%;
+  }
+
+  .info-texto {
+    overflow-wrap: break-word;
   }
 
   .acoes {
     flex-direction: column;
     gap: 20px;
     align-items: center;
+  }
+
+  .btn-coleta {
+    margin-right: 0;
   }
 }

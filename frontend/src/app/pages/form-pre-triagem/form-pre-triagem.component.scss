@@ -230,8 +230,30 @@ select {
 }
 
 @media (max-width: 768px) {
+  .form-pre-triagem {
+    padding: 20px 16px;
+  }
+
+  .container {
+    padding: 24px 20px;
+  }
+
   .layout-duplo {
     flex-direction: column;
+    gap: 24px;
+  }
+
+  .grupo-inputs {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .campo input {
+    width: 100%;
+  }
+
+  .info-texto {
+    overflow-wrap: break-word;
   }
 
   .coluna-info {

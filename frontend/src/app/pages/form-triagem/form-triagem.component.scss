@@ -191,8 +191,22 @@ select {
 }
 
 @media (max-width: 768px) {
+  .form-triagem {
+    padding: 20px 16px;
+  }
+
+  .container {
+    padding: 24px 20px;
+  }
+
   .linha {
     flex-direction: column;
+  }
+
+  .campo,
+  .campo input {
+    min-width: 0;
+    width: 100%;
   }
 
   .acoes {

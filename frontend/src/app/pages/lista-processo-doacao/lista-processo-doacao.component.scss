@@ -192,3 +192,10 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .lista-scroll {
+    max-height: none;
+    overflow-y: visible;
+  }
+}

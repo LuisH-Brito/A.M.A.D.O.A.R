@@ -181,8 +181,8 @@
   }
 
   .btn-acao {
-    width: 38px;
-    height: 38px;
+    width: 44px;
+    height: 44px;
     font-size: 16px;
   }
 
@@ -321,4 +321,32 @@
 .bolsas {
   font-size: 13px;
   color: #888;
+}
+
+@media (max-width: 576px) {
+  .doador-header {
+    display: grid;
+    grid-template-columns: 55px minmax(0, 1fr);
+    gap: 12px;
+  }
+
+  .tipo-badge {
+    grid-column: 1;
+  }
+
+  .doador-info {
+    grid-column: 2;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+
+  .acoes-carteira {
+    grid-column: 1 / -1;
+  }
+
+  .btn-upload {
+    width: 100%;
+    min-height: 44px;
+    justify-content: center;
+  }
 }

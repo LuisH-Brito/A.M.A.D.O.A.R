@@ -79,9 +79,12 @@
     flex-direction: column;
     gap: 24px;
     padding-top: 40px;
+    padding-bottom: 48px;
+    width: 100%;
+    align-items: center;
 
     .card {
-      width: min(300px, calc(100vw - 40px));
+      width: min(300px, 100%);
       flex: none;
     }
   }

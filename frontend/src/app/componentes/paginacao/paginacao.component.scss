@@ -22,6 +22,8 @@
       border-radius: 8px;
       transition: all 0.2s;
       font-weight: 600;
+      min-width: 44px;
+      min-height: 44px;
 
       &:hover {
         background-color: #e9ecef;
