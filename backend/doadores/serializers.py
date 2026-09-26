@@ -2,6 +2,7 @@ import re
 from rest_framework import serializers
 from .models import Doador
 from django.utils import timezone
+from usuarios.serializers import UsuarioNormalizacaoMixin
 
 def senha_forte(senha: str) -> bool:
     senha = (senha or '').strip()
@@ -12,7 +13,10 @@ def senha_forte(senha: str) -> bool:
         and re.search(r'\d', senha)
     )
 
-class DoadorSerializer(serializers.ModelSerializer):
+class DoadorSerializer(
+    UsuarioNormalizacaoMixin,
+    serializers.ModelSerializer,
+):
     password = serializers.CharField(write_only=True, required=False)
     apto_para_doacao = serializers.ReadOnlyField()
     data_proxima_doacao = serializers.ReadOnlyField()
@@ -90,18 +94,6 @@ class DoadorSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Telefone fixo inválido.')
 
         return numeros
-
-    def to_internal_value(self, data):
-        dados = data.copy()
-        cpf = dados.get('cpf')
-
-        if cpf and re.fullmatch(
-            r'\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}',
-            cpf,
-        ):
-            dados['cpf'] = re.sub(r'\D', '', cpf)
-
-        return super().to_internal_value(dados)
 
     def create(self, validated_data):
         password = validated_data.pop('password')

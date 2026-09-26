@@ -39,6 +39,7 @@ class Usuario(AbstractUser):
     first_name = None  
     last_name = None
     cpf = models.CharField(max_length=14, unique=True)
+    email = models.EmailField(unique=True)
     endereco = models.CharField(max_length=255)
     data_nascimento = models.DateField(null=True, blank=True)
     nome_completo = models.CharField(max_length=255)
@@ -48,3 +49,12 @@ class Usuario(AbstractUser):
 
     def __str__(self):
         return f"{self.nome_completo} ({self.cpf})"
+
+    def save(self, *args, **kwargs):
+        if self.cpf:
+            self.cpf = ''.join(char for char in self.cpf if char.isdigit())
+
+        if self.email:
+            self.email = self.email.strip().lower()
+
+        super().save(*args, **kwargs)

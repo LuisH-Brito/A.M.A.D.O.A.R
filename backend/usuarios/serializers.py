@@ -1,4 +1,29 @@
+import re
+from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+
+class UsuarioNormalizacaoMixin:
+    def to_internal_value(self, data):
+        dados = data.copy()
+
+        cpf = dados.get('cpf')
+        if cpf:
+            if not re.fullmatch(
+                r'\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}',
+                cpf,
+            ):
+                raise serializers.ValidationError({
+                    'cpf': 'Formato de CPF inválido.'
+                })
+
+            dados['cpf'] = re.sub(r'\D', '', cpf)
+
+        email = dados.get('email')
+        if email:
+            dados['email'] = email.strip().lower()
+
+        return super().to_internal_value(dados)
+
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
     """
