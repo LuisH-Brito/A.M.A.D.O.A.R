@@ -36,7 +36,7 @@ class DoadorSerializer(serializers.ModelSerializer):
 
         numeros = ''.join(char for char in value if char.isdigit())
 
-        if len(numeros) != 11 or len(set(numeros)) == 1:
+        if len(set(numeros)) == 1:
             raise serializers.ValidationError('CPF inválido.')
 
         def calcular_digito(base, peso_inicial):
@@ -47,17 +47,13 @@ class DoadorSerializer(serializers.ModelSerializer):
             resto = soma % 11
             return 0 if resto < 2 else 11 - resto
 
-        primeiro_digito = calcular_digito(numeros[:9], 10)
-
-        if primeiro_digito != int(numeros[9]):
+        if calcular_digito(numeros[:9], 10) != int(numeros[9]):
             raise serializers.ValidationError('CPF inválido.')
 
-        segundo_digito = calcular_digito(numeros[:10], 11)
-
-        if segundo_digito != int(numeros[10]):
+        if calcular_digito(numeros[:10], 11) != int(numeros[10]):
             raise serializers.ValidationError('CPF inválido.')
 
-        return value
+        return numeros
 
     def validate_data_nascimento(self, value):
         if value and value > timezone.localdate():
@@ -94,6 +90,18 @@ class DoadorSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Telefone fixo inválido.')
 
         return value
+
+    def to_internal_value(self, data):
+        dados = data.copy()
+        cpf = dados.get('cpf')
+
+        if cpf and re.fullmatch(
+            r'\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}',
+            cpf,
+        ):
+            dados['cpf'] = re.sub(r'\D', '', cpf)
+
+        return super().to_internal_value(dados)
 
     def create(self, validated_data):
         password = validated_data.pop('password')
