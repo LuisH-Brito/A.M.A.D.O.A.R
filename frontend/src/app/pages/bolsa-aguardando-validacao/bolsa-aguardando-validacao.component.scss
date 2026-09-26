@@ -139,3 +139,42 @@
     }
   }
 }
+
+@media (max-width: 768px) {
+  .pagina {
+    padding: 20px 16px;
+  }
+
+  .centralizando {
+    padding: 20px 16px;
+  }
+
+  .lista-scroll {
+    max-height: none;
+    overflow-y: visible;
+  }
+
+  .usuario-card {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+
+    .linha-superior {
+      flex-wrap: wrap;
+    }
+
+    .nome {
+      min-width: 0;
+      overflow-wrap: break-word;
+    }
+
+    .acoes {
+      justify-content: flex-end;
+      min-width: 0;
+    }
+
+    .btn-acao {
+      min-height: 44px;
+    }
+  }
+}

@@ -277,13 +277,51 @@ input.ng-invalid.ng-touched {
 }
 
 @media (max-width: 768px) {
-  .formulario-grid,
-  .conteudo-principal,
-  .acoes-final {
-    grid-template-columns: 1fr;
+  .pagina {
+    padding: 24px 16px;
   }
 
-  .grid-sangue {
-    grid-template-columns: repeat(4, 1fr);
+  .card-validacao {
+    padding: 24px 20px;
+
+    .formulario-grid,
+    .conteudo-principal,
+    .grid-uploads,
+    .acoes-final {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .secao-sangue,
+    .grid-uploads {
+      grid-column: auto;
+    }
+
+    .formulario-grid .campo,
+    .grid-uploads .secao-upload {
+      min-width: 0;
+    }
+
+    .formulario-grid input {
+      width: 100%;
+    }
+
+    .cabecalho-sangue {
+      flex-wrap: wrap;
+      white-space: normal;
+
+      .label-destaque,
+      .badge-aviso {
+        white-space: normal;
+      }
+    }
+  }
+
+  .card-validacao .grid-sangue {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .card-validacao .upload-container {
+    height: auto;
+    min-height: 180px;
   }
 }

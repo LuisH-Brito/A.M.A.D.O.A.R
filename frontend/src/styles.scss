@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+
+@media (max-width: 768px) {
+  .btn-icone,
+  .btn-hamburger {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}

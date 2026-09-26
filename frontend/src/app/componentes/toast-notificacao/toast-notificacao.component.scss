@@ -13,6 +13,13 @@
   z-index: 9999;
   border-left: 6px solid #28a745;
   transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  max-width: calc(100vw - 32px);
+
+  @media (max-width: 480px) {
+    &.show {
+      right: 16px;
+    }
+  }
 
   &.show {
     right: 30px;
@@ -53,6 +60,8 @@
     color: #aaa;
     font-size: 24px;
     padding: 0;
+    min-width: 44px;
+    min-height: 44px;
     transition: color 0.2s;
     &:hover {
       color: #333;
