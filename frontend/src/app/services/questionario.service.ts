@@ -7,7 +7,7 @@ import { HttpClient } from '@angular/common/http';
 export class QuestionarioService {
   private http = inject(HttpClient);
   
-  private apiUrl = 'http://127.0.0.1:8000/api/'; 
+  private apiUrl = '/api/';
 
   getPerguntas() {
     return this.http.get<any[]>(this.apiUrl + 'perguntas/');

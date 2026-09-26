@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class EstoqueBolsaService {
-  private baseUrl = 'http://localhost:8000/api';
+  private baseUrl = '/api';
   private endpoint = `${this.baseUrl}/estoque`;
   constructor(private http: HttpClient) {}
   obterDashboard(): Observable<any> {

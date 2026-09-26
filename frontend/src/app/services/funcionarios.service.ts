@@ -6,7 +6,7 @@ import { forkJoin, map, Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class FuncionariosService {
-  private baseUrl = 'http://localhost:8000/api';
+  private baseUrl = '/api';
 
   constructor(private http: HttpClient) {}
 

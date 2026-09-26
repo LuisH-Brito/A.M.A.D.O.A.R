@@ -45,7 +45,7 @@ export class LoginComponent implements OnInit {
   }
 
   fazerLogin() {
-    const url = 'http://localhost:8000/api/token/';
+    const url = '/api/token/';
     const loginPayload = {
       cpf: this.loginData.cpf,
       password: this.loginData.password,

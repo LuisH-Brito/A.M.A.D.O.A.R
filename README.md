@@ -1,5 +1,20 @@
 # A.M.A.D.O.A.R
 
+## Deploy com Docker
+
+1. Copie `.env.example` para `.env` e preencha os valores de produção, principalmente `SECRET_KEY`, senhas do MySQL, `ALLOWED_HOSTS`, `CORS_ALLOWED_ORIGINS` e `CSRF_TRUSTED_ORIGINS`.
+2. Inicie a stack:
+
+```bash
+docker compose up -d --build
+```
+
+3. Acesse `http://localhost` ou o domínio configurado. O Angular é servido pelo Nginx; as rotas `/api/` e `/admin/` são encaminhadas ao Django.
+
+Para acompanhar os serviços: `docker compose logs -f backend frontend`.
+
+Os dados do MySQL, uploads e arquivos estáticos ficam em volumes Docker persistentes. Em produção, coloque HTTPS em um proxy reverso externo e configure `ALLOWED_HOSTS` com o domínio real.
+
 #Alguns comandos que devem ser rodados depois de clonar o repositorio
 
 Abra o terminal na pasta do BACKEND

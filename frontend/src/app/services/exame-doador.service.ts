@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root',
 })
 export class ExameDoadorService {
-  private apiUrl = 'http://127.0.0.1:8000/api/exames-doador/';
+  private apiUrl = '/api/exames-doador/';
 
   constructor(private http: HttpClient) {}
 

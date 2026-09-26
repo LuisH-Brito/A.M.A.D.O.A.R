@@ -4,7 +4,7 @@ import { inject, Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private http = inject(HttpClient);
-  private baseUrl = 'http://127.0.0.1:8000/api/';
+  private baseUrl = '/api/';
 
   getDoadores(cpf?: string) {
     const options = cpf ? { params: { cpf } } : undefined;
