@@ -1,5 +1,3 @@
-from django.utils import timezone
-from datetime import timedelta
 from django.db.models import F, Value
 from django.db.models.functions import Replace
 from rest_framework import viewsets, status
@@ -124,7 +122,7 @@ class SalvarQuestionarioView(APIView):
 
         # Isso ignora se a data virou meia-noite e resolve o bug do fuso horário :(
         if not questionario_alvo:
-            limite_tempo = timezone.now() - timedelta(hours=24)
+            limite_tempo = Questionario.limite_validade_online()
             questionario_alvo = Questionario.objects.filter(
                 doador=doador,
                 data_hora_submissao__gte=limite_tempo
