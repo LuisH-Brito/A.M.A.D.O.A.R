@@ -23,6 +23,10 @@ export class ApiService {
     return this.http.post(`${this.baseUrl}dados-clinicos/`, payload);
   }
 
+  atualizarDadosClinicos(id: number, payload: any) {
+    return this.http.patch(`${this.baseUrl}dados-clinicos/${id}/`, payload);
+  }
+
   atualizarStatusProcesso(id: number, status: number) {
     return this.http.patch(`${this.baseUrl}processos/${id}/atualizar-status/`, {
       status,

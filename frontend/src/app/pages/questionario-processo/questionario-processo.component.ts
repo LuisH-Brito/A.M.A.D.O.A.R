@@ -57,11 +57,12 @@ export class QuestionarioProcessoComponent implements OnInit {
           resposta_dada: null 
         }));
 
-        //  buscar por CPF 
-        if (this.cpfDoador) {
-          this.carregarUltimoQuestionarioPorCpf();
-        } else if (this.processoId) {
+        // Em um atendimento, o questionário vinculado ao processo prevalece
+        // sobre qualquer outro questionário do histórico do doador.
+        if (this.processoId) {
           this.carregarQuestionarioPorProcesso();
+        } else if (this.cpfDoador) {
+          this.carregarUltimoQuestionarioPorCpf();
         } else {
           this.carregando = false;
         }
@@ -115,6 +116,9 @@ export class QuestionarioProcessoComponent implements OnInit {
       },
       error: (erro) => {
         console.error('Erro ao buscar questionário do processo:', erro);
+        if (erro?.status === 404) {
+          this.modoEdicao = true;
+        }
         this.carregando = false;
       }
     });
@@ -135,6 +139,7 @@ export class QuestionarioProcessoComponent implements OnInit {
       this.salvarQuestionarioEditado();
     } else {
       this.modoEdicao = true;
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   }
 

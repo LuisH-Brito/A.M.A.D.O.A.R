@@ -152,11 +152,28 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
         if not isinstance(aprovado, bool):
             return Response({'erro': 'Campo "aprovado" deve ser booleano.'}, status=status.HTTP_400_BAD_REQUEST)
 
+        if aprovado and not processo.questionario_id:
+            return Response(
+                {'erro': 'O processo não possui questionário concluído.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if aprovado and not processo.questionario.validade:
+            return Response(
+                {
+                    'erro': (
+                        'O questionário possui respostas incompatíveis com '
+                        'a classificação como apto.'
+                    )
+                },
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         with transaction.atomic():
             dados, _ = Dados_Clinicos.objects.get_or_create(
                 processo=processo,
                 defaults={
-                    'peso': 0, 'altura': 0, 'hemoglobina': 0,
+                    'peso': 0, 'altura': 0, 'hemoglobina': None,
                     'status_clinico': StatusClinico.APTO
                 }
             )

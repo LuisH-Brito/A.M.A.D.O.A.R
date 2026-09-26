@@ -38,6 +38,10 @@
     font-weight: 600;
     color: #6c757d;
     transition: all 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
 
     &:hover {
       color: #343a40;
@@ -47,6 +51,59 @@
       background-color: #c5e4cd;
       color: #000000;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+
+      .etapa-count {
+        background-color: #ffffff;
+        color: #1f6b36;
+      }
+    }
+
+    .etapa-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .etapa-count {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 22px;
+      padding: 0 6px;
+      border-radius: 999px;
+      background-color: #e5e9e6;
+      color: #495057;
+      font-size: 0.8rem;
+      line-height: 1;
+    }
+  }
+}
+
+@media (max-width: 576px) {
+  .pagina {
+    padding: 16px;
+  }
+
+  .centralizando {
+    padding: 20px 12px;
+  }
+
+  .navegacao-abas {
+    button {
+      padding: 10px 4px;
+      font-size: 0.8rem;
+
+      .etapa-label {
+        gap: 4px;
+      }
+
+      .etapa-count {
+        min-width: 19px;
+        height: 19px;
+        padding: 0 4px;
+        font-size: 0.72rem;
+      }
     }
   }
 }

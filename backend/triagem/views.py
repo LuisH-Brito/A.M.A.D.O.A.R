@@ -115,13 +115,23 @@ class SalvarQuestionarioView(APIView):
             from processos_doacao.models import Processo_Doacao # Importação local para evitar dependência circular
             try:
                 processo_obj = Processo_Doacao.objects.get(id=processo_id)
-                if processo_obj.questionario:
-                    questionario_alvo = processo_obj.questionario
             except Processo_Doacao.DoesNotExist:
-                pass
+                return Response(
+                    {"erro": "Processo de doação não encontrado."},
+                    status=status.HTTP_404_NOT_FOUND
+                )
+
+            if processo_obj.doador_id != doador.id:
+                return Response(
+                    {"erro": "O processo informado não pertence ao doador."},
+                    status=status.HTTP_400_BAD_REQUEST
+                )
+
+            if processo_obj.questionario:
+                questionario_alvo = processo_obj.questionario
 
         # Isso ignora se a data virou meia-noite e resolve o bug do fuso horário :(
-        if not questionario_alvo:
+        if not processo_id and not questionario_alvo:
             limite_tempo = Questionario.limite_validade_online()
             questionario_alvo = Questionario.objects.filter(
                 doador=doador,

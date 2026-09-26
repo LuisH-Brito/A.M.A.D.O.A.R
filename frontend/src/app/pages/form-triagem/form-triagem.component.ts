@@ -6,6 +6,9 @@ import { ApiService } from '../../services/api.service';
 import { QuestionarioService } from '../../services/questionario.service';
 import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
+import { TriagemRascunhoService } from '../../services/triagem-rascunho.service';
+import { EMPTY } from 'rxjs';
+import { catchError, finalize, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-form-triagem',
@@ -24,8 +27,10 @@ export class FormTriagemComponent implements OnInit {
   doador = { nome: '', dataNascimento: '', cpf: '' };
   pressaoArterial = '';
   questionarioVinculado = false;
+  questionarioPermiteAptidao: boolean | null = null;
 
   questionarioRevisado = false;
+  processando = false;
 
   @ViewChild('toast') toast!: ToastNotificacaoComponent;
   modalVisivel = false;
@@ -42,6 +47,7 @@ export class FormTriagemComponent implements OnInit {
     private router: Router,
     private api: ApiService,
     private questionarioService: QuestionarioService,
+    private triagemRascunhoService: TriagemRascunhoService,
   ) {}
 
   ngOnInit(): void {
@@ -53,6 +59,11 @@ export class FormTriagemComponent implements OnInit {
     }
 
     this.processoId = id;
+
+    const rascunho = this.triagemRascunhoService.obter(this.processoId);
+    if (rascunho) {
+      this.pressaoArterial = rascunho.pressaoArterial;
+    }
 
     if (sessionStorage.getItem(`q_visto_${this.processoId}`) === 'true') {
       this.questionarioRevisado = true;
@@ -66,17 +77,7 @@ export class FormTriagemComponent implements OnInit {
           cpf: processo?.doador?.cpf || '',
         };
 
-        // Em vez de olhar pro processo, olha pro histórico do CPF
-        if (this.doador.cpf) {
-          this.questionarioService
-            .getQuestionariosPorCpf(this.doador.cpf)
-            .subscribe({
-              next: (questionarios) => {
-                this.questionarioVinculado =
-                  questionarios && questionarios.length > 0;
-              },
-            });
-        }
+        this.carregarResultadoQuestionario();
       },
       error: () => {
         this.toast.exibir(
@@ -88,12 +89,38 @@ export class FormTriagemComponent implements OnInit {
     });
   }
 
+  private carregarResultadoQuestionario(): void {
+    this.questionarioService
+      .getQuestionarioPorProcesso(this.processoId)
+      .subscribe({
+        next: (questionario) => {
+          this.questionarioVinculado = true;
+          this.questionarioPermiteAptidao = questionario?.validade === true;
+        },
+        error: (erro) => {
+          this.questionarioVinculado = false;
+          this.questionarioPermiteAptidao = null;
+
+          if (erro?.status === 404) {
+            this.questionarioRevisado = false;
+            sessionStorage.removeItem(`q_visto_${this.processoId}`);
+          }
+        },
+      });
+  }
+
   abrirQuestionarios(): void {
+    if (this.processando) return;
+
     if (!this.processoId) {
       alert('Processo inválido.');
       return;
     }
 
+    this.triagemRascunhoService.salvar(
+      this.processoId,
+      this.pressaoArterial,
+    );
     sessionStorage.setItem(`q_visto_${this.processoId}`, 'true');
     this.questionarioRevisado = true;
 
@@ -115,9 +142,20 @@ export class FormTriagemComponent implements OnInit {
       this.pressaoArterial = '';
       return;
     }
+
+    const valorNormalizado = valorDigitado
+      .toLowerCase()
+      .replace(/[^0-9x]/g, '');
+    if (valorNormalizado.includes('x')) {
+      const [sistolica, ...partesDiastolica] = valorNormalizado.split('x');
+      const diastolica = partesDiastolica.join('');
+      this.pressaoArterial = `${sistolica.slice(0, 3)}x${diastolica.slice(0, 3)}`;
+      return;
+    }
+
     const digitandoParaTras =
       valorDigitado.length < this.pressaoArterial.length;
-    const apenasNumeros = valorDigitado.replace(/\D/g, '');
+    const apenasNumeros = valorNormalizado.replace(/\D/g, '');
     if (apenasNumeros.length <= 1) {
       this.pressaoArterial = apenasNumeros;
     } else if (apenasNumeros.length === 2) {
@@ -133,6 +171,44 @@ export class FormTriagemComponent implements OnInit {
 
   get pressaoIncompleta(): boolean {
     return !this.pressaoArterial || this.pressaoArterial.trim().length < 4;
+  }
+
+  get orientacaoApto(): string | null {
+    if (this.processando) {
+      return null;
+    }
+
+    if (this.questionarioImpeditivo) {
+      return 'O questionário possui respostas incompatíveis com a classificação como apto.';
+    }
+
+    const pressaoPendente = this.pressaoIncompleta;
+    const questionarioPendente =
+      !this.questionarioRevisado ||
+      !this.questionarioVinculado ||
+      this.questionarioPermiteAptidao === null;
+
+    if (pressaoPendente && questionarioPendente) {
+      return 'Para habilitar "Apto", informe a pressão arterial e revise o questionário.';
+    }
+
+    if (questionarioPendente) {
+      return 'Revise o questionário para habilitar "Apto".';
+    }
+
+    if (pressaoPendente) {
+      return 'Informe uma pressão arterial válida para habilitar "Apto".';
+    }
+
+    return null;
+  }
+
+  get questionarioImpeditivo(): boolean {
+    return (
+      this.questionarioRevisado &&
+      this.questionarioVinculado &&
+      this.questionarioPermiteAptidao === false
+    );
   }
 
   private validarPressao(): boolean {
@@ -156,6 +232,7 @@ export class FormTriagemComponent implements OnInit {
   }
 
   abrirModal(aprovado: boolean): void {
+    if (this.processando) return;
     if (aprovado && !this.validarPressao()) return;
 
     this.acaoPendente = aprovado;
@@ -185,6 +262,8 @@ export class FormTriagemComponent implements OnInit {
   }
 
   confirmarAcaoModal(): void {
+    if (this.processando) return;
+
     this.modalVisivel = false;
     if (this.acaoPendente !== null) {
       this.enviarDecisao(this.acaoPendente);
@@ -192,6 +271,8 @@ export class FormTriagemComponent implements OnInit {
   }
 
   private enviarDecisao(aprovado: boolean): void {
+    if (this.processando) return;
+
     const medicoId = localStorage.getItem('usuario_id');
     if (!medicoId) {
       this.toast.exibir(
@@ -206,43 +287,55 @@ export class FormTriagemComponent implements OnInit {
       aprovado: aprovado,
       medico_id: medicoId,
     };
+    const novoStatus = aprovado ? 4 : 0; // 4 = Coleta, 0 = Cancelado/Inapto
 
-    this.api.decidirTriagem(this.processoId, payload as any).subscribe({
-      next: () => {
-        sessionStorage.removeItem(`q_visto_${this.processoId}`);
-        const novoStatus = aprovado ? 4 : 0; // 4 = Coleta, 0 = Cancelado/Inapto
+    this.processando = true;
+    this.api
+      .decidirTriagem(this.processoId, payload as any)
+      .pipe(
+        switchMap(() => {
+          sessionStorage.removeItem(`q_visto_${this.processoId}`);
+          return this.api
+            .atualizarStatusProcesso(this.processoId, novoStatus)
+            .pipe(
+              catchError(() => {
+                this.toast.exibir(
+                  'Os dados foram salvos, mas houve um erro ao mudar a etapa do processo.',
+                  false,
+                );
+                return EMPTY;
+              }),
+            );
+        }),
+        finalize(() => {
+          this.processando = false;
+        }),
+      )
+      .subscribe({
+        next: () => {
+          this.triagemRascunhoService.limpar(this.processoId);
+          const msg = aprovado
+            ? 'Doador Apto! Processo enviado para Coleta.'
+            : 'Doador Inapto. Processo encerrado.';
 
-        this.api
-          .atualizarStatusProcesso(this.processoId, novoStatus)
-          .subscribe({
-            next: () => {
-              const msg = aprovado
-                ? 'Doador Apto! Processo enviado para Coleta.'
-                : 'Doador Inapto. Processo encerrado.';
-
-              this.toast.exibir(msg, true);
-              setTimeout(
-                () => this.router.navigate(['/processo-doacao-andamento']),
-                1500,
-              );
-            },
-            error: () =>
-              this.toast.exibir(
-                'Os dados foram salvos, mas houve um erro ao mudar a etapa do processo.',
-                false,
-              ),
-          });
-      },
-      error: (err) => {
-        this.toast.exibir(
-          err?.error?.erro || 'Erro ao registrar os dados da triagem.',
-          false,
-        );
-      },
-    });
+          this.toast.exibir(msg, true);
+          setTimeout(
+            () => this.router.navigate(['/processo-doacao-andamento']),
+            1500,
+          );
+        },
+        error: (err) => {
+          this.toast.exibir(
+            err?.error?.erro || 'Erro ao registrar os dados da triagem.',
+            false,
+          );
+        },
+      });
   }
 
   voltar() {
+    if (this.processando) return;
+    this.triagemRascunhoService.limpar(this.processoId);
     this.router.navigate(['/processo-doacao-andamento']);
   }
 }
