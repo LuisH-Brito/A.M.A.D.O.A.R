@@ -30,7 +30,8 @@ class BolsaViewSet(viewsets.ModelViewSet):
     Otimizado com select_related para evitar N+1 queries nas listagens.
     """
     queryset = Bolsa.objects.select_related(
-        'processo', 'doador', 'tipo_sanguineo', 'enfermeiro_coleta', 'medico_validacao'
+        'processo', 'processo__recepcionista', 'doador', 'tipo_sanguineo',
+        'enfermeiro_coleta', 'medico_validacao'
     ).all().order_by('data_vencimento')
     
     serializer_class = BolsaSerializer

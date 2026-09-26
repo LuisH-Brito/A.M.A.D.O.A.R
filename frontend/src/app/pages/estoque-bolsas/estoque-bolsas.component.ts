@@ -119,6 +119,7 @@ export class EstoqueBolsasComponent implements OnInit {
             status: b.estado_temporal,
             doadorNome: b.doador_nome,
             doadorEmail: b.doador_email || 'Não informado',
+            recepcionista: b.recepcionista_nome || 'Não informado',
             textoVencimento: `Vencimento: ${dataVencFormatada}`,
             enfermeiro: b.enfermeiro_nome || 'N/A',
             medico: b.medico_nome || 'Aguardando',

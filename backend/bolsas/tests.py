@@ -22,6 +22,81 @@ from recepcionistas.models import Recepcionista
 from .models import Bolsa
 
 
+class RastreabilidadeRecepcionistaEstoqueTests(APITestCase):
+    @classmethod
+    def setUpTestData(cls):
+        campos_comuns = {
+            'endereco': 'Rua da Rastreabilidade, 1',
+            'data_nascimento': '1990-01-01',
+        }
+        cls.medico_consultante = Medico.objects.create(
+            cpf='91000000001',
+            nome_completo='Medico Consultante',
+            crm='CRM-RASTREIO',
+            email='medico.rastreio@example.com',
+            **campos_comuns,
+        )
+        cls.recepcionista_autora = Recepcionista.objects.create(
+            cpf='91000000002',
+            nome_completo='Recepcionista Autora',
+            email='recepcionista.autora@example.com',
+            **campos_comuns,
+        )
+        cls.outra_recepcionista = Recepcionista.objects.create(
+            cpf='91000000003',
+            nome_completo='Outra Recepcionista',
+            email='outra.recepcionista@example.com',
+            **campos_comuns,
+        )
+        cls.doador = Doador.objects.create(
+            cpf='91000000004',
+            nome_completo='Doador Rastreavel',
+            sexo='M',
+            telefone='68999999999',
+            email='doador.rastreio@example.com',
+            **campos_comuns,
+        )
+        cls.processo = Processo_Doacao.objects.create(
+            doador=cls.doador,
+            recepcionista=cls.recepcionista_autora,
+        )
+        cls.bolsa = Bolsa.objects.create(
+            processo=cls.processo,
+            doador=cls.doador,
+            tipo_sanguineo=Tipo_Sanguineo.objects.get(tipo='A', fator_rh='+'),
+            medico_validacao=cls.medico_consultante,
+            status=StatusBolsa.VALIDADO,
+            data_vencimento=timezone.now().date() + timedelta(days=10),
+        )
+
+    def test_estoque_exibe_autora_historica_da_recepcao(self):
+        self.client.force_authenticate(user=self.medico_consultante)
+
+        response = self.client.get('/api/estoque/')
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        bolsas = (
+            response.data['results']
+            if isinstance(response.data, dict)
+            else response.data
+        )
+        bolsa_serializada = next(
+            item for item in bolsas if item['id'] == self.bolsa.pk
+        )
+        self.assertEqual(
+            bolsa_serializada['recepcionista_nome'],
+            self.recepcionista_autora.nome_completo,
+        )
+        self.assertNotEqual(
+            bolsa_serializada['recepcionista_nome'],
+            self.outra_recepcionista.nome_completo,
+        )
+        self.assertNotEqual(
+            bolsa_serializada['recepcionista_nome'],
+            self.medico_consultante.nome_completo,
+        )
+
+
 class IntegridadeBolsaTests(APITestCase):
     @classmethod
     def setUpClass(cls):
