@@ -1,7 +1,7 @@
 import re
 from rest_framework import serializers
 from .models import Doador
-
+from django.utils import timezone
 
 def senha_forte(senha: str) -> bool:
     senha = (senha or '').strip()
@@ -11,7 +11,6 @@ def senha_forte(senha: str) -> bool:
         and re.search(r'[A-Z]', senha)
         and re.search(r'\d', senha)
     )
-
 
 class DoadorSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True, required=False)
@@ -28,11 +27,72 @@ class DoadorSerializer(serializers.ModelSerializer):
             'apto_para_doacao', 'data_proxima_doacao', 'data_ultima_doacao'
         ]
 
+    def validate_cpf(self, value):
+        if not re.fullmatch(
+            r'\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2}',
+            value or '',
+        ):
+            raise serializers.ValidationError('Formato de CPF inválido.')
+
+        numeros = ''.join(char for char in value if char.isdigit())
+
+        if len(numeros) != 11 or len(set(numeros)) == 1:
+            raise serializers.ValidationError('CPF inválido.')
+
+        def calcular_digito(base, peso_inicial):
+            soma = sum(
+                int(numero) * (peso_inicial - indice)
+                for indice, numero in enumerate(base)
+            )
+            resto = soma % 11
+            return 0 if resto < 2 else 11 - resto
+
+        primeiro_digito = calcular_digito(numeros[:9], 10)
+
+        if primeiro_digito != int(numeros[9]):
+            raise serializers.ValidationError('CPF inválido.')
+
+        segundo_digito = calcular_digito(numeros[:10], 11)
+
+        if segundo_digito != int(numeros[10]):
+            raise serializers.ValidationError('CPF inválido.')
+
+        return value
+
+    def validate_data_nascimento(self, value):
+        if value and value > timezone.localdate():
+            raise serializers.ValidationError(
+                'A data de nascimento não pode ser futura.'
+            )
+        return value
+
     def validate_password(self, value):
         if not senha_forte(value):
             raise serializers.ValidationError(
                 'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.'
             )
+        return value
+
+    def validate_telefone(self, value):
+        if not re.fullmatch(
+            r'\d{10,11}|\(\d{2}\) \d{4,5}-\d{4}',
+            value or '',
+        ):
+            raise serializers.ValidationError('Formato de telefone inválido.')
+
+        numeros = ''.join(char for char in value if char.isdigit())
+        ddd = int(numeros[:2])
+        numero = numeros[2:]
+
+        if ddd < 11 or ddd > 99 or set(numero) == {'0'}:
+            raise serializers.ValidationError('Telefone inválido.')
+
+        if len(numero) == 9 and not numero.startswith('9'):
+            raise serializers.ValidationError('Celular inválido.')
+
+        if len(numero) == 8 and numero[0] not in '2345':
+            raise serializers.ValidationError('Telefone fixo inválido.')
+
         return value
 
     def create(self, validated_data):

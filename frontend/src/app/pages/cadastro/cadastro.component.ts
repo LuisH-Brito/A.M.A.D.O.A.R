@@ -114,6 +114,19 @@ export class CadastroComponent implements OnInit {
   }
 
   abrirModalConfirmacao() {
+    if (!this.modoEdicao && !this.cpfValido(this.dados.cpf)) {
+      this.toast.exibir('CPF inválido.', false);
+      return;
+    }
+
+    if (this.dados.data_nascimento > this.dataMaxima) {
+      this.toast.exibir(
+        'A data de nascimento não pode ser futura.',
+        false,
+      );
+      return;
+    }
+
     if (this.dados.senha || this.dados.confirmarSenha) {
       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(this.dados.senha)) {
         this.toast.exibir(
@@ -205,5 +218,62 @@ export class CadastroComponent implements OnInit {
     } else {
       this.router.navigate(['/login']);
     }
+  }
+
+  cpfValido(cpf: string): boolean {
+    const numeros = (cpf || '').replace(/\D/g, '');
+
+    if (numeros.length !== 11 || /^(\d)\1{10}$/.test(numeros)) {
+      return false;
+    }
+
+    const calcularDigito = (base: string, pesoInicial: number): number => {
+      const soma = base.split('').reduce((total, numero, indice) => {
+        return total + Number(numero) * (pesoInicial - indice);
+      }, 0);
+
+      const resto = soma % 11;
+      return resto < 2 ? 0 : 11 - resto;
+    };
+
+    const primeiroDigito = calcularDigito(numeros.slice(0, 9), 10);
+
+    if (primeiroDigito !== Number(numeros[9])) {
+      return false;
+    }
+
+    const segundoDigito = calcularDigito(numeros.slice(0, 10), 11);
+
+    return segundoDigito === Number(numeros[10]);
+  }
+
+  telefoneValido(telefone: string): boolean {
+    const numeros = (telefone || '').replace(/\D/g, '');
+
+    if (!/^\d{10,11}$/.test(numeros)) {
+      return false;
+    }
+
+    const ddd = Number(numeros.slice(0, 2));
+    const numero = numeros.slice(2);
+
+    if (ddd < 11 || ddd > 99 || /^0+$/.test(numero)) {
+      return false;
+    }
+
+    if (numero.length === 9) {
+      return numero.startsWith('9');
+    }
+
+    return /^[2-5]/.test(numero);
+  }
+
+  get dataMaxima(): string {
+    const hoje = new Date();
+    const ano = hoje.getFullYear();
+    const mes = String(hoje.getMonth() + 1).padStart(2, '0');
+    const dia = String(hoje.getDate()).padStart(2, '0');
+
+    return `${ano}-${mes}-${dia}`;
   }
 }

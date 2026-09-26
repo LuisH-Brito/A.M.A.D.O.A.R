@@ -235,6 +235,30 @@ input.ng-valid.ng-touched {
   border: 2px solid #12a150;
 }
 
+.form-group input.cpf-invalido {
+  border: 2px solid #c40000 !important;
+}
+
+.form-group input.cpf-valido {
+  border: 2px solid #12a150 !important;
+}
+
+.form-group input.data-invalida {
+  border: 2px solid #c40000 !important;
+}
+
+.form-group input.data-valida {
+  border: 2px solid #12a150 !important;
+}
+
+.form-group input.telefone-invalido {
+  border: 2px solid #c40000 !important;
+}
+
+.form-group input.telefone-valido {
+  border: 2px solid #12a150 !important;
+}
+
 .erro {
   color: #c40000;
   font-size: 12px;
