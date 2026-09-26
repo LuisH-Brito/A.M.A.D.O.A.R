@@ -7,6 +7,15 @@ from django.utils import timezone
 
 
 class BolsaSerializer(serializers.ModelSerializer):
+    CAMPOS_CONTROLADOS_POR_ACTION = {
+        'status',
+        'tipo_sanguineo',
+        'medico_validacao',
+        'arquivo_laudo',
+        'data_vencimento',
+        'validacao_at',
+    }
+
     status_display = serializers.CharField(source='get_status_display', read_only=True)
     tipo_sanguineo_detalhe = TipoSanguineoSerializer(source='tipo_sanguineo', read_only=True)
     doador_nome = serializers.CharField(source='doador.nome_completo', read_only=True)
@@ -26,6 +35,27 @@ class BolsaSerializer(serializers.ModelSerializer):
             'medico_nome','medico_validacao', 'status', 'status_display', 'data_vencimento', 
             'validacao_at', 'arquivo_laudo', 'estado_temporal'
         ]
+        read_only_fields = [
+            'status',
+            'tipo_sanguineo',
+            'medico_validacao',
+            'arquivo_laudo',
+            'data_vencimento',
+            'validacao_at',
+        ]
+
+    def validate(self, attrs):
+        campos_recebidos = self.CAMPOS_CONTROLADOS_POR_ACTION.intersection(
+            self.initial_data.keys()
+        )
+        if campos_recebidos:
+            raise serializers.ValidationError({
+                campo: 'Este campo só pode ser alterado pelas ações específicas da bolsa.'
+                for campo in sorted(campos_recebidos)
+            })
+
+        return attrs
+
     def get_estado_temporal(self, obj):
 
         if obj.status == 3:

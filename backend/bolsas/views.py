@@ -11,7 +11,17 @@ from django.db.models import Count, Q
 from django.utils import timezone
 import datetime
 from rest_framework import status
-from django.db.models import Count
+from django.core.exceptions import ValidationError as DjangoValidationError
+
+from choices import FatorRH, StatusBolsa, TipoSanguineo
+from core.models import Tipo_Sanguineo
+from medicos.models import Medico
+from usuarios.permission import (
+    EhAdministrador,
+    EhEnfermeiro,
+    EhMedico,
+    EhRecepcionista,
+)
 
     
 class BolsaViewSet(viewsets.ModelViewSet):
@@ -24,11 +34,37 @@ class BolsaViewSet(viewsets.ModelViewSet):
     ).all().order_by('data_vencimento')
     
     serializer_class = BolsaSerializer
-    permission_classes = [permissions.AllowAny]
+    permission_classes = [permissions.IsAuthenticated]
     filter_backends = [DjangoFilterBackend, filters.SearchFilter, filters.OrderingFilter]
     filterset_fields = ['status', 'tipo_sanguineo', 'data_vencimento']
     search_fields = ['id', 'doador__cpf', 'doador__nome_completo']
     ordering_fields = ['data_vencimento', 'status', 'validacao_at']
+
+    def get_permissions(self):
+        if self.action == 'dashboard':
+            return [permissions.AllowAny()]
+        if self.action in ['validar', 'descartar']:
+            return [(EhMedico | EhAdministrador)()]
+        if self.action in ['registrar_uso', 'notificar_doadores']:
+            return [(EhMedico | EhEnfermeiro | EhAdministrador)()]
+        if self.action == 'doadores_aptos_carteirinha':
+            return [(
+                EhMedico | EhEnfermeiro | EhRecepcionista | EhAdministrador
+            )()]
+        if self.action in ['list', 'retrieve']:
+            return [(EhMedico | EhEnfermeiro | EhAdministrador)()]
+        if self.action in ['create', 'update', 'partial_update', 'destroy']:
+            return [EhAdministrador()]
+
+        return super().get_permissions()
+
+    @staticmethod
+    def _tipo_sanguineo_valido(tipo_sanguineo):
+        return bool(
+            tipo_sanguineo
+            and tipo_sanguineo.tipo in TipoSanguineo.values
+            and tipo_sanguineo.fator_rh in FatorRH.values
+        )
 
     def get_queryset(self):
         """
@@ -156,14 +192,31 @@ class BolsaViewSet(viewsets.ModelViewSet):
         Altera o status para 4 (UTILIZADO).
         """
         bolsa = self.get_object()
-        STATUS_VALIDADO = 2
-        if bolsa.status != STATUS_VALIDADO:
+        if bolsa.status != StatusBolsa.VALIDADO:
             return Response(
                 {"erro": f"Operação negada: O status atual da bolsa ({bolsa.get_status_display()}) não permite uso clínico."}, 
                 status=status.HTTP_400_BAD_REQUEST
             )
-        STATUS_UTILIZADO = 4
-        bolsa.status = STATUS_UTILIZADO
+        if not self._tipo_sanguineo_valido(bolsa.tipo_sanguineo):
+            return Response(
+                {"erro": "Operação negada: A bolsa não possui tipo sanguíneo e fator Rh válidos."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not bolsa.arquivo_laudo or not bolsa.medico_validacao_id:
+            return Response(
+                {"erro": "Operação negada: A bolsa não possui laudo e médico de validação."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        hoje = timezone.now().date()
+        if not bolsa.data_vencimento or bolsa.data_vencimento < hoje:
+            return Response(
+                {"erro": "Operação negada: A bolsa está vencida ou sem data de vencimento."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        bolsa.status = StatusBolsa.UTILIZADO
         bolsa.save(update_fields=['status'])
         return Response(
             {"mensagem": f"Uso clínico da bolsa {bolsa.id} registrado com sucesso."},
@@ -177,11 +230,8 @@ class BolsaViewSet(viewsets.ModelViewSet):
         Recebe os arquivos e altera o status. A matemática de datas é delegada ao models.py.
         """
         bolsa = self.get_object()
-        STATUS_AGUARDANDO = 1
-        STATUS_VALIDADO = 2
 
-     
-        if bolsa.status != STATUS_AGUARDANDO:
+        if bolsa.status != StatusBolsa.AGUARDANDO:
             return Response(
                 {"erro": f"Esta bolsa já foi processada. Status atual: {bolsa.get_status_display()}"}, 
                 status=status.HTTP_400_BAD_REQUEST
@@ -197,13 +247,40 @@ class BolsaViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST
             )
 
-        bolsa.tipo_sanguineo_id = tipo_sanguineo_id
+        try:
+            tipo_sanguineo = Tipo_Sanguineo.objects.get(pk=tipo_sanguineo_id)
+        except (Tipo_Sanguineo.DoesNotExist, TypeError, ValueError):
+            return Response(
+                {"erro": "Tipo sanguíneo inválido."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        if not self._tipo_sanguineo_valido(tipo_sanguineo):
+            return Response(
+                {"erro": "O tipo sanguíneo deve possuir ABO e fator Rh válidos."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        try:
+            medico = Medico.objects.get(pk=medico_id)
+        except (Medico.DoesNotExist, TypeError, ValueError):
+            return Response(
+                {"erro": "Médico responsável inválido."},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+
+        bolsa.tipo_sanguineo = tipo_sanguineo
         bolsa.arquivo_laudo = arquivo_laudo
-        bolsa.medico_validacao_id = medico_id
-        bolsa.status = STATUS_VALIDADO
-        
-    
-        bolsa.save()
+        bolsa.medico_validacao = medico
+        bolsa.status = StatusBolsa.VALIDADO
+
+        try:
+            bolsa.save()
+        except (DjangoValidationError, ValueError) as exc:
+            return Response(
+                {"erro": exc.message_dict if hasattr(exc, 'message_dict') else str(exc)},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         return Response(
             {"mensagem": f"Bolsa {bolsa.id} validada com sucesso!."},
