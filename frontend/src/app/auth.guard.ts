@@ -24,7 +24,7 @@ export const authGuard: CanActivateFn = (route, state) => {
    */
   if (cargosPermitidos && !cargosPermitidos.includes(cargoUsuario!)) {
     alert('Acesso negado: Seu cargo não tem permissão para esta tela.');
-    router.navigate(['/home']);
+    router.navigate(['/']);
     return false;
   }
 
