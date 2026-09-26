@@ -89,7 +89,7 @@ class DoadorSerializer(serializers.ModelSerializer):
         if len(numero) == 8 and numero[0] not in '2345':
             raise serializers.ValidationError('Telefone fixo inválido.')
 
-        return value
+        return numeros
 
     def to_internal_value(self, data):
         dados = data.copy()
