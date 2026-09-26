@@ -32,7 +32,8 @@ $borda-card: #b5b5b5;
   }
 }
 
-.btn-concluir:disabled {
+.btn-concluir:disabled,
+.btn-cancelar:disabled {
   background: #ccc;
   box-shadow: none;
   cursor: not-allowed;
@@ -92,8 +93,20 @@ $borda-card: #b5b5b5;
   }
 }
 
-input.ng-invalid.ng-touched {
+input[aria-invalid="true"] {
   border: 1px solid #c40000;
+}
+
+.orientacao-apto {
+  max-width: 560px;
+  margin: 28px auto 0;
+  padding: 10px 14px;
+  border: 1px solid #b8d9c3;
+  border-radius: 12px;
+  background: #f1f8f3;
+  color: #245f3b;
+  font-size: 14px;
+  line-height: 1.45;
 }
 
 .titulo {
@@ -186,7 +199,7 @@ select {
   display: flex;
   justify-content: center;
   gap: 80px;
-  margin-top: 40px;
+  margin-top: 18px;
 }
 
 .btn-cancelar,
@@ -211,14 +224,18 @@ select {
   box-shadow: 0 4px 10px rgba(18, 161, 80, 0.4);
 }
 
-.btn-cancelar:hover,
-.btn-concluir:hover {
+.btn-cancelar:hover:not(:disabled),
+.btn-concluir:hover:not(:disabled) {
   transform: translateY(-2px);
 }
 
 @media (max-width: 768px) {
-  .linha {
+  .layout-duplo {
     flex-direction: column;
+  }
+
+  .coluna-info {
+    width: 100%;
   }
 
   .acoes {

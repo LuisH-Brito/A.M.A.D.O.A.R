@@ -15,7 +15,12 @@
     </button>
     <h2 class="titulo">Triagem Médica</h2>
 
-    <form class="formulario" #formTri="ngForm" (ngSubmit)="abrirModal(true)">
+    <form
+      class="formulario"
+      #formTri="ngForm"
+      (ngSubmit)="abrirModal(true)"
+      [attr.aria-busy]="processando"
+    >
       <div class="linha">
         <div class="campo grande">
           <label>Nome Completo:</label>
@@ -49,7 +54,7 @@
             [(ngModel)]="pressaoArterial"
             (ngModelChange)="aplicarMascaraPressao($event)"
             placeholder="Ex: 128"
-            maxlength="5"
+            maxlength="7"
             #pressao="ngModel"
             required
           />
@@ -63,6 +68,7 @@
             type="button"
             class="btn-questionario"
             (click)="abrirQuestionarios()"
+            [disabled]="processando"
           >
             Revisar Questionário
           </button>
@@ -75,18 +81,55 @@
         </div>
       </div>
 
-      <div class="acoes">
-        <button type="button" class="btn-cancelar" (click)="abrirModal(false)">
-          Inapto
+      <div
+        *ngIf="orientacaoApto as orientacao"
+        id="orientacao-apto"
+        class="orientacao-apto"
+        [class.orientacao-apto--impeditiva]="questionarioImpeditivo"
+        role="status"
+        aria-live="polite"
+      >
+        <i
+          class="bi"
+          [class.bi-info-circle-fill]="!questionarioImpeditivo"
+          [class.bi-exclamation-triangle-fill]="questionarioImpeditivo"
+          aria-hidden="true"
+        ></i>
+        <span>{{ orientacao }}</span>
+      </div>
+
+      <div
+        class="acoes"
+        role="group"
+        aria-label="Decisão da triagem médica"
+        [attr.aria-describedby]="orientacaoApto ? 'orientacao-apto' : null"
+      >
+        <button
+          type="button"
+          class="btn-cancelar"
+          (click)="abrirModal(false)"
+          [disabled]="processando"
+        >
+          {{
+            processando && acaoPendente === false
+              ? "Processando..."
+              : "Inapto"
+          }}
         </button>
         <button
           type="submit"
           class="btn-concluir"
           [disabled]="
-            formTri.invalid || pressaoIncompleta || !questionarioRevisado
+            processando ||
+            formTri.invalid ||
+            pressaoIncompleta ||
+            !questionarioRevisado ||
+            questionarioPermiteAptidao !== true
           "
         >
-          Apto
+          {{
+            processando && acaoPendente === true ? "Processando..." : "Apto"
+          }}
         </button>
       </div>
     </form>

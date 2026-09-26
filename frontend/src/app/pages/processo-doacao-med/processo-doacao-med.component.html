@@ -6,7 +6,14 @@
       <h3>Processos em Andamento</h3>
     </a>
 
-    <a href="/aguardando-validacao-bolsa" class="card" *ngIf="podeValidacao">
+    <a href="/aguardando-validacao-bolsa" class="card card-validacao" *ngIf="podeValidacao">
+      <span
+        *ngIf="quantidadeBolsasAguardando > 0"
+        class="badge-bolsas-aguardando"
+        [attr.aria-label]="textoBolsasAguardando"
+      >
+        {{ textoBolsasAguardando }}
+      </span>
       <h3>Validação de Bolsas</h3>
     </a>
   </div>

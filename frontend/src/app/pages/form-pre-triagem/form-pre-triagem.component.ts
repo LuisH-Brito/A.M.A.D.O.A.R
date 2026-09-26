@@ -5,6 +5,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
+import { PRE_TRIAGEM_LIMITES } from './pre-triagem-limites';
 
 @Component({
   selector: 'app-form-pre-triagem',
@@ -20,13 +21,15 @@ import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/t
 })
 export class FormPreTriagemComponent implements OnInit {
   processoId!: number;
+  dadosClinicosId: number | null = null;
 
   doador = { nome: '', sexo: '', cpf: '' };
+  readonly limites = PRE_TRIAGEM_LIMITES;
 
   form = {
-    altura: null as number | null,
-    peso: null as number | null,
-    hemoglobina: null as number | null,
+    altura: '',
+    peso: '',
+    hemoglobina: '',
   };
 
   @ViewChild('toast') toast!: ToastNotificacaoComponent;
@@ -62,6 +65,13 @@ export class FormPreTriagemComponent implements OnInit {
           sexo: processo?.doador?.sexo || '',
           cpf: processo?.doador?.cpf || '',
         };
+        const dados = processo?.dados_clinicos;
+        if (dados) {
+          this.dadosClinicosId = dados.id;
+          this.form.altura = this.formatarValorSalvo(dados.altura, 2);
+          this.form.peso = this.formatarValorSalvo(dados.peso, 1);
+          this.form.hemoglobina = this.formatarValorSalvo(dados.hemoglobina, 1);
+        }
       },
       error: () => {
         alert('Não foi possível carregar o processo.');
@@ -71,6 +81,15 @@ export class FormPreTriagemComponent implements OnInit {
   }
 
   abrirModal(acao: 'apto' | 'inapto'): void {
+    if (acao === 'apto' && !this.podeMarcarApto) {
+      this.toast.exibir(this.orientacaoApto || 'Corrija as medições.', false);
+      return;
+    }
+    if (acao === 'inapto' && !this.medicoesValidas) {
+      this.toast.exibir('Corrija as medições inválidas antes de registrar Inapto.', false);
+      return;
+    }
+
     this.acaoPendente = acao;
 
     if (acao === 'apto') {
@@ -112,24 +131,131 @@ export class FormPreTriagemComponent implements OnInit {
     return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
+  private numero(valor: string, casas: number): number | null {
+    const formato = new RegExp(`^\\d+(?:[,.]\\d{1,${casas}})?$`);
+    const texto = valor.trim();
+    if (!formato.test(texto)) return null;
+    const numero = Number(texto.replace(',', '.'));
+    return Number.isFinite(numero) ? numero : null;
+  }
+
+  private formatarValorSalvo(valor: number | null, casas: number): string {
+    return valor == null ? '' : valor.toFixed(casas).replace('.', ',');
+  }
+
+  private salvarDadosClinicos(payload: {
+    processo_id: number;
+    altura: number | null;
+    peso: number | null;
+    hemoglobina: number | null;
+    status_clinico: number;
+    medico_id?: string;
+    enfermeiro_id?: string;
+  }) {
+    return this.dadosClinicosId === null
+      ? this.api.salvarDadosClinicos(payload)
+      : this.api.atualizarDadosClinicos(this.dadosClinicosId, payload);
+  }
+
+  formatarMedicao(
+    campo: 'altura' | 'peso' | 'hemoglobina',
+    evento?: FocusEvent,
+  ): void {
+    const texto = this.form[campo].trim();
+    const casas = campo === 'altura' ? 2 : 1;
+    const formatoParcial = new RegExp(`^\\d+(?:[,.]\\d{0,${casas}})?$`);
+    if (!formatoParcial.test(texto)) return;
+    const numero = Number(texto.replace(',', '.'));
+    if (Number.isFinite(numero)) {
+      this.form[campo] = numero.toFixed(casas).replace('.', ',');
+      if (evento?.target instanceof HTMLInputElement) {
+        evento.target.value = this.form[campo];
+      }
+    }
+  }
+
+  get alturaValor(): number | null {
+    return this.numero(this.form.altura, 2);
+  }
+
+  get pesoValor(): number | null {
+    return this.numero(this.form.peso, 1);
+  }
+
+  get hemoglobinaValor(): number | null {
+    return this.numero(this.form.hemoglobina, 1);
+  }
+
+  get alturaErro(): string | null {
+    if (!this.form.altura.trim()) return 'Informe a altura.';
+    const valor = this.alturaValor;
+    return valor !== null && valor > 0 && valor <= this.limites.alturaMaxM
+      ? null
+      : 'Informe uma altura maior que 0 e de até 3,00 m.';
+  }
+
+  get pesoErro(): string | null {
+    if (!this.form.peso.trim()) return 'Informe o peso.';
+    const valor = this.pesoValor;
+    return valor !== null && valor > 0 && valor <= this.limites.pesoMaxMedicaoKg
+      ? null
+      : `Informe um peso maior que 0 e de até ${this.limites.pesoMaxMedicaoKg} kg.`;
+  }
+
+  get hemoglobinaErro(): string | null {
+    if (!this.form.hemoglobina.trim()) return 'Informe a hemoglobina.';
+    const valor = this.hemoglobinaValor;
+    return valor !== null && valor > 0 && valor <= this.limites.hemoglobinaMaxMedicaoGdl
+      ? null
+      : 'Informe um valor de hemoglobina válido em g/dL.';
+  }
+
+  get medicoesValidas(): boolean {
+    return !this.alturaErro && !this.pesoErro && !this.hemoglobinaErro;
+  }
+
   get pesoInvalidoParaDoacao(): boolean {
-    return this.form.peso == null || this.form.peso < 50;
+    return this.pesoValor === null || this.pesoValor < this.limites.pesoMinDoacaoKg;
+  }
+
+  get hemoglobinaIncompativel(): boolean {
+    const valor = this.hemoglobinaValor;
+    const minimo = this.limites.hemoglobinaMinAptoGdl[
+      this.doador.sexo as 'F' | 'M'
+    ];
+    return valor === null || minimo === undefined ||
+      valor < minimo || valor >= this.limites.hemoglobinaMaxAptoGdl;
+  }
+
+  get podeMarcarApto(): boolean {
+    return this.medicoesValidas && !this.pesoInvalidoParaDoacao &&
+      !this.hemoglobinaIncompativel;
+  }
+
+  get orientacaoApto(): string | null {
+    if (this.alturaErro) return this.alturaErro;
+    if (this.pesoErro) return this.pesoErro;
+    if (this.hemoglobinaErro) return this.hemoglobinaErro;
+    if (this.pesoInvalidoParaDoacao) {
+      return `O peso mínimo para doação é ${this.limites.pesoMinDoacaoKg} kg.`;
+    }
+    const valor = this.hemoglobinaValor!;
+    if (valor >= this.limites.hemoglobinaMaxAptoGdl) {
+      return 'Hemoglobina igual ou superior a 18,0 g/dL impede a classificação como apto.';
+    }
+    const minimo = this.limites.hemoglobinaMinAptoGdl[
+      this.doador.sexo as 'F' | 'M'
+    ];
+    if (minimo === undefined) return 'Confira o sexo do doador antes de classificar como apto.';
+    if (valor < minimo) {
+      return `A hemoglobina mínima para ${this.doador.sexo === 'F' ? 'mulheres' : 'homens'} é ${minimo.toFixed(1).replace('.', ',')} g/dL.`;
+    }
+    return null;
   }
 
   salvarEAvancarTriagem(): void {
-    if (this.form.peso != null && this.form.peso < 50) {
-      this.toast.exibir(
-        'O doador não possui o peso mínimo de 50kg para doar.',
-        false,
-      );
-      return;
-    }
-    if (
-      this.form.altura == null ||
-      this.form.peso == null ||
-      this.form.hemoglobina == null
-    ) {
-      this.toast.exibir('Preencha altura, peso e hemoglobina.', false);
+    if (!this.podeMarcarApto) {
+      this.toast.exibir(this.orientacaoApto || 'Corrija as medições.', false);
       return;
     }
 
@@ -146,9 +272,9 @@ export class FormPreTriagemComponent implements OnInit {
 
     const payload: any = {
       processo_id: this.processoId,
-      altura: this.form.altura,
-      peso: this.form.peso,
-      hemoglobina: this.form.hemoglobina,
+      altura: this.alturaValor,
+      peso: this.pesoValor,
+      hemoglobina: this.hemoglobinaValor,
       status_clinico: 1,
     };
 
@@ -159,7 +285,7 @@ export class FormPreTriagemComponent implements OnInit {
       payload.enfermeiro_id = usuarioId;
     }
 
-    this.api.salvarDadosClinicos(payload).subscribe({
+    this.salvarDadosClinicos(payload).subscribe({
       next: () => {
         this.api.atualizarStatusProcesso(this.processoId, 3).subscribe({
           next: () => {
@@ -187,6 +313,10 @@ export class FormPreTriagemComponent implements OnInit {
   }
 
   marcarInapto(): void {
+    if (!this.medicoesValidas) {
+      this.toast.exibir('Corrija as medições inválidas antes de registrar Inapto.', false);
+      return;
+    }
     const usuarioId = localStorage.getItem('usuario_id');
     const tipoUsuario = localStorage.getItem('tipo_usuario');
     if (!usuarioId) {
@@ -199,9 +329,9 @@ export class FormPreTriagemComponent implements OnInit {
 
     const payload: any = {
       processo_id: this.processoId,
-      altura: this.form.altura || 0,
-      peso: this.form.peso || 0,
-      hemoglobina: this.form.hemoglobina || 0,
+      altura: this.alturaValor,
+      peso: this.pesoValor,
+      hemoglobina: this.hemoglobinaValor,
       status_clinico: 0,
     };
 
@@ -212,7 +342,7 @@ export class FormPreTriagemComponent implements OnInit {
       payload.enfermeiro_id = usuarioId;
     }
 
-    this.api.salvarDadosClinicos(payload).subscribe({
+    this.salvarDadosClinicos(payload).subscribe({
       next: () => {
         this.api.atualizarStatusProcesso(this.processoId, 0).subscribe({
           next: () => {

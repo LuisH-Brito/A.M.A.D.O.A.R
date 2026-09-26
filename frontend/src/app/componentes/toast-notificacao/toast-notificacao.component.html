@@ -1,4 +1,11 @@
-<div class="toast-notificacao" [class.show]="visivel" [class.erro]="!sucesso">
+<div
+  class="toast-notificacao"
+  [class.show]="visivel"
+  [class.erro]="!sucesso"
+  [attr.role]="sucesso ? 'status' : 'alert'"
+  [attr.aria-live]="sucesso ? 'polite' : 'assertive'"
+  aria-atomic="true"
+>
   <div class="toast-icone">
     <i
       class="bi"
@@ -11,7 +18,12 @@
     <h4>{{ sucesso ? "Sucesso" : "Atenção" }}</h4>
     <p>{{ mensagem }}</p>
   </div>
-  <button class="toast-fechar" (click)="fechar()">
+  <button
+    type="button"
+    class="toast-fechar"
+    aria-label="Fechar notificação"
+    (click)="fechar()"
+  >
     <i class="bi bi-x"></i>
   </button>
 </div>

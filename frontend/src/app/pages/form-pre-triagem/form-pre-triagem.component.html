@@ -19,64 +19,64 @@
       <div class="layout-duplo">
         <div class="grupo-inputs">
           <div class="campo">
-            <label>Altura(m):</label>
+            <label for="altura">Altura (m):</label>
             <input
-              type="number"
-              step="0.01"
-              [max]="3.0"
+              id="altura"
+              type="text"
+              inputmode="decimal"
               name="altura"
               #alt="ngModel"
               [(ngModel)]="form.altura"
-              placeholder="Ex: 1.75"
+              (blur)="formatarMedicao('altura', $event)"
+              placeholder="Ex.: 1,75"
+              [attr.aria-invalid]="!!alturaErro && (alt.touched || !!form.altura)"
+              [attr.aria-describedby]="alturaErro && (alt.touched || form.altura) ? 'altura-erro' : null"
               required
             />
-            <small class="msg-erro" *ngIf="alt.invalid && alt.touched">
-              <span *ngIf="alt.errors?.['required']"
-                >Altura é obrigatória.</span
-              >
-              <span *ngIf="alt.errors?.['max']"
-                >A altura máxima permitida é 3.0m.</span
-              >
-            </small>
+            <small id="altura-erro" class="msg-erro" *ngIf="alturaErro && (alt.touched || form.altura)">{{ alturaErro }}</small>
           </div>
 
           <div class="campo">
-            <label>Peso(kg):</label>
+            <label for="peso">Peso (kg):</label>
             <input
-              type="number"
-              step="0.1"
+              id="peso"
+              type="text"
+              inputmode="decimal"
               name="peso"
               #ps="ngModel"
               [(ngModel)]="form.peso"
-              placeholder="Ex: 89.2"
+              (blur)="formatarMedicao('peso', $event)"
+              placeholder="Ex.: 70,0"
+              [attr.aria-invalid]="!!pesoErro && (ps.touched || !!form.peso)"
+              [attr.aria-describedby]="pesoErro && (ps.touched || form.peso) ? 'peso-erro' : null"
               required
             />
-            <small class="msg-erro" *ngIf="ps.invalid && ps.touched">
-              Peso é obrigatório.
-            </small>
+            <small id="peso-erro" class="msg-erro" *ngIf="pesoErro && (ps.touched || form.peso)">{{ pesoErro }}</small>
             <small
               class="msg-alerta-peso"
-              *ngIf="form.peso != null && form.peso < 50"
+              *ngIf="!pesoErro && pesoInvalidoParaDoacao"
             >
-              <i class="bi bi-exclamation-triangle-fill"></i> Peso abaixo do
-              mínimo (50kg) para aprovação.
+              <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+              Peso abaixo do mínimo ({{ limites.pesoMinDoacaoKg }} kg) para aprovação.
             </small>
           </div>
 
           <div class="campo">
-            <label>Teste de Hemoglobina:</label>
+            <label for="hemoglobina">Teste de Hemoglobina (g/dL):</label>
             <input
-              type="number"
-              step="0.1"
+              id="hemoglobina"
+              type="text"
+              inputmode="decimal"
               #hemo="ngModel"
               name="hemoglobina"
               [(ngModel)]="form.hemoglobina"
-              placeholder="Ex: 130"
+              (blur)="formatarMedicao('hemoglobina', $event)"
+              placeholder="Ex.: 13,5"
+              [attr.aria-invalid]="!!hemoglobinaErro && (hemo.touched || !!form.hemoglobina)"
+              [attr.aria-describedby]="hemoglobinaErro && (hemo.touched || form.hemoglobina) ? 'hemoglobina-erro' : null"
               required
             />
-            <small class="msg-erro" *ngIf="hemo.invalid && hemo.touched">
-              Hemoglobina é obrigatória.
-            </small>
+            <small id="hemoglobina-erro" class="msg-erro" *ngIf="hemoglobinaErro && (hemo.touched || form.hemoglobina)">{{ hemoglobinaErro }}</small>
           </div>
         </div>
 
@@ -96,18 +96,20 @@
         </div>
       </div>
 
+      <p *ngIf="orientacaoApto as orientacao" class="orientacao-apto" role="status" aria-live="polite">{{ orientacao }}</p>
       <div class="acoes">
         <button
           type="button"
           class="btn-cancelar"
           (click)="abrirModal('inapto')"
+          [disabled]="!medicoesValidas"
         >
           Inapto
         </button>
         <button
           type="submit"
           class="btn-concluir"
-          [disabled]="formPre.invalid || pesoInvalidoParaDoacao"
+          [disabled]="formPre.invalid || !podeMarcarApto"
         >
           Apto
         </button>

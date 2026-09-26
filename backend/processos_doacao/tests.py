@@ -6,10 +6,12 @@ from django.utils import timezone
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from choices import StatusProcesso
+from choices import StatusClinico, StatusProcesso
+from dados_clinicos.models import Dados_Clinicos
 from doadores.models import Doador
+from medicos.models import Medico
 from recepcionistas.models import Recepcionista
-from triagem.models import Pergunta, Questionario
+from triagem.models import Pergunta, Questionario, Resposta
 
 from .models import Processo_Doacao
 
@@ -126,13 +128,15 @@ class IniciarProcessoQuestionarioTests(APITestCase):
 
         self.assert_processo_criado_sem_questionario(resposta)
 
-    def test_nao_vincula_questionario_inapto_recente(self):
+    def test_vincula_questionario_inapto_recente_para_revisao_medica(self):
         doador = self.criar_doador(8)
-        self.criar_questionario(doador, timedelta(hours=2), validade=False)
+        questionario = self.criar_questionario(
+            doador, timedelta(hours=2), validade=False
+        )
 
         resposta = self.iniciar_processo(doador)
 
-        self.assert_processo_criado_sem_questionario(resposta)
+        self.assert_processo_criado_com_questionario(resposta, questionario)
 
     def test_nao_reutiliza_questionario_ja_vinculado(self):
         doador = self.criar_doador(9)
@@ -163,14 +167,18 @@ class IniciarProcessoQuestionarioTests(APITestCase):
             resposta, questionario_recente
         )
 
-    def test_nao_recupera_apto_antigo_quando_recente_e_inapto(self):
+    def test_vincula_questionario_recente_inapto_em_vez_do_apto_antigo(self):
         doador = self.criar_doador(11)
         self.criar_questionario(doador, timedelta(days=3), validade=True)
-        self.criar_questionario(doador, timedelta(hours=2), validade=False)
+        questionario_recente = self.criar_questionario(
+            doador, timedelta(hours=2), validade=False
+        )
 
         resposta = self.iniciar_processo(doador)
 
-        self.assert_processo_criado_sem_questionario(resposta)
+        self.assert_processo_criado_com_questionario(
+            resposta, questionario_recente
+        )
 
     def test_questionario_feito_durante_processo_e_criado_e_vinculado(self):
         doador = self.criar_doador(12)
@@ -200,4 +208,163 @@ class IniciarProcessoQuestionarioTests(APITestCase):
         self.assertEqual(
             processo.questionario_id,
             resposta_questionario.data['questionario_id'],
+        )
+
+
+class DecidirTriagemQuestionarioTests(APITestCase):
+    def setUp(self):
+        self.medico = Medico.objects.create_user(
+            cpf='81111111111',
+            password='teste',
+            email='medico-triagem@teste.local',
+            endereco='Endereço de teste',
+            nome_completo='Médico de Teste',
+            crm='CRM-AC-8111',
+        )
+        self.recepcionista = Recepcionista.objects.create_user(
+            cpf='82222222222',
+            password='teste',
+            email='recepcao-triagem@teste.local',
+            endereco='Endereço de teste',
+            nome_completo='Recepcionista de Teste',
+        )
+        self.doador = Doador.objects.create_user(
+            cpf='83333333333',
+            password='teste',
+            email='doador-triagem@teste.local',
+            endereco='Endereço de teste',
+            nome_completo='Doador de Teste',
+            sexo='M',
+            telefone='68999999999',
+        )
+        self.pergunta = Pergunta.objects.create(
+            texto='Pergunta impeditiva de teste',
+            resposta_esperada='Não',
+            motivo_inaptidao='Condição impeditiva de teste',
+        )
+        self.client.force_authenticate(self.medico)
+
+    def criar_processo(self, validade):
+        questionario = Questionario.objects.create(
+            doador=self.doador,
+            validade=validade,
+        )
+        Resposta.objects.create(
+            questionario=questionario,
+            pergunta=self.pergunta,
+            resposta_texto='Não' if validade else 'Sim',
+        )
+        processo = Processo_Doacao.objects.create(
+            doador=self.doador,
+            recepcionista=self.recepcionista,
+            questionario=questionario,
+            status=StatusProcesso.TRIAGEM,
+        )
+        return processo
+
+    def decidir(self, processo, aprovado):
+        return self.client.post(
+            reverse('processo-decidir-triagem', kwargs={'pk': processo.pk}),
+            {
+                'pressao_arterial': '120x80',
+                'aprovado': aprovado,
+                'medico_id': self.medico.pk,
+            },
+            format='json',
+        )
+
+    def test_aceita_apto_quando_questionario_permite_aptidao(self):
+        processo = self.criar_processo(validade=True)
+
+        resposta = self.decidir(processo, aprovado=True)
+
+        self.assertEqual(resposta.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            processo.dados_clinicos.status_clinico,
+            StatusClinico.APTO,
+        )
+
+    def test_rejeita_apto_quando_questionario_e_impeditivo(self):
+        processo = self.criar_processo(validade=False)
+
+        resposta = self.decidir(processo, aprovado=True)
+
+        self.assertEqual(resposta.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('incompatíveis', resposta.data['erro'])
+        self.assertFalse(
+            Dados_Clinicos.objects.filter(processo=processo).exists()
+        )
+
+    def test_aceita_inapto_quando_questionario_e_impeditivo(self):
+        processo = self.criar_processo(validade=False)
+
+        resposta = self.decidir(processo, aprovado=False)
+
+        self.assertEqual(resposta.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            processo.dados_clinicos.status_clinico,
+            StatusClinico.INAPTO,
+        )
+
+    def test_questionario_presencial_impeditivo_e_vinculado_e_bloqueia_apto(self):
+        processo = Processo_Doacao.objects.create(
+            doador=self.doador,
+            recepcionista=self.recepcionista,
+            status=StatusProcesso.TRIAGEM,
+        )
+
+        resposta_questionario = self.client.post(
+            reverse('salvar-questionario'),
+            {
+                'cpf': self.doador.cpf,
+                'processo_id': processo.pk,
+                'respostas': [{'id': self.pergunta.pk, 'resposta': 'Sim'}],
+            },
+            format='json',
+        )
+        processo.refresh_from_db()
+        resposta_decisao = self.decidir(processo, aprovado=True)
+
+        self.assertEqual(
+            resposta_questionario.status_code,
+            status.HTTP_201_CREATED,
+        )
+        self.assertEqual(
+            processo.questionario_id,
+            resposta_questionario.data['questionario_id'],
+        )
+        self.assertFalse(processo.questionario.validade)
+        self.assertEqual(
+            resposta_decisao.status_code,
+            status.HTTP_400_BAD_REQUEST,
+        )
+
+    def test_questionario_online_impeditivo_e_vinculado_e_bloqueia_apto(self):
+        questionario = Questionario.objects.create(
+            doador=self.doador,
+            validade=False,
+        )
+        Resposta.objects.create(
+            questionario=questionario,
+            pergunta=self.pergunta,
+            resposta_texto='Sim',
+        )
+        self.client.force_authenticate(self.recepcionista)
+
+        resposta_inicio = self.client.post(
+            reverse('processo-iniciar'),
+            {'cpf': self.doador.cpf},
+            format='json',
+        )
+        processo = Processo_Doacao.objects.get(pk=resposta_inicio.data['id'])
+        processo.status = StatusProcesso.TRIAGEM
+        processo.save(update_fields=['status'])
+        self.client.force_authenticate(self.medico)
+        resposta_decisao = self.decidir(processo, aprovado=True)
+
+        self.assertEqual(resposta_inicio.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(processo.questionario_id, questionario.id)
+        self.assertEqual(
+            resposta_decisao.status_code,
+            status.HTTP_400_BAD_REQUEST,
         )

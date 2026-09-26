@@ -28,7 +28,6 @@ class Questionario(models.Model):
     def elegiveis_para_processo(cls, doador, referencia=None):
         return cls.objects.filter(
             doador=doador,
-            validade=True,
             processo__isnull=True,
             data_hora_submissao__gte=cls.limite_validade_online(referencia),
         )

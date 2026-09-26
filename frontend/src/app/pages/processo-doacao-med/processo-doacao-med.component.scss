@@ -51,5 +51,38 @@
         text-decoration: none;
       }
     }
+
+    .card-validacao {
+      position: relative;
+
+      .badge-bolsas-aguardando {
+        position: absolute;
+        top: 12px;
+        right: 12px;
+        max-width: calc(100% - 24px);
+        padding: 5px 9px;
+        border-radius: 999px;
+        background-color: #f4b942;
+        color: #3b2a00;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.2;
+        text-align: right;
+        pointer-events: none;
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .processo-container .cards {
+    flex-direction: column;
+    gap: 24px;
+    padding-top: 40px;
+
+    .card {
+      width: min(300px, calc(100vw - 40px));
+      flex: none;
+    }
   }
 }

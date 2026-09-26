@@ -9,21 +9,30 @@
                 [attr.aria-selected]="abaAtiva === 'pre-triagem'"
                 [class.ativo]="abaAtiva === 'pre-triagem'" 
                 (click)="selecionarAba('pre-triagem')">
-                Pré-Triagem
+                <span class="etapa-label">
+                    Pré-Triagem
+                    <span class="etapa-count">{{ preTriagem.length }}</span>
+                </span>
             </button>
             <button 
                 role="tab"
                 [attr.aria-selected]="abaAtiva === 'triagem'"
                 [class.ativo]="abaAtiva === 'triagem'" 
                 (click)="selecionarAba('triagem')">
-                Triagem
+                <span class="etapa-label">
+                    Triagem
+                    <span class="etapa-count">{{ triagem.length }}</span>
+                </span>
             </button>
             <button 
                 role="tab"
                 [attr.aria-selected]="abaAtiva === 'coleta'"
                 [class.ativo]="abaAtiva === 'coleta'" 
                 (click)="selecionarAba('coleta')">
-                Coleta
+                <span class="etapa-label">
+                    Coleta
+                    <span class="etapa-count">{{ coleta.length }}</span>
+                </span>
             </button>
         </nav>
 

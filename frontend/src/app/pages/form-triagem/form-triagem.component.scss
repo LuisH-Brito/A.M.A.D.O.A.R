@@ -25,13 +25,6 @@
   }
 }
 
-.btn-concluir:disabled {
-  background: #ccc;
-  box-shadow: none;
-  cursor: not-allowed;
-  transform: none;
-}
-
 .msg-erro {
   color: #c40000;
   font-size: 12px;
@@ -131,7 +124,34 @@ select {
   display: flex;
   justify-content: center;
   gap: 80px;
-  margin-top: 40px;
+  margin-top: 18px;
+}
+
+.orientacao-apto {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  max-width: 600px;
+  margin: 32px auto 0;
+  padding: 12px 16px;
+  border: 1px solid #b8d9c3;
+  border-radius: 12px;
+  background: #f1f8f3;
+  color: #245f3b;
+  font-size: 14px;
+  line-height: 1.45;
+
+  i {
+    flex: 0 0 auto;
+    margin-top: 2px;
+    font-size: 16px;
+  }
+}
+
+.orientacao-apto--impeditiva {
+  border-color: #dfca93;
+  background: #fff8e8;
+  color: #6b5214;
 }
 
 .btn-cancelar,
@@ -156,9 +176,18 @@ select {
   box-shadow: 0 4px 10px rgba(18, 161, 80, 0.4);
 }
 
-.btn-cancelar:hover,
-.btn-concluir:hover {
+.btn-cancelar:hover:not(:disabled),
+.btn-concluir:hover:not(:disabled) {
   transform: translateY(-2px);
+}
+
+.btn-concluir:disabled,
+.btn-cancelar:disabled,
+.btn-questionario:disabled {
+  background: #ccc;
+  box-shadow: none;
+  cursor: not-allowed;
+  transform: none;
 }
 
 @media (max-width: 768px) {
@@ -170,5 +199,9 @@ select {
     flex-direction: column;
     gap: 20px;
     align-items: center;
+  }
+
+  .orientacao-apto {
+    margin-top: 28px;
   }
 }
