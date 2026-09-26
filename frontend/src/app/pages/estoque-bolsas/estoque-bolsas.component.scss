@@ -539,6 +539,18 @@
             margin-top: 2px;
           }
         }
+
+        .info-box--wide {
+          grid-column: 1 / -1;
+        }
+
+        @media (max-width: 700px) {
+          grid-template-columns: 1fr;
+
+          .info-box--wide {
+            grid-column: auto;
+          }
+        }
       }
 
       .botoes-acao {

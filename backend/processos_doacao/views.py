@@ -3,8 +3,6 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
-from django.utils import timezone
-from datetime import timedelta
 from django.db.models import F, Value
 from django.db.models.functions import Replace
 from dados_clinicos.models import EnfermeiroDados 
@@ -95,17 +93,13 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
         if not recepcionista:
             return Response({'erro': 'Usuário não é recepcionista.'}, status=status.HTTP_403_FORBIDDEN)
 
-        questionario_valido = (
-            Questionario.objects
-            .filter(doador=doador, validade=True, processo__isnull=True)
-            .order_by('-data_hora_submissao')
-            .first()
-        )
-
         with transaction.atomic():
+            # Serializa o início de processos para o mesmo doador e evita que
+            # requisições concorrentes reutilizem o mesmo questionário.
+            doador = Doador.objects.select_for_update().get(pk=doador.pk)
+
             processo_ativo = (
                 Processo_Doacao.objects
-                .select_for_update()
                 .filter(doador=doador)
                 .exclude(status__in=[StatusProcesso.CONCLUIDO, StatusProcesso.CANCELADO])
                 .order_by('-data_inicio')
@@ -121,6 +115,13 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
                     },
                     status=status.HTTP_400_BAD_REQUEST
                 )
+
+            questionario_valido = (
+                Questionario.elegiveis_para_processo(doador)
+                .select_for_update()
+                .order_by('-data_hora_submissao')
+                .first()
+            )
 
             processo = Processo_Doacao.objects.create(
                 doador=doador,
