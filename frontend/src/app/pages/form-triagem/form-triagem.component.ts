@@ -317,8 +317,10 @@ export class FormTriagemComponent implements OnInit {
           const msg = aprovado
             ? 'Doador Apto! Processo enviado para Coleta.'
             : 'Doador Inapto. Processo encerrado.';
-
           this.toast.exibir(msg, true);
+          
+          localStorage.setItem('abaAtivaProcessos', 'triagem');
+          
           setTimeout(
             () => this.router.navigate(['/processo-doacao-andamento']),
             1500,
@@ -336,6 +338,7 @@ export class FormTriagemComponent implements OnInit {
   voltar() {
     if (this.processando) return;
     this.triagemRascunhoService.limpar(this.processoId);
+    localStorage.setItem('abaAtivaProcessos', 'triagem');
     this.router.navigate(['/processo-doacao-andamento']);
   }
 }

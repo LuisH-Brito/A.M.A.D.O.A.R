@@ -1,8 +1,18 @@
 <div class="pagina">
     <div class="centralizando">
-        
-        <h2 class="titulo">Processos em Andamento</h2>
-        
+         
+         <div class="header-com-acoes">
+            <div class="titulo-com-voltar">
+                <button class="btn-icone" (click)="voltar()" title="Voltar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <h2 class="titulo">Processos em Andamento</h2>
+            </div>
+         </div>
+         
         <nav class="navegacao-abas" role="tablist" aria-label="Etapas de Doação">
             <button 
                 role="tab"
@@ -43,7 +53,9 @@
                     <div *ngFor="let p of preTriagem" class="usuario-card">
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
                         <div class="acoes" *ngIf="!isRecepcionista">
-                          <button class="btn-acao" (click)="abrirPreTriagem(p.id)">Realizar Pré-triagem</button>
+                          <button class="btn-acao" [disabled]="p.id === processoIdProcessando" (click)="abrirPreTriagem(p.id)">
+                            {{ p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Pré-triagem' }}
+                          </button>
                         </div>
                         <div class="acoes" *ngIf="isRecepcionista">
                           <span></span>
@@ -57,7 +69,9 @@
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
 
                         <div class="acoes" *ngIf="podeTriagem">
-                          <button class="btn-acao" (click)="abrirTriagem(p.id)">Realizar Triagem</button>
+                          <button class="btn-acao" [disabled]="p.id === processoIdProcessando" (click)="abrirTriagem(p.id)">
+                            {{ p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Triagem' }}
+                          </button>
                         </div>
 
                         <div class="acoes" *ngIf="!podeTriagem">
@@ -71,7 +85,9 @@
                     <div *ngFor="let p of coleta" class="usuario-card">
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
                         <div class="acoes" *ngIf="podeColeta">
-                            <button class="btn-acao" (click)="abrirColeta(p.id)">Realizar Coleta</button>
+                            <button class="btn-acao" [disabled]="p.id === processoIdProcessando" (click)="abrirColeta(p.id)">
+                              {{ p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Coleta' }}
+                            </button>
                         </div>
                         <div class="acoes" *ngIf="!podeColeta">
                             <span></span>

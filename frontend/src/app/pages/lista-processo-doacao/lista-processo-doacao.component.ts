@@ -20,11 +20,18 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   coleta: any[] = [];
   isRecepcionista = false;
   cargoUsuario = localStorage.getItem('cargo') || '';
+  processoIdProcessando: number | null = null;
 
   constructor(private api: ApiService, private router: Router) {}
 
   ngOnInit(): void {
     this.isRecepcionista = this.cargoUsuario === 'recepcionista';
+
+    // Recupera a última aba salva em cache, se existir
+    const abaSalva = localStorage.getItem('abaAtivaProcessos') as EtapaProcesso;
+    if (abaSalva && ['pre-triagem', 'triagem', 'coleta'].includes(abaSalva)) {
+      this.abaAtiva = abaSalva;
+    }
 
     this.api.getProcessos().subscribe(
       (res: any) => {
@@ -46,28 +53,62 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   selecionarAba(aba: EtapaProcesso): void {
     if (this.abaAtiva === aba) return;
     this.abaAtiva = aba;
+    // Salva a aba escolhida no cache do navegador
+    localStorage.setItem('abaAtivaProcessos', aba);
   }
 
   abrirPreTriagem(processoId: number): void {
-    if (this.isRecepcionista) return;
+    if (this.isRecepcionista || this.processoIdProcessando !== null) return;
+    this.processoIdProcessando = processoId;
+    localStorage.setItem('abaAtivaProcessos', 'pre-triagem');
     this.router.navigate(['/form-pre-triagem', processoId]);
   }
 
   abrirTriagem(processoId: number): void {
-    if (!this.podeTriagem) return;
+    if (!this.podeTriagem || this.processoIdProcessando !== null) return;
+    this.processoIdProcessando = processoId;
+    localStorage.setItem('abaAtivaProcessos', 'triagem');
     this.router.navigate(['/form-triagem', processoId]);
   }
 
   abrirColeta(processoId: number): void {
-    if (!this.podeColeta) return;
+    if (!this.podeColeta || this.processoIdProcessando !== null) return;
+    this.processoIdProcessando = processoId;
+    localStorage.setItem('abaAtivaProcessos', 'coleta');
     this.router.navigate(['/form-coleta', processoId]);
   }
 
   get podeTriagem(): boolean {
-    return this.cargoUsuario === 'medico';
+    return this.cargoUsuario === 'medico' || this.cargoUsuario === 'administrador';
   }
 
   get podeColeta(): boolean {
-    return this.cargoUsuario === 'enfermeiro';
+    return this.cargoUsuario === 'enfermeiro' || this.cargoUsuario === 'administrador';
+  }
+
+  voltar(): void {
+    switch (this.cargoUsuario) {
+      case 'recepcionista':
+        this.router.navigate(['/processo-doacao-REC']);
+        break;
+      case 'medico':
+        this.router.navigate(['/processo-doacao-MED']);
+        break;
+      case 'enfermeiro':
+        this.router.navigate(['/processo-doacao-MED']);
+        break;
+      case 'administrador': {
+        const origemAdmin = localStorage.getItem('origem_admin');
+        if (origemAdmin) {
+          localStorage.removeItem('origem_admin');
+          this.router.navigate([origemAdmin]);
+        } else {
+          this.router.navigate(['/processo-doacao-MED']);
+        }
+        break;
+      }
+      default:
+        this.router.navigate(['/']);
+    }
   }
 }

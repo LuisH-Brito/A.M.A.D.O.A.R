@@ -10,13 +10,12 @@ import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/t
   standalone: true,
   imports: [CommonModule, FormsModule, RouterLink, ToastNotificacaoComponent],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
+  styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
   @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   showPassword = false;
   mensagemSucesso: string | null = null;
-
   loginData = {
     cpf: '',
     password: '',
@@ -26,9 +25,9 @@ export class LoginComponent implements OnInit {
     private route: ActivatedRoute,
     private http: HttpClient,
     private router: Router,
-  ) {}
+  ) { }
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   ngAfterViewInit() {
     this.route.queryParams.subscribe((params) => {
@@ -44,10 +43,41 @@ export class LoginComponent implements OnInit {
     this.showPassword = !this.showPassword;
   }
 
+  aplicarMascaraCpf(event: any): void {
+    const input = event.target as HTMLInputElement;
+    const valorAtual = input.value;
+
+    if (/[a-zA-Z]/.test(valorAtual)) {
+      this.loginData.cpf = valorAtual;
+      return;
+    }
+
+    // Caso contrário, aplica a máscara normal de CPF baseada apenas em números
+    const apenasNumeros = valorAtual.replace(/\D/g, '').slice(0, 11);
+    
+    let cpfFormatado = '';
+    if (apenasNumeros.length <= 3) {
+      cpfFormatado = apenasNumeros;
+    } else if (apenasNumeros.length <= 6) {
+      cpfFormatado = `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3)}`;
+    } else if (apenasNumeros.length <= 9) {
+      cpfFormatado = `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3, 6)}.${apenasNumeros.slice(6)}`;
+    } else {
+      cpfFormatado = `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3, 6)}.${apenasNumeros.slice(6, 9)}-${apenasNumeros.slice(9, 11)}`;
+    }
+
+    input.value = cpfFormatado;
+    this.loginData.cpf = cpfFormatado;
+  }
+
   fazerLogin() {
-    const url = '/api/token/';
+    const identifier = /[a-zA-Z]/.test(this.loginData.cpf)
+      ? this.loginData.cpf
+      : this.loginData.cpf.replace(/\D/g, '');
+
+    const url = 'api/token/';
     const loginPayload = {
-      cpf: this.loginData.cpf,
+      cpf: identifier,
       password: this.loginData.password,
     };
 
@@ -56,7 +86,6 @@ export class LoginComponent implements OnInit {
         console.log('Dados vindos do Django:', res);
         localStorage.setItem('access', res.access);
         localStorage.setItem('refresh', res.refresh);
-
         localStorage.setItem('cargo', res.tipo);
         localStorage.setItem('nomeUsuario', res.nome);
         localStorage.setItem('usuario_id', res.usuario_id.toString());

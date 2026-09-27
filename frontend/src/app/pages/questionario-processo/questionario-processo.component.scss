@@ -28,20 +28,56 @@
 }
 
 .header-simples {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  
-  h2 { margin: 0; font-size: 1.5rem; color: #333; }
-  
-  .btn-icone {
-    background: none; border: none; cursor: pointer; color: #333;
-    display: flex; align-items: center; justify-content: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    h2 { margin: 0; font-size: 1.5rem; color: #333; }
+
+    .btn-icone {
+      background: none; border: none; cursor: pointer; color: #333;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .acoes-header {
+      display: flex;
+      justify-content: flex-end;
+      min-width: 24px; 
+
+      .btn-header-acao {
+        border: none;
+        padding: 6px 16px;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem; 
+        cursor: pointer;
+        color: #ffffff;
+        transition: all 0.2s;
+
+        &.btn-editar {
+          background-color: #20a952; 
+          box-shadow: 0 4px 6px rgba(18, 161, 80, 0.3);
+          &:hover { 
+            background-color: #129542; 
+            transform: translateY(-2px); 
+          }
+        }
+
+        &.btn-salvar {
+          background-color: #12a150; 
+          box-shadow: 0 4px 6px rgba(18, 161, 80, 0.3);
+          &:hover { 
+            background-color: #0e8a44; 
+            transform: translateY(-2px); 
+          }
+        }
+      }
+    }
+
+    .espacador-header {
+      width: 24px;
+    }
   }
-  .espacador-header {
-    width: 24px;
-  }
-}
 
 .footer-botoes {
   display: flex;

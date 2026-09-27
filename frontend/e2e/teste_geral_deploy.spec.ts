@@ -17,8 +17,8 @@ function gerarCpfValido() {
 }
 
 function nomeAleatorio() {
-  const nomes = ['Larissa', 'Mariana', 'Camila', 'Juliana', 'Beatriz', 'Amanda', 'Gabriela', 'Hayssa', 'Almecina', 'Raquel', 'Catarina', 'Billie', 'Sabrina', 'Taylor', 'Tate', 'Gracie'];
-  const sobrenomes = ['Nobrega', 'Figueredo', 'Silva', 'Souza', 'Oliveira', 'Costa', 'Sousa', 'Santos', 'Ishii', 'Braga', 'Eilish', 'Carpenter', 'Swift', 'McRae', 'Abrams', "O'Connel"];
+  const nomes = ['Larissa', 'Mariana', 'Camila', 'Juliana', 'Beatriz', 'Amanda', 'Gabriela', 'Hayssa', 'Almecina', 'Raquel', 'Catarina', 'Billie', 'Sabrina', 'Taylor', 'Tate', 'Gracie', 'Maya', 'Ava', 'Luna', 'Zoe', 'Chloe', 'Lily', 'Ella', 'Aria', 'Scarlett', 'Aurora', 'Hazel', 'Violet', 'Stella', 'Nova', 'Emilia', 'Isla', 'Freya', 'Ivy'];
+  const sobrenomes = ['Nobrega', 'Figueredo', 'Silva', 'Souza', 'Oliveira', 'Costa', 'Sousa', 'Santos', 'Ishii', 'Braga', 'Eilish', 'Carpenter', 'Swift', 'McRae', 'Abrams', "O'Connel", 'Hernandez', 'Miller', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Martinez', 'Rodriguez', 'Lee', 'Walker', 'Hall', 'Allen', 'Young'];
 
   const primeiroNome = nomes[Math.floor(Math.random() * nomes.length)];
   const segundoNome = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
@@ -36,7 +36,10 @@ function emailAleatorio(nomeBase: string) {
   return `${nomeLimpo}${sufixoUnico}@${provedor}`;
 }
 
-test.describe.serial('fluxo doador', () => {
+test.describe.serial('fluxo doador no deploy', () => {
+
+// Substitui a URL base apenas para os testes dentro deste arquivo
+test.use({ baseURL: 'http://rldiasbr.duckdns.org:3301' });
 
 // Credenciais dinâmicas para evitar conflito com cadastro já existente
 const cpf = gerarCpfValido();
@@ -60,7 +63,7 @@ test('cadastro de doador com sucesso', async ({ page }) => {
   await page.fill('input[name="telefone"]', '(68) 97455-7624');
 
   await page.check('input[name="sexo"][value="Feminino"]');
-  await page.getByRole('radio', { name: 'A+', exact: true }).check();
+  await page.getByRole('radio', { name: 'O+', exact: true }).check();
 
   await page.fill('input[name="senha"]', senha);
   await page.fill('input[name="confirmar"]', senha);
@@ -311,7 +314,7 @@ test('médico realiza a validação e liberação da bolsa', async ({ page }) =>
     buffer: Buffer.from('%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids []\n/Count 0\n>>\nendobj\nxref\n0 3\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \ntrailer\n<<\n/Size 3\n/Root 1 0 R\n>>\nstartxref\n101\n%%EOF'),
   });
 
-  // Desce a página e clica em Liberar para Estoque
+  // Desce a página e clica em Liberar para o Estoque
   await page.getByRole('button', { name: 'Liberar para o Estoque', exact: true }).click();
 
   // Confirma a liberação no modal

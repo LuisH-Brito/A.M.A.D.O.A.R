@@ -25,6 +25,25 @@ export class RedefinirSenhaComponent {
     return (valor || '').replace(/\D/g, '');
   }
 
+  // Função para aplicar a máscara visualmente no input
+  aplicarMascaraCpf(event: any): void {
+    const input = event.target as HTMLInputElement;
+    const apenasNumeros = input.value.replace(/\D/g, '').slice(0, 11);
+    
+    let cpfFormatado = '';
+    if (apenasNumeros.length <= 3) {
+      cpfFormatado = apenasNumeros;
+    } else if (apenasNumeros.length <= 6) {
+      cpfFormatado = `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3)}`;
+    } else if (apenasNumeros.length <= 9) {
+      cpfFormatado = `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3, 6)}.${apenasNumeros.slice(6)}`;
+    } else {
+      cpfFormatado = `${apenasNumeros.slice(0, 3)}.${apenasNumeros.slice(3, 6)}.${apenasNumeros.slice(6, 9)}-${apenasNumeros.slice(9, 11)}`;
+    }
+
+    input.value = cpfFormatado;
+    this.cpf = cpfFormatado;
+  }
   continuar(): void {
     const cpfSemMascara = this.limparCpf(this.cpf);
 
