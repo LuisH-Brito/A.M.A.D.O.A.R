@@ -19,7 +19,9 @@
             id="cpf"
             name="username"
             [(ngModel)]="loginData.cpf"
+            (input)="aplicarMascaraCpf($event)"
             placeholder="Digite seu CPF"
+            maxlength="14"
             required
           />
         </div>

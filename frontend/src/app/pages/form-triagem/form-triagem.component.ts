@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
@@ -9,6 +9,7 @@ import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/t
 import { TriagemRascunhoService } from '../../services/triagem-rascunho.service';
 import { EMPTY } from 'rxjs';
 import { catchError, finalize, switchMap } from 'rxjs/operators';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 
 @Component({
   selector: 'app-form-triagem',
@@ -22,7 +23,7 @@ import { catchError, finalize, switchMap } from 'rxjs/operators';
   templateUrl: './form-triagem.component.html',
   styleUrl: './form-triagem.component.scss',
 })
-export class FormTriagemComponent implements OnInit {
+export class FormTriagemComponent implements OnInit, OnDestroy {
   processoId!: number;
   doador = { nome: '', dataNascimento: '', cpf: '' };
   pressaoArterial = '';
@@ -48,6 +49,7 @@ export class FormTriagemComponent implements OnInit {
     private api: ApiService,
     private questionarioService: QuestionarioService,
     private triagemRascunhoService: TriagemRascunhoService,
+    private atendimento: AtendimentoProcessoService,
   ) {
     // getCurrentNavigation só está disponível durante a navegação que cria o
     // componente; por isso a confirmação é consumida já no construtor.
@@ -55,6 +57,8 @@ export class FormTriagemComponent implements OnInit {
     this.questionarioRevisado =
       navigation?.extras.state?.['retornoRevisaoQuestionario'] === true;
   }
+
+  ngOnDestroy(): void { if (this.processoId) this.atendimento.parar(this.processoId); }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('processoId'));
@@ -65,6 +69,12 @@ export class FormTriagemComponent implements OnInit {
     }
 
     this.processoId = id;
+    this.atendimento.iniciar(this.processoId).subscribe({
+      error: () => {
+        alert('Este processo já está em andamento por outro funcionário.');
+        this.router.navigate(['/processo-doacao-andamento']);
+      },
+    });
 
     const rascunho = this.triagemRascunhoService.obter(this.processoId);
     if (rascunho) {

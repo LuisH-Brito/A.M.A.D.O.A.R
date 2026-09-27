@@ -112,11 +112,12 @@
             <input
               type="text"
               name="cpf"
-              [(ngModel)]="dados.cpf"
+              [ngModel]="dados.cpf"
+              (input)="aplicarMascaraCpf($event)"
               required
               [disabled]="modoEdicao"
               #cpf="ngModel"
-              placeholder="Formato: 00000000000"
+              placeholder="Formato: 000.000.000-00"
               maxlength="14"
               [pattern]="'^[0-9]{11}$|^[0-9]{3}\\.[0-9]{3}\\.[0-9]{3}-[0-9]{2}$'"
               [class.cpf-invalido]="cpf.touched && !cpfValido(cpf.value)"

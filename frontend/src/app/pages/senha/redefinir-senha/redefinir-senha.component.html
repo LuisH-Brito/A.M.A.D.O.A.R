@@ -18,7 +18,10 @@
             id="cpf"
             name="cpf"
             [(ngModel)]="cpf"
+            (input)="aplicarMascaraCpf($event)"
             placeholder="Digite seu CPF"
+            maxlength="14"
+            inputmode="numeric"
             required
           />
         </div>
