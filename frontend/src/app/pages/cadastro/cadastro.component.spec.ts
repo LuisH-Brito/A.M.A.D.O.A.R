@@ -9,6 +9,7 @@ describe('CadastroComponent', () => {
   let component: CadastroComponent;
   let fixture: ComponentFixture<CadastroComponent>;
   let doadorService: jasmine.SpyObj<DoadorService>;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
     doadorService = jasmine.createSpyObj<DoadorService>('DoadorService', [
@@ -30,12 +31,13 @@ describe('CadastroComponent', () => {
       }),
     );
     doadorService.atualizarDoador.and.returnValue(of({}));
+    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
 
     await TestBed.configureTestingModule({
       imports: [CadastroComponent],
       providers: [
         { provide: DoadorService, useValue: doadorService },
-        { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate']) },
+        { provide: Router, useValue: router },
         {
           provide: ActivatedRoute,
           useValue: { queryParams: of({ modo: 'editar' }) },
@@ -84,6 +86,18 @@ describe('CadastroComponent', () => {
       'A data de nascimento não pode ser futura.',
       false,
     );
+  });
+
+  it('volta para o perfil do doador pela seta no modo de edicao', () => {
+    component.voltar();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/pagina-perfil']);
+  });
+
+  it('volta para o perfil do doador ao cancelar no modo de edicao', () => {
+    component.cancelar();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/pagina-perfil']);
   });
 });
 

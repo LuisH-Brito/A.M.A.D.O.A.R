@@ -70,7 +70,7 @@ export class CadastroComponent implements OnInit {
     if (this.modoRecepcionista) {
       this.router.navigate(['/processo-doacao-REC']);
     } else if (this.modoEdicao) {
-      this.router.navigate(['/pagina-doador']);
+      this.router.navigate(['/pagina-perfil']);
     } else {
       this.router.navigate(['/login']);
     }
@@ -197,7 +197,7 @@ export class CadastroComponent implements OnInit {
       this.doadorService.atualizarDoador(doadorParaEnviar).subscribe({
         next: () => {
           this.toast.exibir('Dados atualizados com sucesso!', true);
-          setTimeout(() => this.router.navigate(['/pagina-doador']), 1500);
+          setTimeout(() => this.router.navigate(['/pagina-perfil']), 1500);
         },
         error: (err) => {
           this.toast.exibir('Erro ao atualizar os dados.', false);
@@ -242,7 +242,7 @@ export class CadastroComponent implements OnInit {
     if (this.modoRecepcionista) {
       this.router.navigate(['/processo-doacao-REC']);
     } else if (this.modoEdicao) {
-      this.router.navigate(['/pagina-doador']);
+      this.router.navigate(['/pagina-perfil']);
     } else {
       this.router.navigate(['/login']);
     }
