@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 
 @Component({
   selector: 'app-form-coleta',
@@ -18,7 +19,7 @@ import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/m
   templateUrl: './form-coleta.component.html',
   styleUrl: './form-coleta.component.scss',
 })
-export class FormColetaComponent implements OnInit {
+export class FormColetaComponent implements OnInit, OnDestroy {
   processoId!: number;
   doador = {
     nome: '',
@@ -44,7 +45,10 @@ export class FormColetaComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private api: ApiService,
+    private atendimento: AtendimentoProcessoService,
   ) {}
+
+  ngOnDestroy(): void { if (this.processoId) this.atendimento.parar(this.processoId); }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('processoId'));

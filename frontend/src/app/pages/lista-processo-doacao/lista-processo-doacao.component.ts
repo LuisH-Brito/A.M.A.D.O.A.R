@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { EMPTY, timer } from 'rxjs';
 import { catchError, switchMap } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 
 type EtapaProcesso = 'pre-triagem' | 'triagem' | 'coleta';
 
@@ -27,7 +28,7 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   cargoUsuario = localStorage.getItem('cargo') || '';
   processoIdProcessando: number | null = null;
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private api: ApiService, private router: Router, private atendimento: AtendimentoProcessoService) {}
 
   ngOnInit(): void {
     this.isRecepcionista = this.cargoUsuario === 'recepcionista';
@@ -84,22 +85,28 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   abrirPreTriagem(processoId: number): void {
     if (this.isRecepcionista || this.processoIdProcessando !== null) return;
     this.processoIdProcessando = processoId;
-    localStorage.setItem('abaAtivaProcessos', 'pre-triagem');
-    this.router.navigate(['/form-pre-triagem', processoId]);
+    this.atendimento.iniciar(processoId).subscribe({ next: () => {
+      localStorage.setItem('abaAtivaProcessos', 'pre-triagem');
+      this.router.navigate(['/form-pre-triagem', processoId]);
+    }, error: () => this.processoIdProcessando = null });
   }
 
   abrirTriagem(processoId: number): void {
     if (!this.podeTriagem || this.processoIdProcessando !== null) return;
     this.processoIdProcessando = processoId;
-    localStorage.setItem('abaAtivaProcessos', 'triagem');
-    this.router.navigate(['/form-triagem', processoId]);
+    this.atendimento.iniciar(processoId).subscribe({ next: () => {
+      localStorage.setItem('abaAtivaProcessos', 'triagem');
+      this.router.navigate(['/form-triagem', processoId]);
+    }, error: () => this.processoIdProcessando = null });
   }
 
   abrirColeta(processoId: number): void {
     if (!this.podeColeta || this.processoIdProcessando !== null) return;
     this.processoIdProcessando = processoId;
-    localStorage.setItem('abaAtivaProcessos', 'coleta');
-    this.router.navigate(['/form-coleta', processoId]);
+    this.atendimento.iniciar(processoId).subscribe({ next: () => {
+      localStorage.setItem('abaAtivaProcessos', 'coleta');
+      this.router.navigate(['/form-coleta', processoId]);
+    }, error: () => this.processoIdProcessando = null });
   }
 
   get podeTriagem(): boolean {

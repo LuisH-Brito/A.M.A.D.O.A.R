@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ApiService } from '../../services/api.service';
 import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 import { PRE_TRIAGEM_LIMITES } from './pre-triagem-limites';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 
 @Component({
   selector: 'app-form-pre-triagem',
@@ -19,7 +20,7 @@ import { PRE_TRIAGEM_LIMITES } from './pre-triagem-limites';
   templateUrl: './form-pre-triagem.component.html',
   styleUrl: './form-pre-triagem.component.scss',
 })
-export class FormPreTriagemComponent implements OnInit {
+export class FormPreTriagemComponent implements OnInit, OnDestroy {
   processoId!: number;
   dadosClinicosId: number | null = null;
 
@@ -46,7 +47,10 @@ export class FormPreTriagemComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private api: ApiService,
+    private atendimento: AtendimentoProcessoService,
   ) {}
+
+  ngOnDestroy(): void { if (this.processoId) this.atendimento.parar(this.processoId); }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('processoId'));
