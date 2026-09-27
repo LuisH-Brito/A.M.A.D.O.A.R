@@ -59,6 +59,12 @@ export class FormColetaComponent implements OnInit, OnDestroy {
     }
 
     this.processoId = id;
+    this.atendimento.iniciar(this.processoId).subscribe({
+      error: () => {
+        alert('Este processo já está em andamento por outro funcionário.');
+        this.router.navigate(['/processo-doacao-andamento']);
+      },
+    });
 
     this.api.getProcessoById(this.processoId).subscribe({
       next: (processo) => {

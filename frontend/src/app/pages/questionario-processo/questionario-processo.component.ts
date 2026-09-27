@@ -49,6 +49,15 @@ export class QuestionarioProcessoComponent implements OnInit, OnDestroy {
       this.processoId = null;
     }
 
+    if (this.processoId) {
+      this.atendimento.iniciar(this.processoId).subscribe({
+        error: () => {
+          alert('Este processo já está em andamento por outro funcionário.');
+          this.router.navigate(['/processo-doacao-andamento']);
+        },
+      });
+    }
+
     console.log("Diagnóstico de Rota -> CPF:", this.cpfDoador, "| Processo ID:", this.processoId);
 
     this.questionarioService.getPerguntas().subscribe({
