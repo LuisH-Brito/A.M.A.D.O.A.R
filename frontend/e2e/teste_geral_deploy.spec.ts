@@ -63,7 +63,7 @@ test('cadastro de doador com sucesso', async ({ page }) => {
   await page.fill('input[name="telefone"]', '(68) 97455-7624');
 
   await page.check('input[name="sexo"][value="Feminino"]');
-  await page.getByLabel('O+').check();
+  await page.getByRole('radio', { name: 'O+', exact: true }).check();
 
   await page.fill('input[name="senha"]', senha);
   await page.fill('input[name="confirmar"]', senha);
