@@ -13,11 +13,12 @@ export class AtendimentoProcessoService {
   constructor(private api: ApiService) {}
 
   iniciar(processoId: number): Observable<unknown> {
+    this.cancelarLiberacao();
+
     if (this.processoId === processoId && this.heartbeat) {
       return of(undefined);
     }
 
-    this.cancelarLiberacao();
     this.processoId = processoId;
     return this.api.iniciarAtendimentoProcesso(processoId).pipe(
       tap(() => this.iniciarHeartbeat(processoId)),

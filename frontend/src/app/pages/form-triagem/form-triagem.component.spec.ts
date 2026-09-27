@@ -5,6 +5,7 @@ import { of, Subject } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { QuestionarioService } from '../../services/questionario.service';
 import { TriagemRascunhoService } from '../../services/triagem-rascunho.service';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 import { FormTriagemComponent } from './form-triagem.component';
 
 describe('FormTriagemComponent', () => {
@@ -15,6 +16,7 @@ describe('FormTriagemComponent', () => {
   let router: jasmine.SpyObj<Router>;
   let rascunho: TriagemRascunhoService;
   let questionarioService: jasmine.SpyObj<QuestionarioService>;
+  let atendimento: jasmine.SpyObj<AtendimentoProcessoService>;
 
   beforeEach(async () => {
     localStorage.setItem('usuario_id', '7');
@@ -45,6 +47,10 @@ describe('FormTriagemComponent', () => {
       of({ validade: true }),
     );
     router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    atendimento = jasmine.createSpyObj<AtendimentoProcessoService>(
+      'AtendimentoProcessoService', ['iniciar', 'parar'],
+    );
+    atendimento.iniciar.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
       imports: [FormTriagemComponent],
@@ -52,6 +58,7 @@ describe('FormTriagemComponent', () => {
         { provide: ApiService, useValue: api },
         { provide: QuestionarioService, useValue: questionarioService },
         { provide: Router, useValue: router },
+        { provide: AtendimentoProcessoService, useValue: atendimento },
         {
           provide: ActivatedRoute,
           useValue: {
