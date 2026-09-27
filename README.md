@@ -66,9 +66,12 @@ Comandos do angular para criar
 EXTRA: -> ng g c components/botao --dry-run  
  -> Mostra o que será criado sem criar de verdade
 
-Comando para rodar o teste automatizado
+Comando para rodar o teste automatizado (rodar na pasta frontend)
 -> obs: antes de rodar o comando deve intalar a biblioteca do playwright
     npm install -D @playwright/test
     npx playwright install
-    
--> npx playwright test --headed
+
+    teste dev:
+-> npx playwright test teste_geral.spec.ts --headed
+    teste deploy:
+-> npx playwright test teste_geral_deploy.spec.ts --headed
