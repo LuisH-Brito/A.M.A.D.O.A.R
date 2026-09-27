@@ -53,8 +53,8 @@
                     <div *ngFor="let p of preTriagem" class="usuario-card">
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
                         <div class="acoes" *ngIf="!isRecepcionista">
-                          <button class="btn-acao" [disabled]="p.id === processoIdProcessando" (click)="abrirPreTriagem(p.id)">
-                            {{ p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Pré-triagem' }}
+                                                    <button class="btn-acao" [disabled]="p.em_andamento || p.id === processoIdProcessando" (click)="abrirPreTriagem(p.id)">
+                                                        {{ p.em_andamento ? 'Em andamento' : (p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Pré-triagem') }}
                           </button>
                         </div>
                         <div class="acoes" *ngIf="isRecepcionista">
@@ -69,8 +69,8 @@
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
 
                         <div class="acoes" *ngIf="podeTriagem">
-                          <button class="btn-acao" [disabled]="p.id === processoIdProcessando" (click)="abrirTriagem(p.id)">
-                            {{ p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Triagem' }}
+                                                    <button class="btn-acao" [disabled]="p.em_andamento || p.id === processoIdProcessando" (click)="abrirTriagem(p.id)">
+                                                        {{ p.em_andamento ? 'Em andamento' : (p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Triagem') }}
                           </button>
                         </div>
 
@@ -85,8 +85,8 @@
                     <div *ngFor="let p of coleta" class="usuario-card">
                         <div class="info">Nome: {{ p.doador?.nome_completo || p.doador?.username }}</div>
                         <div class="acoes" *ngIf="podeColeta">
-                            <button class="btn-acao" [disabled]="p.id === processoIdProcessando" (click)="abrirColeta(p.id)">
-                              {{ p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Coleta' }}
+                                                        <button class="btn-acao" [disabled]="p.em_andamento || p.id === processoIdProcessando" (click)="abrirColeta(p.id)">
+                                                            {{ p.em_andamento ? 'Em andamento' : (p.id === processoIdProcessando ? 'Abrindo...' : 'Realizar Coleta') }}
                             </button>
                         </div>
                         <div class="acoes" *ngIf="!podeColeta">

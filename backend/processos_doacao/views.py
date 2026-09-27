@@ -3,6 +3,8 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from django.db import transaction
+from django.utils import timezone
+from datetime import timedelta
 from django.db.models import F, Value
 from django.db.models.functions import Replace
 from dados_clinicos.models import EnfermeiroDados 
@@ -22,12 +24,16 @@ from .serializers import ProcessoDoacaoSerializer
 
 
 class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Processo_Doacao.objects.select_related('doador', 'questionario').all()
+    queryset = Processo_Doacao.objects.select_related(
+        'doador', 'questionario', 'atendimento_usuario'
+    ).all()
     serializer_class = ProcessoDoacaoSerializer
     permission_classes = [IsAuthenticated]
     pagination_class = None
 
     def get_permissions(self):
+        if self.action in ['iniciar_atendimento', 'encerrar_atendimento']:
+            return [IsAuthenticated()]
         if self.action == 'iniciar':
             return [IsAuthenticated(), EhRecepcionista()]
         if self.action == 'decidir_triagem':
@@ -35,6 +41,41 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
         if self.action == 'finalizar_coleta':
             return [IsAuthenticated(), EhEnfermeiro()]
         return [IsAuthenticated()]
+
+    @action(detail=True, methods=['post'], url_path='atendimento-heartbeat')
+    def iniciar_atendimento(self, request, pk=None):
+        agora = timezone.now()
+        limite = agora - timedelta(seconds=15)
+
+        with transaction.atomic():
+            processo = Processo_Doacao.objects.select_for_update().get(pk=pk)
+            reserva_expirada = (
+                processo.atendimento_atualizado_em is None
+                or processo.atendimento_atualizado_em < limite
+            )
+            ocupado_por_outro = (
+                processo.atendimento_usuario_id is not None
+                and processo.atendimento_usuario_id != request.user.id
+                and not reserva_expirada
+            )
+            if ocupado_por_outro:
+                return Response(
+                    {'erro': 'Este processo já está em andamento por outro funcionário.'},
+                    status=status.HTTP_409_CONFLICT,
+                )
+
+            processo.atendimento_usuario = request.user
+            processo.atendimento_atualizado_em = agora
+            processo.save(update_fields=['atendimento_usuario', 'atendimento_atualizado_em'])
+
+        return Response({'em_andamento': True})
+
+    @action(detail=True, methods=['delete'], url_path='atendimento')
+    def encerrar_atendimento(self, request, pk=None):
+        Processo_Doacao.objects.filter(
+            pk=pk, atendimento_usuario=request.user,
+        ).update(atendimento_usuario=None, atendimento_atualizado_em=None)
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(detail=True, methods=['patch'], url_path='atualizar-status')
     def atualizar_status(self, request, pk=None):

@@ -19,6 +19,14 @@ export class ApiService {
     return this.http.get<any>(`${this.baseUrl}processos/${id}/`);
   }
 
+  iniciarAtendimentoProcesso(id: number) {
+    return this.http.post(`${this.baseUrl}processos/${id}/atendimento-heartbeat/`, {});
+  }
+
+  encerrarAtendimentoProcesso(id: number) {
+    return this.http.delete(`${this.baseUrl}processos/${id}/atendimento/`);
+  }
+
   salvarDadosClinicos(payload: any) {
     return this.http.post(`${this.baseUrl}dados-clinicos/`, payload);
   }
