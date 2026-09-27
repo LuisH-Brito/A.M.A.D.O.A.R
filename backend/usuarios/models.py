@@ -43,6 +43,7 @@ class Usuario(AbstractUser):
     endereco = models.CharField(max_length=255)
     data_nascimento = models.DateField(null=True, blank=True)
     nome_completo = models.CharField(max_length=255)
+    deve_alterar_senha = models.BooleanField(default=False)
     objects = UsuarioManager()
     USERNAME_FIELD = 'cpf'
    

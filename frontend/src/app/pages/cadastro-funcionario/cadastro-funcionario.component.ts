@@ -33,6 +33,7 @@ export class CadastroFuncionarioComponent {
   erroApi: string = '';
   carregando: boolean = false;
   origem: string = '';
+  somenteDadosPermitidos = false;
 
   constructor(
     private fb: FormBuilder,
@@ -150,6 +151,8 @@ export class CadastroFuncionarioComponent {
       this.modoEdicao = true;
       this.idFuncionario = f.id;
       this.somenteVisualizar = !!estado.visualizar;
+      this.somenteDadosPermitidos =
+        this.origem === 'perfil' && f.cargo === 'Administrador';
 
       this.removerValidacaoSenha();
 
@@ -171,6 +174,12 @@ export class CadastroFuncionarioComponent {
         registro: f.crm || f.coren || '',
       });
       this.form.get('cargo')?.disable();
+
+      if (this.somenteDadosPermitidos) {
+        ['nomeCompleto', 'dataNascimento', 'cpf', 'registro'].forEach(
+          (campo) => this.form.get(campo)?.disable(),
+        );
+      }
     } else {
       this.ativarValidacaoSenha();
     }
@@ -238,10 +247,33 @@ export class CadastroFuncionarioComponent {
       }
     }
 
-    if (this.modoEdicao && this.idFuncionario && this.origem == 'perfil') {
+    if (
+      this.modoEdicao &&
+      this.idFuncionario &&
+      this.origem == 'perfil' &&
+      this.somenteDadosPermitidos
+    ) {
+      const dadosPerfil: any = {
+        email: dados.email,
+        endereco: dados.endereco,
+      };
+
+      if (dados.senha) dadosPerfil.password = dados.senha;
+
+      this.funcionarioService
+        .atualizarPerfilPessoal('administrador', dadosPerfil)
+        .subscribe({
+          next: () => {
+            this.router.navigate(['/pagina-perfil']);
+          },
+          error: (erro) => {
+            console.error('Erro ao editar perfil:', erro);
+          },
+        });
+    } else if (this.modoEdicao && this.idFuncionario && this.origem == 'perfil') {
       this.funcionarioService.editar(this.idFuncionario, dados).subscribe({
         next: () => {
-          this.router.navigate(['/pagina-doador']);
+          this.router.navigate(['/pagina-perfil']);
         },
         error: (erro) => {
           console.error('Erro ao editar:', erro);
@@ -291,7 +323,7 @@ export class CadastroFuncionarioComponent {
 
   voltar() {
     if (this.origem === 'perfil') {
-      this.router.navigate(['/pagina-doador']);
+      this.router.navigate(['/pagina-perfil']);
       return;
     } else if (this.modoEdicao) {
       this.router.navigate(['/gestao-crud']);

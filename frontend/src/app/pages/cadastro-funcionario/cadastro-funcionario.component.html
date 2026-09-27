@@ -32,7 +32,7 @@
           </small>
         </div>
 
-        <div class="campo pequeno">
+        <div class="campo pequeno" *ngIf="!somenteDadosPermitidos">
           <label>Cargo</label>
           <select formControlName="cargo">
             <option value="">Selecione</option>

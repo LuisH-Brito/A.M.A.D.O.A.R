@@ -82,11 +82,12 @@ SIMPLE_JWT = {
     'ALGORITHM': 'HS256',
     'SIGNING_KEY': SECRET_KEY,
     'AUTH_HEADER_TYPES': ('Bearer',),
+    'CHECK_REVOKE_TOKEN': True,
 }
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'usuarios.authentication.TrocaSenhaJWTAuthentication',
     ),
     # Configurações de filtro e paginação para otimizar as consultas e evitar sobrecarga no backend (pode dar erro)
     'DEFAULT_FILTER_BACKENDS': [
