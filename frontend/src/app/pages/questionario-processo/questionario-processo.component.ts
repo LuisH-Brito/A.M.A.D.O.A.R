@@ -20,13 +20,19 @@ export class QuestionarioProcessoComponent implements OnInit {
   perguntas: any[] = [];
   modoEdicao: boolean = false;
   somenteLeitura: boolean = false;
+  private retornarParaTriagem = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private questionarioService: QuestionarioService,
     private location: Location
-  ) {}
+  ) {
+    // Mantém a origem apenas enquanto esta instância do questionário existir.
+    const navigation = this.router.getCurrentNavigation();
+    this.retornarParaTriagem =
+      navigation?.extras.state?.['retornarParaTriagem'] === true;
+  }
 
   ngOnInit() {
     const processoIdParam = this.route.snapshot.paramMap.get('processoId');
@@ -191,7 +197,13 @@ export class QuestionarioProcessoComponent implements OnInit {
     }
 
     if (this.processoId) {
-      this.router.navigate(['/form-triagem', this.processoId]);
+      if (this.retornarParaTriagem) {
+        this.router.navigate(['/form-triagem', this.processoId], {
+          state: { retornoRevisaoQuestionario: true },
+        });
+      } else {
+        this.router.navigate(['/form-triagem', this.processoId]);
+      }
       return;
     }
     this.router.navigate(['/form-triagem']);

@@ -48,7 +48,13 @@ export class FormTriagemComponent implements OnInit {
     private api: ApiService,
     private questionarioService: QuestionarioService,
     private triagemRascunhoService: TriagemRascunhoService,
-  ) {}
+  ) {
+    // getCurrentNavigation só está disponível durante a navegação que cria o
+    // componente; por isso a confirmação é consumida já no construtor.
+    const navigation = this.router.getCurrentNavigation();
+    this.questionarioRevisado =
+      navigation?.extras.state?.['retornoRevisaoQuestionario'] === true;
+  }
 
   ngOnInit(): void {
     const id = Number(this.route.snapshot.paramMap.get('processoId'));
@@ -63,10 +69,6 @@ export class FormTriagemComponent implements OnInit {
     const rascunho = this.triagemRascunhoService.obter(this.processoId);
     if (rascunho) {
       this.pressaoArterial = rascunho.pressaoArterial;
-    }
-
-    if (sessionStorage.getItem(`q_visto_${this.processoId}`) === 'true') {
-      this.questionarioRevisado = true;
     }
 
     this.api.getProcessoById(this.processoId).subscribe({
@@ -103,7 +105,6 @@ export class FormTriagemComponent implements OnInit {
 
           if (erro?.status === 404) {
             this.questionarioRevisado = false;
-            sessionStorage.removeItem(`q_visto_${this.processoId}`);
           }
         },
       });
@@ -121,14 +122,13 @@ export class FormTriagemComponent implements OnInit {
       this.processoId,
       this.pressaoArterial,
     );
-    sessionStorage.setItem(`q_visto_${this.processoId}`, 'true');
-    this.questionarioRevisado = true;
-
     this.router.navigate([
       '/questionario-processo/proc',
       this.processoId,
       this.doador.cpf,
-    ]);
+    ], {
+      state: { retornarParaTriagem: true },
+    });
   }
 
   formatarCPF(cpf: string): string {
@@ -294,7 +294,6 @@ export class FormTriagemComponent implements OnInit {
       .decidirTriagem(this.processoId, payload as any)
       .pipe(
         switchMap(() => {
-          sessionStorage.removeItem(`q_visto_${this.processoId}`);
           return this.api
             .atualizarStatusProcesso(this.processoId, novoStatus)
             .pipe(

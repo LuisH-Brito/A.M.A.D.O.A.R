@@ -10,6 +10,7 @@ describe('QuestionarioProcessoComponent', () => {
   let component: QuestionarioProcessoComponent;
   let fixture: ComponentFixture<QuestionarioProcessoComponent>;
   let questionarioService: jasmine.SpyObj<QuestionarioService>;
+  let router: jasmine.SpyObj<Router>;
 
   beforeEach(async () => {
     questionarioService = jasmine.createSpyObj<QuestionarioService>(
@@ -38,11 +39,17 @@ describe('QuestionarioProcessoComponent', () => {
       of({ validade: true, respostas: [] }),
     );
 
+    router = jasmine.createSpyObj<Router>('Router', [
+      'navigate',
+      'getCurrentNavigation',
+    ]);
+    router.getCurrentNavigation.and.returnValue(null);
+
     await TestBed.configureTestingModule({
       imports: [QuestionarioProcessoComponent],
       providers: [
         { provide: QuestionarioService, useValue: questionarioService },
-        { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate']) },
+        { provide: Router, useValue: router },
         { provide: Location, useValue: jasmine.createSpyObj('Location', ['back']) },
         {
           provide: ActivatedRoute,
@@ -66,6 +73,26 @@ describe('QuestionarioProcessoComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('sinaliza revisao apenas ao retornar da Triagem que a solicitou', () => {
+    let leiturasDeNavegacao = 0;
+    router.getCurrentNavigation.and.callFake(() =>
+      leiturasDeNavegacao++ === 0
+        ? ({ extras: { state: { retornarParaTriagem: true } } } as any)
+        : null,
+    );
+    fixture.destroy();
+    fixture = TestBed.createComponent(QuestionarioProcessoComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    component.voltar();
+
+    expect(router.navigate).toHaveBeenCalledWith(['/form-triagem', 42], {
+      state: { retornoRevisaoQuestionario: true },
+    });
+    expect(leiturasDeNavegacao).toBe(1);
   });
 
   it('prioriza o questionário vinculado ao processo em vez do histórico por CPF', () => {

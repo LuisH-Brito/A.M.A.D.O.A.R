@@ -226,8 +226,10 @@ test('medico realiza triagem do doador recém-cadastrado', async ({ page }) => {
   // Passo adicionado: Revisar questionário para habilitar o botão "Apto"
   await page.getByRole('button', { name: 'Revisar Questionário', exact: true }).click();
   await page.waitForLoadState('load'); // Aguarda o carregamento da página de revisão
-  await page.goBack(); // Retorna para a página anterior
+  await page.getByRole('button', { name: 'Voltar', exact: true }).click();
   await expect(page).toHaveURL(/\/form-triagem\/\d+/); // Garante que voltou ao formulário
+  await expect(page.locator('.msg-revisado-ok')).toBeVisible();
+  await expect(page.locator('button.btn-concluir')).toBeEnabled();
 
   await page.click('button.btn-concluir');
   await expect(page.locator('.modal-overlay')).toBeVisible();
