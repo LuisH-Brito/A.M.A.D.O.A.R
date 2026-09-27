@@ -63,6 +63,12 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
     }
 
     this.processoId = id;
+    this.atendimento.iniciar(this.processoId).subscribe({
+      error: () => {
+        alert('Este processo já está em andamento por outro funcionário.');
+        this.router.navigate(['/processo-doacao-andamento']);
+      },
+    });
 
     const rascunho = this.triagemRascunhoService.obter(this.processoId);
     if (rascunho) {
