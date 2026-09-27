@@ -64,10 +64,36 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   }
 
   get podeTriagem(): boolean {
-    return this.cargoUsuario === 'medico';
+    return this.cargoUsuario === 'medico' || this.cargoUsuario === 'administrador';
   }
 
   get podeColeta(): boolean {
-    return this.cargoUsuario === 'enfermeiro';
+    return this.cargoUsuario === 'enfermeiro' || this.cargoUsuario === 'administrador';
+  }
+
+  voltar(): void {
+    switch (this.cargoUsuario) {
+      case 'recepcionista':
+        this.router.navigate(['/processo-doacao-REC']);
+        break;
+      case 'medico':
+        this.router.navigate(['/processo-doacao-MED']);
+        break;
+      case 'enfermeiro':
+        this.router.navigate(['/processo-doacao-ENF']);
+        break;
+      case 'administrador': {
+        const origemAdmin = localStorage.getItem('origem_admin');
+        if (origemAdmin) {
+          localStorage.removeItem('origem_admin');
+          this.router.navigate([origemAdmin]);
+        } else {
+          this.router.navigate(['/processo-doacao-MED']);
+        }
+        break;
+      }
+      default:
+        this.router.navigate(['/']);
+    }
   }
 }

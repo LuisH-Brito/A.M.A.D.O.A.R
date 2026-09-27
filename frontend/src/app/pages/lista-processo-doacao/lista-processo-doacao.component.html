@@ -1,8 +1,18 @@
 <div class="pagina">
     <div class="centralizando">
-        
-        <h2 class="titulo">Processos em Andamento</h2>
-        
+         
+         <div class="header-com-acoes">
+            <div class="titulo-com-voltar">
+                <button class="btn-icone" (click)="voltar()" title="Voltar">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                </button>
+                <h2 class="titulo">Processos em Andamento</h2>
+            </div>
+         </div>
+         
         <nav class="navegacao-abas" role="tablist" aria-label="Etapas de Doação">
             <button 
                 role="tab"
