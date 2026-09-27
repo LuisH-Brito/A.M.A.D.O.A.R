@@ -30,9 +30,18 @@ class AdministradorViewSet(viewsets.ModelViewSet):
 
         # Se o Angular quiser salvar/atualizar os dados (PATCH)
         elif request.method == 'PATCH':
+            campos_permitidos = {'email', 'endereco', 'password'}
+            campos_invalidos = set(request.data) - campos_permitidos
+
+            if campos_invalidos:
+                return Response(
+                    {'erro': 'Apenas e-mail, endereço e senha podem ser alterados.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+
             serializer = self.get_serializer(
                 administrador,
-                data=request.data,
+                data={campo: request.data[campo] for campo in campos_permitidos if campo in request.data},
                 partial=True,
             )
             if serializer.is_valid():

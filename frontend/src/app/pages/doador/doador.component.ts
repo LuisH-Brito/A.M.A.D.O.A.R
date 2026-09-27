@@ -27,6 +27,7 @@ export class DoadorComponent implements OnInit {
   isMedico = false;
   isEnfermeiro = false;
   isRecepcionista = false;
+  isAdministrador = false;
 
   usuario = {
     nome: '',
@@ -63,6 +64,7 @@ export class DoadorComponent implements OnInit {
     this.isMedico = this.cargoAtual === 'medico';
     this.isEnfermeiro = this.cargoAtual === 'enfermeiro';
     this.isRecepcionista = this.cargoAtual === 'recepcionista';
+    this.isAdministrador = this.cargoAtual === 'administrador';
 
     this.carregarDadosPerfil();
   }
@@ -151,6 +153,8 @@ export class DoadorComponent implements OnInit {
       cargoFormatado = 'Enfermeiro';
     } else if (this.cargoAtual === 'recepcionista') {
       cargoFormatado = 'Recepcionista';
+    } else if (this.cargoAtual === 'administrador') {
+      cargoFormatado = 'Administrador';
     }
 
     const funcionario = {
