@@ -12,7 +12,13 @@
         </svg>
       </button>
       <h2>Questionário</h2>
-      <div class="espacador-header"></div> 
+      
+      <div class="acoes-header">
+        <button *ngIf="!somenteLeitura" class="btn-header-acao" [ngClass]="modoEdicao ? 'btn-salvar' : 'btn-editar'" (click)="alternarEdicao()">
+          {{ modoEdicao ? 'Salvar' : 'Editar' }}
+        </button>
+        <div *ngIf="somenteLeitura" class="espacador-header"></div>
+      </div>
     </div>
 
     <div class="pergunta-wrapper" *ngFor="let item of perguntas; let i = index">
