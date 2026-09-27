@@ -50,7 +50,13 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
     private questionarioService: QuestionarioService,
     private triagemRascunhoService: TriagemRascunhoService,
     private atendimento: AtendimentoProcessoService,
-  ) {}
+  ) {
+    // getCurrentNavigation só está disponível durante a navegação que cria o
+    // componente; por isso a confirmação é consumida já no construtor.
+    const navigation = this.router.getCurrentNavigation();
+    this.questionarioRevisado =
+      navigation?.extras.state?.['retornoRevisaoQuestionario'] === true;
+  }
 
   ngOnDestroy(): void { if (this.processoId) this.atendimento.parar(this.processoId); }
 
@@ -73,10 +79,6 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
     const rascunho = this.triagemRascunhoService.obter(this.processoId);
     if (rascunho) {
       this.pressaoArterial = rascunho.pressaoArterial;
-    }
-
-    if (sessionStorage.getItem(`q_visto_${this.processoId}`) === 'true') {
-      this.questionarioRevisado = true;
     }
 
     this.api.getProcessoById(this.processoId).subscribe({
@@ -113,7 +115,6 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
 
           if (erro?.status === 404) {
             this.questionarioRevisado = false;
-            sessionStorage.removeItem(`q_visto_${this.processoId}`);
           }
         },
       });
@@ -131,14 +132,13 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
       this.processoId,
       this.pressaoArterial,
     );
-    sessionStorage.setItem(`q_visto_${this.processoId}`, 'true');
-    this.questionarioRevisado = true;
-
     this.router.navigate([
       '/questionario-processo/proc',
       this.processoId,
       this.doador.cpf,
-    ]);
+    ], {
+      state: { retornarParaTriagem: true },
+    });
   }
 
   formatarCPF(cpf: string): string {
@@ -304,7 +304,6 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
       .decidirTriagem(this.processoId, payload as any)
       .pipe(
         switchMap(() => {
-          sessionStorage.removeItem(`q_visto_${this.processoId}`);
           return this.api
             .atualizarStatusProcesso(this.processoId, novoStatus)
             .pipe(

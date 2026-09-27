@@ -21,6 +21,7 @@ export class QuestionarioProcessoComponent implements OnInit, OnDestroy {
   perguntas: any[] = [];
   modoEdicao: boolean = false;
   somenteLeitura: boolean = false;
+  private retornarParaTriagem = false;
 
   constructor(
     private route: ActivatedRoute,
@@ -28,7 +29,12 @@ export class QuestionarioProcessoComponent implements OnInit, OnDestroy {
     private questionarioService: QuestionarioService,
     private location: Location,
     private atendimento: AtendimentoProcessoService,
-  ) {}
+  ) {
+    // Mantém a origem apenas enquanto esta instância do questionário existir.
+    const navigation = this.router.getCurrentNavigation();
+    this.retornarParaTriagem =
+      navigation?.extras.state?.['retornarParaTriagem'] === true;
+  }
 
   ngOnDestroy(): void { if (this.processoId) this.atendimento.parar(this.processoId); }
 
@@ -204,7 +210,13 @@ export class QuestionarioProcessoComponent implements OnInit, OnDestroy {
     }
 
     if (this.processoId) {
-      this.router.navigate(['/form-triagem', this.processoId]);
+      if (this.retornarParaTriagem) {
+        this.router.navigate(['/form-triagem', this.processoId], {
+          state: { retornoRevisaoQuestionario: true },
+        });
+      } else {
+        this.router.navigate(['/form-triagem', this.processoId]);
+      }
       return;
     }
     this.router.navigate(['/form-triagem']);
