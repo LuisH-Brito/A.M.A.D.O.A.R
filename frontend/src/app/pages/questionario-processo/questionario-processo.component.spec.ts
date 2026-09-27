@@ -5,11 +5,13 @@ import { of, throwError } from 'rxjs';
 
 import { QuestionarioService } from '../../services/questionario.service';
 import { QuestionarioProcessoComponent } from './questionario-processo.component';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 
 describe('QuestionarioProcessoComponent', () => {
   let component: QuestionarioProcessoComponent;
   let fixture: ComponentFixture<QuestionarioProcessoComponent>;
   let questionarioService: jasmine.SpyObj<QuestionarioService>;
+  let atendimento: jasmine.SpyObj<AtendimentoProcessoService>;
 
   beforeEach(async () => {
     questionarioService = jasmine.createSpyObj<QuestionarioService>(
@@ -37,11 +39,16 @@ describe('QuestionarioProcessoComponent', () => {
     questionarioService.getQuestionarioPorProcesso.and.returnValue(
       of({ validade: true, respostas: [] }),
     );
+    atendimento = jasmine.createSpyObj<AtendimentoProcessoService>(
+      'AtendimentoProcessoService', ['iniciar', 'parar'],
+    );
+    atendimento.iniciar.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
       imports: [QuestionarioProcessoComponent],
       providers: [
         { provide: QuestionarioService, useValue: questionarioService },
+        { provide: AtendimentoProcessoService, useValue: atendimento },
         { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate']) },
         { provide: Location, useValue: jasmine.createSpyObj('Location', ['back']) },
         {
