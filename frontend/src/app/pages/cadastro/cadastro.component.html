@@ -1,5 +1,5 @@
 <main class="cadastro-page">
-  <button class="btn-icone" (click)="voltar()">
+  <button *ngIf="!modoRecepcionista" class="btn-icone" (click)="voltar()">
     <svg
       width="24"
       height="24"
@@ -197,7 +197,7 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" *ngIf="!modoRecepcionista">
             <label>{{ modoEdicao ? "Nova senha" : "Senha" }}</label>
             <div class="input-com-icone">
               <input
@@ -232,7 +232,7 @@
             </div>
           </div>
 
-          <div class="form-group">
+          <div class="form-group" *ngIf="!modoRecepcionista">
             <label>{{
               modoEdicao ? "Confirmar nova senha" : "Confirmar senha"
             }}</label>
@@ -280,7 +280,7 @@
                 formCadastro.invalid ||
                 (!modoEdicao && !cpfValido(dados.cpf)) ||
                 dados.data_nascimento > dataMaxima ||
-                dados.senha !== dados.confirmarSenha
+                (!modoRecepcionista && dados.senha !== dados.confirmarSenha)
               "
             >
               {{ modoEdicao ? "Salvar Alterações" : "Concluir" }}

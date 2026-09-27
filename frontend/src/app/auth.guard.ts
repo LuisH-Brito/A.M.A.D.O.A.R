@@ -1,5 +1,7 @@
 import { inject } from '@angular/core';
 import { CanActivateFn, Router } from '@angular/router';
+import { catchError, map, of } from 'rxjs';
+import { AuthService } from './services/auth.service';
 
 /**
  * authGuard (CanActivateFn)
@@ -10,6 +12,26 @@ import { CanActivateFn, Router } from '@angular/router';
 export const authGuard: CanActivateFn = (route, state) => {
   const router = inject(Router);
   const cargoUsuario = localStorage.getItem('cargo');
+  const access = localStorage.getItem('access');
+  const auth = inject(AuthService);
+  const troca = state.url.split('?')[0] === '/troca-senha-obrigatoria';
+  const cadastroRecepcao = route.routeConfig?.path === 'cadastro'
+    && route.queryParamMap.get('modo') === 'recepcionista';
+  const cadastroEdicao = route.routeConfig?.path === 'cadastro'
+    && route.queryParamMap.get('modo') === 'editar';
+
+  if (!access) {
+    return troca || cadastroRecepcao || cadastroEdicao || route.data?.['cargoPermitido']
+      ? router.parseUrl('/login')
+      : true;
+  }
+
+  if (cadastroRecepcao && cargoUsuario !== 'recepcionista') {
+    return router.parseUrl('/');
+  }
+  if (cadastroEdicao && cargoUsuario !== 'doador') {
+    return router.parseUrl('/');
+  }
 
   const cargosPermitidos = route.data?.['cargoPermitido'] as Array<string>;
 
@@ -24,9 +46,15 @@ export const authGuard: CanActivateFn = (route, state) => {
    */
   if (cargosPermitidos && !cargosPermitidos.includes(cargoUsuario!)) {
     alert('Acesso negado: Seu cargo não tem permissão para esta tela.');
-    router.navigate(['/']);
-    return false;
+    return router.parseUrl('/');
   }
 
-  return true;
+  return auth.verificarTrocaObrigatoria().pipe(
+    map(pendente => {
+      if (pendente && !troca) return router.parseUrl('/troca-senha-obrigatoria');
+      if (!pendente && troca) return router.parseUrl('/');
+      return true;
+    }),
+    catchError(() => of(router.parseUrl('/login'))),
+  );
 };

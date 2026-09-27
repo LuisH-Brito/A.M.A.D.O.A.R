@@ -86,3 +86,55 @@ describe('CadastroComponent', () => {
     );
   });
 });
+
+describe('CadastroComponent no modo recepcionista', () => {
+  let component: CadastroComponent;
+  let fixture: ComponentFixture<CadastroComponent>;
+  let service: jasmine.SpyObj<DoadorService>;
+
+  beforeEach(async () => {
+    service = jasmine.createSpyObj<DoadorService>('DoadorService', [
+      'obterDoador', 'atualizarDoador', 'cadastrar', 'cadastrarPelaRecepcao',
+    ]);
+    service.cadastrarPelaRecepcao.and.returnValue(of({}));
+    await TestBed.configureTestingModule({
+      imports: [CadastroComponent],
+      providers: [
+        { provide: DoadorService, useValue: service },
+        { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate']) },
+        { provide: ActivatedRoute, useValue: { queryParams: of({ modo: 'recepcionista' }) } },
+      ],
+    }).compileComponents();
+    fixture = TestBed.createComponent(CadastroComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+  });
+
+  it('reutiliza o cadastro sem mostrar senhas', () => {
+    expect(component.modoRecepcionista).toBeTrue();
+    expect(fixture.nativeElement.querySelector('input[name="senha"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('input[name="confirmar"]')).toBeNull();
+    expect(fixture.nativeElement.querySelector('input[name="cpf"]')).not.toBeNull();
+  });
+
+  it('envia o cadastro sem senha e mostra o feedback de sucesso', () => {
+    spyOn(component.toast, 'exibir');
+    component.dados.nome_completo = 'Doador Teste';
+    component.dados.cpf = '52998224725';
+    component.dados.email = 'novo@amadoar.test';
+
+    component.concluirCadastro();
+
+    expect(service.cadastrarPelaRecepcao).toHaveBeenCalledWith(
+      jasmine.objectContaining({
+        cpf: '52998224725', email: 'novo@amadoar.test',
+      }),
+    );
+    expect(service.cadastrarPelaRecepcao.calls.mostRecent().args[0].password).toBeUndefined();
+    expect(service.cadastrar).not.toHaveBeenCalled();
+    expect(component.toast.exibir).toHaveBeenCalledWith(
+      jasmine.stringMatching(/senha inicial é Senha123/), true,
+    );
+    expect(component.dados.cpf).toBe('');
+  });
+});

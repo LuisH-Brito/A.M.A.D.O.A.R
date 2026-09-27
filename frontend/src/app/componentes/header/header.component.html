@@ -146,6 +146,14 @@
           (click)="toggleMenu()"
           >Processo de Doação - REC</a
         >
+        <a
+          *ngIf="temAcesso(['recepcionista'])"
+          routerLink="/cadastro"
+          [queryParams]="{ modo: 'recepcionista' }"
+          class="menu-item"
+          (click)="toggleMenu()"
+          >Cadastrar Doador</a
+        >
 
         <a
           *ngIf="temAcesso(['medico', 'administrador'])"

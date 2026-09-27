@@ -28,8 +28,21 @@ class DoadorViewSet(viewsets.ModelViewSet):
         """
         if self.action == 'create':
             return [permissions.AllowAny()]
+        if self.action == 'cadastro_recepcao':
+            return [EhRecepcionista()]
         
         return [permissions.IsAuthenticated()]
+
+    @action(detail=False, methods=['post'], url_path='cadastro-recepcao',
+            permission_classes=[EhRecepcionista])
+    def cadastro_recepcao(self, request):
+        dados = request.data.copy()
+        dados.pop('password', None)
+        dados.pop('deve_alterar_senha', None)
+        serializer = self.get_serializer(data=dados)
+        serializer.is_valid(raise_exception=True)
+        doador = serializer.save(password='Senha123', deve_alterar_senha=True)
+        return Response(self.get_serializer(doador).data, status=201)
 
     def get_queryset(self):
         """
