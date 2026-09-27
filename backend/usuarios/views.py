@@ -1,5 +1,10 @@
 from rest_framework_simplejwt.views import TokenObtainPairView
-from .serializers import MyTokenObtainPairSerializer
+from .serializers import MyTokenObtainPairSerializer, RevocableTokenRefreshSerializer
+from rest_framework_simplejwt.views import TokenRefreshView
+from rest_framework.permissions import IsAuthenticated
+from django.contrib.auth.password_validation import validate_password
+from django.core.exceptions import ValidationError as DjangoValidationError
+from doadores.serializers import senha_forte
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
@@ -16,6 +21,41 @@ logger = logging.getLogger(__name__)
 
 class MyTokenObtainPairView(TokenObtainPairView):
     serializer_class = MyTokenObtainPairSerializer
+
+
+class RevocableTokenRefreshView(TokenRefreshView):
+    serializer_class = RevocableTokenRefreshSerializer
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def usuario_atual(request):
+    return Response({'deve_alterar_senha': request.user.deve_alterar_senha})
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def trocar_senha_obrigatoria(request):
+    usuario = request.user
+    if not usuario.deve_alterar_senha:
+        return Response({'erro': 'Troca obrigatória não pendente.'}, status=400)
+    senha_atual = request.data.get('senha_atual') or ''
+    nova_senha = request.data.get('nova_senha') or ''
+    confirmar = request.data.get('confirmar_nova_senha') or ''
+    if not usuario.check_password(senha_atual):
+        return Response({'senha_atual': ['Senha atual incorreta.']}, status=400)
+    if not nova_senha or nova_senha != confirmar:
+        return Response({'nova_senha': ['Preencha senhas novas iguais.']}, status=400)
+    if nova_senha == senha_atual or not senha_forte(nova_senha):
+        return Response({'nova_senha': ['Use uma senha nova com 8 caracteres, maiúscula, minúscula e número.']}, status=400)
+    try:
+        validate_password(nova_senha, usuario)
+    except DjangoValidationError as error:
+        return Response({'nova_senha': error.messages}, status=400)
+    usuario.set_password(nova_senha)
+    usuario.deve_alterar_senha = False
+    usuario.save(update_fields=['password', 'deve_alterar_senha'])
+    return Response({'mensagem': 'Senha alterada com sucesso. Entre novamente com sua nova senha.'})
 
 
 @api_view(['GET'])
@@ -107,7 +147,8 @@ def confirm_password_reset(request):
         return Response({'erro': 'Código inválido ou expirado.'}, status=status.HTTP_400_BAD_REQUEST)
 
     usuario.set_password(nova_senha)
-    usuario.save(update_fields=['password'])
+    usuario.deve_alterar_senha = False
+    usuario.save(update_fields=['password', 'deve_alterar_senha'])
     cache.delete(f'password_reset_code:{cpf_sem_mascara}')
 
     return Response({'mensagem': 'Senha redefinida com sucesso.'}, status=status.HTTP_200_OK)

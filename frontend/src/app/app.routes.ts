@@ -25,11 +25,13 @@ import { CarteiraDoacaoComponent } from './pages/carteira-doacao/carteira-doacao
 import { RedefinirSenhaComponent } from './pages/senha/redefinir-senha/redefinir-senha.component';
 import { CodigoSenhaComponent } from './pages/senha/codigo-senha/codigo-senha.component';
 import { NovaSenhaComponent } from './pages/senha/nova-senha/nova-senha.component';
+import { TrocaSenhaObrigatoriaComponent } from './pages/senha/troca-senha-obrigatoria/troca-senha-obrigatoria.component';
 
 export const routes: Routes = [
-  { path: '', component: HomeComponent }, // Define Home como padrão
+  { path: '', component: HomeComponent, canActivate: [authGuard] }, // Define Home como padrão
   { path: 'login', component: LoginComponent },
-  { path: 'cadastro', component: CadastroComponent },
+  { path: 'cadastro', component: CadastroComponent, canActivate: [authGuard] },
+  { path: 'troca-senha-obrigatoria', component: TrocaSenhaObrigatoriaComponent, canActivate: [authGuard] },
   { path: 'redefinir-senha', component: RedefinirSenhaComponent },
   { path: 'redefinir-senha/codigo', component: CodigoSenhaComponent },
   { path: 'redefinir-senha/nova-senha', component: NovaSenhaComponent },

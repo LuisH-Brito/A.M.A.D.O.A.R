@@ -22,6 +22,10 @@ export class DoadorService {
     return this.http.post(this.apiUrl, dadosDoador);
   }
 
+  cadastrarPelaRecepcao(dadosDoador: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}cadastro-recepcao/`, dadosDoador);
+  }
+
   atualizarDoador(dados: any): Observable<any> {
     return this.http.patch(`${this.apiUrl}me/`, dados);
   }
