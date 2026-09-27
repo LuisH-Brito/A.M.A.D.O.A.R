@@ -90,7 +90,7 @@
               'administrador',
             ])
           "
-          routerLink="/pagina-doador"
+          routerLink="/pagina-perfil"
           class="menu-item"
           (click)="toggleMenu()"
           >Meu Perfil</a
@@ -111,7 +111,7 @@
           >Carteiras de Doadores</a
         >
         <a
-          *ngIf="temAcesso(['administrador', 'medico', 'enfermeiro'])"
+          *ngIf="temAcesso(['medico', 'enfermeiro'])"
           routerLink="/estoque-bolsas"
           class="menu-item"
           (click)="toggleMenu()"
@@ -140,7 +140,7 @@
         >
 
         <a
-          *ngIf="temAcesso(['recepcionista', 'administrador'])"
+          *ngIf="temAcesso(['recepcionista'])"
           routerLink="/processo-doacao-REC"
           class="menu-item"
           (click)="toggleMenu()"
@@ -148,7 +148,7 @@
         >
 
         <a
-          *ngIf="temAcesso(['medico', 'administrador'])"
+          *ngIf="temAcesso(['medico'])"
           routerLink="/processo-doacao-MED"
           class="menu-item"
           (click)="toggleMenu()"
@@ -156,14 +156,14 @@
         >
 
         <a
-          *ngIf="temAcesso(['enfermeiro', 'administrador'])"
+          *ngIf="temAcesso(['enfermeiro'])"
           routerLink="/processo-doacao-MED"
           class="menu-item"
           (click)="toggleMenu()"
           >Processo de Doação - ENF</a
         >
         <a
-          *ngIf="temAcesso(['doador', 'administrador'])"
+          *ngIf="temAcesso(['doador'])"
           routerLink="/questionario"
           class="menu-item"
           (click)="toggleMenu()"
