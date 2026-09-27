@@ -23,6 +23,7 @@ urlpatterns = [
     path('api/medicos/', include('medicos.urls')),
     path('api/enfermeiros/', include('enfermeiros.urls')),
     path('api/recepcionistas/', include('recepcionistas.urls')),
+    path('api/administradores/', include('administradores.urls')),
     path('api/token/', MyTokenObtainPairView.as_view(), name='token_obtain_pair'),
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),

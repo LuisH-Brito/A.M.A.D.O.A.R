@@ -1,9 +1,8 @@
-from django.shortcuts import render
-from requests import Response
 from rest_framework.decorators import action
 
 
 from rest_framework import viewsets, status
+from rest_framework.response import Response
 from administradores.models import Administrador
 from administradores.serializers import AdministradorSerializer
 from usuarios.permission import EhAdministrador, EhSuperAdmin
@@ -16,19 +15,26 @@ class AdministradorViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get', 'patch'], url_path='me')
     def me(self, request):
-        enfermeiro = getattr(request.user, 'enfermeiro', None)
+        administrador = getattr(request.user, 'administrador', None)
         
-        if not enfermeiro:
-            return Response({'erro': 'Usuário não é um enfermeiro.'}, status=status.HTTP_404_NOT_FOUND)
+        if not administrador:
+            return Response(
+                {'erro': 'Usuário não é um administrador.'},
+                status=status.HTTP_404_NOT_FOUND,
+            )
 
         # Se o Angular pedir os dados (GET)
         if request.method == 'GET':
-            serializer = self.get_serializer(enfermeiro)
+            serializer = self.get_serializer(administrador)
             return Response(serializer.data)
 
         # Se o Angular quiser salvar/atualizar os dados (PATCH)
         elif request.method == 'PATCH':
-            serializer = self.get_serializer(enfermeiro, data=request.data, partial=True)
+            serializer = self.get_serializer(
+                administrador,
+                data=request.data,
+                partial=True,
+            )
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data)
