@@ -20,6 +20,7 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   coleta: any[] = [];
   isRecepcionista = false;
   cargoUsuario = localStorage.getItem('cargo') || '';
+  processoIdProcessando: number | null = null;
 
   constructor(private api: ApiService, private router: Router) {}
 
@@ -57,19 +58,22 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   }
 
   abrirPreTriagem(processoId: number): void {
-    if (this.isRecepcionista) return;
+    if (this.isRecepcionista || this.processoIdProcessando !== null) return;
+    this.processoIdProcessando = processoId;
     localStorage.setItem('abaAtivaProcessos', 'pre-triagem');
     this.router.navigate(['/form-pre-triagem', processoId]);
   }
 
   abrirTriagem(processoId: number): void {
-    if (!this.podeTriagem) return;
+    if (!this.podeTriagem || this.processoIdProcessando !== null) return;
+    this.processoIdProcessando = processoId;
     localStorage.setItem('abaAtivaProcessos', 'triagem');
     this.router.navigate(['/form-triagem', processoId]);
   }
 
   abrirColeta(processoId: number): void {
-    if (!this.podeColeta) return;
+    if (!this.podeColeta || this.processoIdProcessando !== null) return;
+    this.processoIdProcessando = processoId;
     localStorage.setItem('abaAtivaProcessos', 'coleta');
     this.router.navigate(['/form-coleta', processoId]);
   }
