@@ -108,12 +108,34 @@
       <div class="linha" *ngIf="isDoador">
         <div class="campo">
           <label>Última Doação</label>
-          <input type="date" [(ngModel)]="usuario.ultimaDoacao" disabled />
+          <input
+            *ngIf="usuario.ultimaDoacao"
+            type="date"
+            [(ngModel)]="usuario.ultimaDoacao"
+            disabled
+          />
+          <input
+            *ngIf="!usuario.ultimaDoacao"
+            type="text"
+            value="Nenhuma doação registrada"
+            disabled
+          />
         </div>
 
         <div class="campo">
           <label>Próxima Doação</label>
-          <input type="date" [(ngModel)]="usuario.proximaDoacao" disabled />
+          <input
+            *ngIf="usuario.proximaDoacao"
+            type="date"
+            [(ngModel)]="usuario.proximaDoacao"
+            disabled
+          />
+          <input
+            *ngIf="!usuario.proximaDoacao"
+            type="text"
+            value="Sem previsão de próxima doação"
+            disabled
+          />
         </div>
       </div>
     </div>
