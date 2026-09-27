@@ -51,37 +51,37 @@ export const routes: Routes = [
     path: 'questionario',
     component: QuestionarioIntroComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
+    data: { cargoPermitido: ['doador', 'medico'] },
   },
   {
     path: 'questionario_form',
     component: QuestionarioComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
+    data: { cargoPermitido: ['doador', 'medico'] },
   },
   {
     path: 'processo-doacao-REC',
     component: ProcessoDoacaoComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['recepcionista', 'administrador'] },
+    data: { cargoPermitido: ['recepcionista'] },
   },
   {
     path: 'processo-doacao-MED',
     component: ProcessoDoacaoMedComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['medico', 'enfermeiro', 'administrador'] },
+    data: { cargoPermitido: ['medico', 'enfermeiro'] },
   },
   {
     path: 'iniciar-doacao',
     component: ProcessoDoacaoIntroComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['recepcionista', 'administrador'] },
+    data: { cargoPermitido: ['recepcionista'] },
   },
   {
     path: 'form-pre-triagem',
     component: FormPreTriagemComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['enfermeiro', 'medico', 'administrador'] },
+    data: { cargoPermitido: ['enfermeiro', 'medico'] },
   },
   {
     path: 'form-pre-triagem/:processoId',
@@ -93,7 +93,7 @@ export const routes: Routes = [
     path: 'form-triagem',
     component: FormTriagemComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['medico', 'administrador'] },
+    data: { cargoPermitido: ['medico'] },
   },
   {
     path: 'form-triagem/:processoId',
@@ -105,7 +105,7 @@ export const routes: Routes = [
     path: 'form-coleta',
     component: FormColetaComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['enfermeiro', 'administrador'] },
+    data: { cargoPermitido: ['enfermeiro'] },
   },
   {
     path: 'form-coleta/:processoId',
@@ -121,13 +121,12 @@ export const routes: Routes = [
       cargoPermitido: [
         'enfermeiro',
         'medico',
-        'recepcionista',
-        'administrador',
+        'recepcionista'
       ],
     },
   },
   {
-    path: 'pagina-doador',
+    path: 'pagina-perfil',
     component: DoadorComponent,
     canActivate: [authGuard],
     data: {
@@ -146,10 +145,7 @@ export const routes: Routes = [
     canActivate: [authGuard],
     data: {
       cargoPermitido: [
-        'administrador',
-        'medico',
-        'enfermeiro',
-        'recepcionista',
+        'administrador'
       ],
     }, // Exemplo de dado para o guard usar
   },
@@ -157,25 +153,25 @@ export const routes: Routes = [
     path: 'aguardando-validacao-bolsa',
     component: BolsaAguardandoValidacaoComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['medico', 'administrador'] },
+    data: { cargoPermitido: ['medico'] },
   },
   {
     path: 'validar-bolsa/:id',
     component: ValidacaoBolsaComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['medico', 'administrador'] },
+    data: { cargoPermitido: ['medico'] },
   },
   {
     path: 'estoque-bolsas',
     component: EstoqueBolsasComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['administrador', 'medico', 'enfermeiro'] },
+    data: { cargoPermitido: ['medico', 'enfermeiro'] },
   },
   {
     path: 'questionario-processo',
     component: QuestionarioProcessoComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
+    data: { cargoPermitido: ['doador', 'medico'] },
   },
   {
     path: 'questionario-processo/proc/:processoId/:cpf', // <-- Tem que ter o /:cpf no final
@@ -187,7 +183,7 @@ export const routes: Routes = [
     path: 'questionario-processo/:cpf',
     component: QuestionarioProcessoComponent,
     canActivate: [authGuard],
-    data: { cargoPermitido: ['doador', 'medico', 'administrador'] },
+    data: { cargoPermitido: ['doador', 'medico'] },
   },
   {
     path: 'listar-doadores',
