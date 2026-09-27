@@ -141,6 +141,10 @@ export class FormColetaComponent implements OnInit {
               false,
             );
           }
+          
+          // Define a aba de coleta como ativa ao retornar
+          localStorage.setItem('abaAtivaProcessos', 'coleta');
+
           setTimeout(
             () => this.router.navigate(['/processo-doacao-andamento']),
             2000,
@@ -156,6 +160,7 @@ export class FormColetaComponent implements OnInit {
       });
   }
   voltar() {
+    localStorage.setItem('abaAtivaProcessos', 'coleta');
     this.router.navigate(['/processo-doacao-andamento']);
   }
 }

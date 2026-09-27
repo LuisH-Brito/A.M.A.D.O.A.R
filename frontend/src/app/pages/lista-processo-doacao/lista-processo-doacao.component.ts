@@ -26,6 +26,12 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   ngOnInit(): void {
     this.isRecepcionista = this.cargoUsuario === 'recepcionista';
 
+    // Recupera a última aba salva em cache, se existir
+    const abaSalva = localStorage.getItem('abaAtivaProcessos') as EtapaProcesso;
+    if (abaSalva && ['pre-triagem', 'triagem', 'coleta'].includes(abaSalva)) {
+      this.abaAtiva = abaSalva;
+    }
+
     this.api.getProcessos().subscribe(
       (res: any) => {
         this.processos = Array.isArray(res) ? res : (res?.results ?? []);
@@ -46,20 +52,25 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   selecionarAba(aba: EtapaProcesso): void {
     if (this.abaAtiva === aba) return;
     this.abaAtiva = aba;
+    // Salva a aba escolhida no cache do navegador
+    localStorage.setItem('abaAtivaProcessos', aba);
   }
 
   abrirPreTriagem(processoId: number): void {
     if (this.isRecepcionista) return;
+    localStorage.setItem('abaAtivaProcessos', 'pre-triagem');
     this.router.navigate(['/form-pre-triagem', processoId]);
   }
 
   abrirTriagem(processoId: number): void {
     if (!this.podeTriagem) return;
+    localStorage.setItem('abaAtivaProcessos', 'triagem');
     this.router.navigate(['/form-triagem', processoId]);
   }
 
   abrirColeta(processoId: number): void {
     if (!this.podeColeta) return;
+    localStorage.setItem('abaAtivaProcessos', 'coleta');
     this.router.navigate(['/form-coleta', processoId]);
   }
 
@@ -80,7 +91,7 @@ export class ListaProcessoDoacaoComponent implements OnInit {
         this.router.navigate(['/processo-doacao-MED']);
         break;
       case 'enfermeiro':
-        this.router.navigate(['/processo-doacao-ENF']);
+        this.router.navigate(['/processo-doacao-MED']);
         break;
       case 'administrador': {
         const origemAdmin = localStorage.getItem('origem_admin');
