@@ -73,7 +73,7 @@ test('cadastro de doador com sucesso', async ({ page }) => {
 
   // Seleciona de forma dinâmica o sexo com base no nome gerado (Masculino ou Feminino)
   await page.check(`input[name="sexo"][value="${generoGerado}"]`);
-  await page.getByRole('radio', { name: 'O+', exact: true }).check();
+  await page.getByRole('radio', { name: 'AB+', exact: true }).check();
 
   await page.fill('input[name="senha"]', senha);
   await page.fill('input[name="confirmar"]', senha);
@@ -355,6 +355,7 @@ test('médico realiza a validação e liberação da bolsa', async ({ page }) =>
   // Confirma a liberação no modal
   await expect(page.getByText('Confirma a validação da bolsa')).toBeVisible();
   await page.getByRole('button', { name: 'Sim, Liberar', exact: true }).click();
+  await expect(page).toHaveURL('/aguardando-validacao-bolsa', { timeout: 15000 });
 });
 
 });
