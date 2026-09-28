@@ -16,13 +16,22 @@ function gerarCpfValido() {
   return n.join('');
 }
 
-function nomeAleatorio() {
-  const nomes = ['Larissa', 'Mariana', 'Camila', 'Juliana', 'Beatriz', 'Amanda', 'Gabriela', 'Hayssa', 'Almecina', 'Raquel', 'Catarina', 'Billie', 'Sabrina', 'Taylor', 'Tate', 'Gracie', 'Maya', 'Ava', 'Luna', 'Zoe', 'Chloe', 'Lily', 'Ella', 'Aria', 'Scarlett', 'Aurora', 'Hazel', 'Violet', 'Stella', 'Nova', 'Emilia', 'Isla', 'Freya', 'Ivy'];
-  const sobrenomes = ['Nobrega', 'Figueredo', 'Silva', 'Souza', 'Oliveira', 'Costa', 'Sousa', 'Santos', 'Ishii', 'Braga', 'Eilish', 'Carpenter', 'Swift', 'McRae', 'Abrams', "O'Connel", 'Hernandez', 'Miller', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Martinez', 'Rodriguez', 'Lee', 'Walker', 'Hall', 'Allen', 'Young'];
+let generoGerado = 'Feminino';
 
-  const primeiroNome = nomes[Math.floor(Math.random() * nomes.length)];
-  const segundoNome = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
-  const terceiroNome = sobrenomes[Math.floor(Math.random() * sobrenomes.length)];
+function nomeAleatorio() {
+  const nomesMasculinos = ['Carlos', 'Lucas', 'Gabriel', 'Mateus', 'Rafael', 'Bruno', 'Thiago', 'Daniel', 'Rodrigo', 'Felipe', 'Leonardo', 'Eduardo', 'Gustavo', 'Vinicius', 'Diego'];
+  const nomesFemininos = ['Larissa', 'Mariana', 'Camila', 'Juliana', 'Beatriz', 'Amanda', 'Gabriela', 'Hayssa', 'Raquel', 'Catarina', 'Sabrina', 'Taylor', 'Maya', 'Luna', 'Chloe'];
+  const sobrenomesComuns = ['Nobrega', 'Figueredo', 'Silva', 'Souza', 'Oliveira', 'Costa', 'Sousa', 'Santos', 'Ishii', 'Braga', 'Eilish', 'Carpenter', 'Swift', 'McRae', 'Abrams', "O'Connel", 'Hernandez', 'Miller', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Martinez', 'Rodriguez', 'Lee', 'Walker', 'Hall', 'Allen', 'Young'];
+
+  const ehMasculino = Math.random() < 0.5;
+  generoGerado = ehMasculino ? 'Masculino' : 'Feminino';
+
+  const primeiroNome = ehMasculino 
+    ? nomesMasculinos[Math.floor(Math.random() * nomesMasculinos.length)]
+    : nomesFemininos[Math.floor(Math.random() * nomesFemininos.length)];
+
+  const segundoNome = sobrenomesComuns[Math.floor(Math.random() * sobrenomesComuns.length)];
+  const terceiroNome = sobrenomesComuns[Math.floor(Math.random() * sobrenomesComuns.length)];
 
   return `${primeiroNome} ${segundoNome} ${terceiroNome}`;
 }
@@ -62,7 +71,8 @@ test('cadastro de doador com sucesso', async ({ page }) => {
   await page.fill('input[name="data"]', '1995-05-20');
   await page.fill('input[name="telefone"]', '(68) 97455-7624');
 
-  await page.check('input[name="sexo"][value="Feminino"]');
+  // Seleciona de forma dinâmica o sexo com base no nome gerado (Masculino ou Feminino)
+  await page.check(`input[name="sexo"][value="${generoGerado}"]`);
   await page.getByRole('radio', { name: 'O+', exact: true }).check();
 
   await page.fill('input[name="senha"]', senha);
@@ -104,6 +114,28 @@ test('login como doador com sucesso', async ({ page }) => {
     });
 });
 
+/*
+test('doador edita a data de nascimento no proprio cadastro', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('input[name="username"]', cpf);
+  await page.fill('input[name="password"]', senha);
+  await page.click('button.btn-login');
+  await expect(page).toHaveURL('/');
+
+  await page.goto('/cadastro?modo=editar');
+  const dataNascimento = page.locator('input[name="data"]');
+  await expect(dataNascimento).toBeEditable();
+  await dataNascimento.fill('1991-02-03');
+
+  await page.getByRole('button', { name: 'Salvar Alterações', exact: true }).click();
+  await page.getByRole('button', { name: 'Sim, Salvar', exact: true }).click();
+  await expect(page).toHaveURL('/pagina-perfil', { timeout: 5000 });
+  await page.goto('/cadastro?modo=editar');
+  await expect(dataNascimento).toHaveValue('1991-02-03');
+  await dataNascimento.fill('2999-01-01');
+  await expect(page.locator('button.btn-concluir')).toBeDisabled();
+});
+*/
 
 test('doador edita a data de nascimento no proprio cadastro', async ({ page }) => {
   await page.goto('/login');
