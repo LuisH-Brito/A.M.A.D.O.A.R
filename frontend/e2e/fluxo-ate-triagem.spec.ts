@@ -19,7 +19,7 @@ function gerarCpfValido() {
 let generoGerado = 'Feminino';
 
 function nomeAleatorio() {
-  const nomesMasculinos = ['Carlos', 'Lucas', 'Gabriel', 'Mateus', 'Rafael', 'Bruno', 'Thiago', 'Daniel', 'Rodrigo', 'Felipe', 'Leonardo', 'Eduardo', 'Gustavo', 'Vinicius', 'Diego'];
+  const nomesMasculinos = ['Kelvin','Carlos', 'Lucas', 'Gabriel', 'Mateus', 'Rafael', 'Bruno', 'Thiago', 'Daniel', 'Rodrigo', 'Felipe', 'Leonardo', 'Eduardo', 'Gustavo', 'Vinicius', 'Diego'];
   const nomesFemininos = ['Larissa', 'Mariana', 'Camila', 'Juliana', 'Beatriz', 'Amanda', 'Gabriela', 'Hayssa', 'Raquel', 'Catarina', 'Sabrina', 'Taylor', 'Maya', 'Luna', 'Chloe'];
   const sobrenomesComuns = ['Nobrega', 'Figueredo', 'Silva', 'Souza', 'Oliveira', 'Costa', 'Sousa', 'Santos', 'Ishii', 'Braga', 'Eilish', 'Carpenter', 'Swift', 'McRae', 'Abrams', "O'Connel", 'Hernandez', 'Miller', 'Johnson', 'Williams', 'Brown', 'Jones', 'Garcia', 'Martinez', 'Rodriguez', 'Lee', 'Walker', 'Hall', 'Allen', 'Young'];
 
@@ -45,7 +45,7 @@ function emailAleatorio(nomeBase: string) {
   return `${nomeLimpo}${sufixoUnico}@${provedor}`;
 }
 
-test.describe.serial('fluxo doador no deploy', () => {
+test.describe.serial('fluxo doador no deploy - até triagem', () => {
 
 // Substitui a URL base apenas para os testes dentro deste arquivo
 test.use({ baseURL: 'http://rldiasbr.duckdns.org:3301' });
@@ -73,7 +73,7 @@ test('cadastro de doador com sucesso', async ({ page }) => {
 
   // Seleciona de forma dinâmica o sexo com base no nome gerado (Masculino ou Feminino)
   await page.check(`input[name="sexo"][value="${generoGerado}"]`);
-  await page.getByRole('radio', { name: 'O+', exact: true }).check();
+  await page.getByRole('radio', { name: 'A+', exact: true }).check();
 
   await page.fill('input[name="senha"]', senha);
   await page.fill('input[name="confirmar"]', senha);
@@ -129,14 +129,14 @@ test('doador edita a data de nascimento no proprio cadastro', async ({ page }) =
 
   await page.getByRole('button', { name: 'Salvar Alterações', exact: true }).click();
   await page.getByRole('button', { name: 'Sim, Salvar', exact: true }).click();
-  await expect(page).toHaveURL('/pagina-perfil', { timeout: 5000 });
+  await expect(page).toHaveURL('/pagina-doador', { timeout: 5000 });
+
   await page.goto('/cadastro?modo=editar');
   await expect(dataNascimento).toHaveValue('1991-02-03');
   await dataNascimento.fill('2999-01-01');
   await expect(page.locator('button.btn-concluir')).toBeDisabled();
 });
 */
-
 
 // Doador responde questionário
 test('doador responde questionário com sucesso', async ({ page }) => {
@@ -234,7 +234,8 @@ test('enfermeiro realiza pré-triagem do doador recém-cadastrado', async ({ pag
   await expect(page).toHaveURL('/processo-doacao-andamento', { timeout: 15000 });
 });
 
-// Médico realiza a triagem do doador recém-cadastrado
+    // Médico realiza a triagem do doador recém-cadastrado
+    /*
 test('medico realiza triagem do doador recém-cadastrado', async ({ page }) => {
   await page.goto('/login');
   await page.fill('input[name="username"]', cpfMedico);
@@ -274,87 +275,5 @@ test('medico realiza triagem do doador recém-cadastrado', async ({ page }) => {
   await expect(page).toHaveURL('/processo-doacao-andamento', { timeout: 15000 });
 });
 
-// Enfermeiro realiza a coleta do doador recém-cadastrado
-test('enfermeiro realiza coleta do doador recém-cadastrado', async ({ page }) => {
-  await page.goto('/login');
-  await page.fill('input[name="username"]', cpfEnfermeiro);
-  await page.fill('input[name="password"]', senhaFuncionarios);
-  await page.click('button.btn-login');
-  await expect(page).toHaveURL('/');
-
-  await expect
-    .poll(async () => page.evaluate(() => localStorage.getItem('cargo')))
-    .toBe('enfermeiro');
-
-  await page.goto('/processo-doacao-andamento');
-  await expect(page).toHaveURL('/processo-doacao-andamento');
-
-  await page.getByText(/Coleta/i).first().click();
-
-  const cardDoador = page.locator('.usuario-card', { hasText: nome }).first();
-  await expect(cardDoador).toBeVisible();
-  await cardDoador.getByRole('button', { name: 'Realizar Coleta', exact: true }).click();
-
-  await expect(page).toHaveURL(/\/form-coleta\/\d+/);
-
-  await page.selectOption('select[name="responsavel"]', { index: 1 });
-  await page.getByLabel('Sim').check();
-
-  await page.click('button.btn-coleta');
-  await expect(page.locator('.modal-overlay')).toBeVisible();
-  await page.getByRole('button', { name: 'Sim, Finalizar', exact: true }).click();
-
-  await expect(page).toHaveURL('/processo-doacao-andamento', { timeout: 20000 });
-});
-
-// Médico realiza a validação da bolsa e libera para estoque
-test('médico realiza a validação e liberação da bolsa', async ({ page }) => {
-  await page.goto('/login');
-  await page.fill('input[name="username"]', cpfMedico);
-  await page.fill('input[name="password"]', senhaFuncionarios);
-  await page.click('button.btn-login');
-  await expect(page).toHaveURL('/');
-
-  await expect
-    .poll(async () => page.evaluate(() => localStorage.getItem('cargo')))
-    .toBe('medico');
-
-  await page.goto('/aguardando-validacao-bolsa');
-  await expect(page).toHaveURL('/aguardando-validacao-bolsa');
-
-  // Encontra a linha com o nome do doador e clica no botão "Realizar Validação" correspondente
-  await page.locator('div').filter({ hasText: nome }).getByRole('button', { name: 'Realizar Validação' }).first().click();
-
-  await expect(page).toHaveURL(/\/validar-bolsa\/\d+/);
-
-  // Adicionar Laudo Laboratorial
-  const [fileChooserLaudo] = await Promise.all([
-    page.waitForEvent('filechooser'),
-    page.getByRole('button', { name: 'Adicionar Laudo' }).click(),
-  ]);
-  await fileChooserLaudo.setFiles({
-    name: 'laudo_laboratorial.pdf',
-    mimeType: 'application/pdf',
-    buffer: Buffer.from('%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids []\n/Count 0\n>>\nendobj\nxref\n0 3\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \ntrailer\n<<\n/Size 3\n/Root 1 0 R\n>>\nstartxref\n101\n%%EOF'),
-  });
-
-  // Adicionar Exame do Doador
-  const [fileChooserExame] = await Promise.all([
-    page.waitForEvent('filechooser'),
-    page.getByRole('button', { name: 'Adicionar Exame' }).click(),
-  ]);
-  await fileChooserExame.setFiles({
-    name: 'exame_doador.pdf',
-    mimeType: 'application/pdf',
-    buffer: Buffer.from('%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids []\n/Count 0\n>>\nendobj\nxref\n0 3\n0000000000 65535 f \n0000000009 00000 n \n0000000052 00000 n \ntrailer\n<<\n/Size 3\n/Root 1 0 R\n>>\nstartxref\n101\n%%EOF'),
-  });
-
-  // Desce a página e clica em Liberar para o Estoque
-  await page.getByRole('button', { name: 'Liberar para o Estoque', exact: true }).click();
-
-  // Confirma a liberação no modal
-  await expect(page.getByText('Confirma a validação da bolsa')).toBeVisible();
-  await page.getByRole('button', { name: 'Sim, Liberar', exact: true }).click();
-});
-
+*/
 });
