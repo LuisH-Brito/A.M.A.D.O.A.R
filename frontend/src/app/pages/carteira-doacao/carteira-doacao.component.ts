@@ -82,9 +82,19 @@ export class CarteiraDoacaoComponent implements OnInit {
     return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
-  uploadCarteirinha(event: any, doador: any) {
-    const arquivo = event.target.files[0];
+  uploadCarteirinha(event: Event, doador: any) {
+    const input = event.target as HTMLInputElement;
+    const arquivo = input.files?.[0];
     if (!arquivo) return;
+
+    if (!arquivo.type.startsWith('image/')) {
+      input.value = '';
+      this.toastComponente.exibir(
+        'Envie apenas arquivos de imagem para a carteirinha.',
+        false,
+      );
+      return;
+    }
 
     const formData = new FormData();
     formData.append('carteira_doador', arquivo);
