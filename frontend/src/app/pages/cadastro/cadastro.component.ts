@@ -20,6 +20,7 @@ import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/m
 })
 export class CadastroComponent implements OnInit {
   modoEdicao = false;
+  modoRecepcionista = false;
   idDoador!: number;
   tituloPagina = 'Cadastro do Doador';
   mostrarSenha = false;
@@ -66,8 +67,10 @@ export class CadastroComponent implements OnInit {
   ) {}
 
   voltar() {
-    if (this.modoEdicao) {
-      this.router.navigate(['/pagina-doador']);
+    if (this.modoRecepcionista) {
+      this.router.navigate(['/processo-doacao-REC']);
+    } else if (this.modoEdicao) {
+      this.router.navigate(['/pagina-perfil']);
     } else {
       this.router.navigate(['/login']);
     }
@@ -75,10 +78,15 @@ export class CadastroComponent implements OnInit {
 
   ngOnInit(): void {
     this.route.queryParams.subscribe((params) => {
+      this.modoEdicao = params['modo'] === 'editar';
+      this.modoRecepcionista = params['modo'] === 'recepcionista';
       if (params['modo'] === 'editar') {
-        this.modoEdicao = true;
         this.carregarDadosDoador();
         this.tituloPagina = 'Editar Perfil do Doador';
+      } else if (params['modo'] === 'recepcionista') {
+        this.tituloPagina = 'Cadastrar Doador';
+      } else {
+        this.tituloPagina = 'Cadastro do Doador';
       }
     });
   }
@@ -127,7 +135,7 @@ export class CadastroComponent implements OnInit {
       return;
     }
 
-    if (this.dados.senha || this.dados.confirmarSenha) {
+    if (!this.modoRecepcionista && (this.dados.senha || this.dados.confirmarSenha)) {
       if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/.test(this.dados.senha)) {
         this.toast.exibir(
           'A senha deve conter no mínimo 8 caracteres, com pelo menos uma letra maiúscula, uma minúscula e um número.',
@@ -181,7 +189,7 @@ export class CadastroComponent implements OnInit {
           : null,
     };
 
-    if (this.dados.senha) {
+    if (!this.modoRecepcionista && this.dados.senha) {
       doadorParaEnviar.password = this.dados.senha;
     }
 
@@ -189,10 +197,28 @@ export class CadastroComponent implements OnInit {
       this.doadorService.atualizarDoador(doadorParaEnviar).subscribe({
         next: () => {
           this.toast.exibir('Dados atualizados com sucesso!', true);
-          setTimeout(() => this.router.navigate(['/pagina-doador']), 1500);
+          setTimeout(() => this.router.navigate(['/pagina-perfil']), 1500);
         },
         error: (err) => {
           this.toast.exibir('Erro ao atualizar os dados.', false);
+        },
+      });
+    } else if (this.modoRecepcionista) {
+      this.doadorService.cadastrarPelaRecepcao(doadorParaEnviar).subscribe({
+        next: () => {
+          this.toast.exibir(
+            'Doador cadastrado com sucesso. A senha inicial é Senha123 e deverá ser alterada no primeiro acesso.',
+            true,
+          );
+          this.dados = {
+            nome_completo: '', email: '', cpf: '', endereco: '',
+            data_nascimento: '', telefone: '', senha: '', confirmarSenha: '',
+            sexo: '', tipoCompleto: '',
+          };
+        },
+        error: (err) => {
+          const detalhes = err?.error ? JSON.stringify(err.error) : 'Erro de conexão';
+          this.toast.exibir('Erro ao cadastrar: ' + detalhes, false);
         },
       });
     } else {
@@ -213,8 +239,10 @@ export class CadastroComponent implements OnInit {
   }
 
   cancelar() {
-    if (this.modoEdicao) {
-      this.router.navigate(['/pagina-doador']);
+    if (this.modoRecepcionista) {
+      this.router.navigate(['/processo-doacao-REC']);
+    } else if (this.modoEdicao) {
+      this.router.navigate(['/pagina-perfil']);
     } else {
       this.router.navigate(['/login']);
     }

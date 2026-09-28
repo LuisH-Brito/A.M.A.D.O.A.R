@@ -102,6 +102,28 @@ test('login como doador com sucesso', async ({ page }) => {
 });
 
 
+test('doador edita a data de nascimento no proprio cadastro', async ({ page }) => {
+  await page.goto('/login');
+  await page.fill('input[name="username"]', cpf);
+  await page.fill('input[name="password"]', senha);
+  await page.click('button.btn-login');
+  await expect(page).toHaveURL('/');
+
+  await page.goto('/cadastro?modo=editar');
+  const dataNascimento = page.locator('input[name="data"]');
+  await expect(dataNascimento).toBeEditable();
+  await dataNascimento.fill('1991-02-03');
+
+  await page.getByRole('button', { name: 'Salvar Alterações', exact: true }).click();
+  await page.getByRole('button', { name: 'Sim, Salvar', exact: true }).click();
+  await expect(page).toHaveURL('/pagina-doador', { timeout: 5000 });
+
+  await page.goto('/cadastro?modo=editar');
+  await expect(dataNascimento).toHaveValue('1991-02-03');
+  await dataNascimento.fill('2999-01-01');
+  await expect(page.locator('button.btn-concluir')).toBeDisabled();
+});
+
 // Doador responde questionário
 test('doador responde questionário com sucesso', async ({ page }) => {
   await page.goto('/login');
@@ -226,8 +248,10 @@ test('medico realiza triagem do doador recém-cadastrado', async ({ page }) => {
   // Passo adicionado: Revisar questionário para habilitar o botão "Apto"
   await page.getByRole('button', { name: 'Revisar Questionário', exact: true }).click();
   await page.waitForLoadState('load'); // Aguarda o carregamento da página de revisão
-  await page.goBack(); // Retorna para a página anterior
+  await page.getByRole('button', { name: 'Voltar', exact: true }).click();
   await expect(page).toHaveURL(/\/form-triagem\/\d+/); // Garante que voltou ao formulário
+  await expect(page.locator('.msg-revisado-ok')).toBeVisible();
+  await expect(page.locator('button.btn-concluir')).toBeEnabled();
 
   await page.click('button.btn-concluir');
   await expect(page.locator('.modal-overlay')).toBeVisible();

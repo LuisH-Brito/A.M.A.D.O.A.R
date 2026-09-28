@@ -35,6 +35,9 @@ export class LoginComponent implements OnInit {
         this.mensagemSucesso =
           'Cadastro realizado com sucesso! Faça seu login.';
         this.toastComponente.exibir(this.mensagemSucesso, true);
+      } else if (params['senhaAlterada'] === 'true') {
+        this.mensagemSucesso = 'Senha alterada com sucesso. Entre novamente com sua nova senha.';
+        this.toastComponente.exibir(this.mensagemSucesso, true);
       }
     });
   }
@@ -89,7 +92,9 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('cargo', res.tipo);
         localStorage.setItem('nomeUsuario', res.nome);
         localStorage.setItem('usuario_id', res.usuario_id.toString());
-        this.router.navigate(['/']);
+        this.router.navigate([
+          res.deve_alterar_senha ? '/troca-senha-obrigatoria' : '/',
+        ]);
       },
       error: (err) => {
         this.toastComponente?.exibir('CPF ou senha incorretos.', false);

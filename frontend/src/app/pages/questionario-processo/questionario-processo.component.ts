@@ -1,9 +1,10 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { QuestionarioService } from '../../services/questionario.service';
 import { PerguntasComponent } from '../../componentes/perguntas/perguntas.component';
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 
 @Component({
   selector: 'app-questionario-processo',
@@ -12,7 +13,7 @@ import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/t
   templateUrl: './questionario-processo.component.html',
   styleUrl: './questionario-processo.component.scss'
 })
-export class QuestionarioProcessoComponent implements OnInit {
+export class QuestionarioProcessoComponent implements OnInit, OnDestroy {
   @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   carregando: boolean = true;
   cpfDoador: string | null = null;
@@ -20,13 +21,22 @@ export class QuestionarioProcessoComponent implements OnInit {
   perguntas: any[] = [];
   modoEdicao: boolean = false;
   somenteLeitura: boolean = false;
+  private retornarParaTriagem = false;
 
   constructor(
     private route: ActivatedRoute,
     private router: Router,
     private questionarioService: QuestionarioService,
-    private location: Location
-  ) {}
+    private location: Location,
+    private atendimento: AtendimentoProcessoService,
+  ) {
+    // Mantém a origem apenas enquanto esta instância do questionário existir.
+    const navigation = this.router.getCurrentNavigation();
+    this.retornarParaTriagem =
+      navigation?.extras.state?.['retornarParaTriagem'] === true;
+  }
+
+  ngOnDestroy(): void { if (this.processoId) this.atendimento.parar(this.processoId); }
 
   ngOnInit() {
     const processoIdParam = this.route.snapshot.paramMap.get('processoId');
@@ -43,6 +53,15 @@ export class QuestionarioProcessoComponent implements OnInit {
     if (this.processoId && this.processoId.toString().length >= 11) {
       this.cpfDoador = this.processoId.toString();
       this.processoId = null;
+    }
+
+    if (this.processoId) {
+      this.atendimento.iniciar(this.processoId).subscribe({
+        error: () => {
+          alert('Este processo já está em andamento por outro funcionário.');
+          this.router.navigate(['/processo-doacao-andamento']);
+        },
+      });
     }
 
     console.log("Diagnóstico de Rota -> CPF:", this.cpfDoador, "| Processo ID:", this.processoId);
@@ -191,7 +210,13 @@ export class QuestionarioProcessoComponent implements OnInit {
     }
 
     if (this.processoId) {
-      this.router.navigate(['/form-triagem', this.processoId]);
+      if (this.retornarParaTriagem) {
+        this.router.navigate(['/form-triagem', this.processoId], {
+          state: { retornoRevisaoQuestionario: true },
+        });
+      } else {
+        this.router.navigate(['/form-triagem', this.processoId]);
+      }
       return;
     }
     this.router.navigate(['/form-triagem']);

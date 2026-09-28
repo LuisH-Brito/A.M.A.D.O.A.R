@@ -1,0 +1,51 @@
+<main>
+  <app-toast-notificacao #toast></app-toast-notificacao>
+  <div class="login-container">
+    <div class="login-left">
+      <img src="images/logo-hemoacre.png" alt="HEMO ACRE" class="logo" />
+      <h2>Antes de continuar, altere sua senha inicial.</h2>
+      <button type="button" class="btn-cancelar" (click)="auth.logout()">Sair</button>
+    </div>
+    <div class="login-right">
+      <h2>Alterar senha</h2>
+      <form (ngSubmit)="trocarSenha()">
+        <div class="form-group">
+          <label for="senhaAtual">Senha atual</label>
+          <div class="password-wrapper">
+            <input id="senhaAtual" name="senhaAtual" [type]="showSenhaAtual ? 'text' : 'password'"
+                   [(ngModel)]="senhaAtual" required [disabled]="carregando" />
+            <button type="button" class="btn-toggle-password" (click)="toggleSenhaAtual()"
+                    [disabled]="carregando" aria-label="Mostrar ou ocultar senha atual">
+              <i class="bi" [ngClass]="showSenhaAtual ? 'bi-eye' : 'bi-eye-slash'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="novaSenha">Nova senha</label>
+          <div class="password-wrapper">
+            <input id="novaSenha" name="novaSenha" [type]="showNovaSenha ? 'text' : 'password'"
+                   [(ngModel)]="novaSenha" required [disabled]="carregando" />
+            <button type="button" class="btn-toggle-password" (click)="toggleNovaSenha()"
+                    [disabled]="carregando" aria-label="Mostrar ou ocultar nova senha">
+              <i class="bi" [ngClass]="showNovaSenha ? 'bi-eye' : 'bi-eye-slash'"></i>
+            </button>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="confirmarNovaSenha">Confirmar nova senha</label>
+          <div class="password-wrapper">
+            <input id="confirmarNovaSenha" name="confirmarNovaSenha" [type]="showConfirmarNovaSenha ? 'text' : 'password'"
+                   [(ngModel)]="confirmarNovaSenha" required [disabled]="carregando" />
+            <button type="button" class="btn-toggle-password" (click)="toggleConfirmarNovaSenha()"
+                    [disabled]="carregando" aria-label="Mostrar ou ocultar confirmação de senha">
+              <i class="bi" [ngClass]="showConfirmarNovaSenha ? 'bi-eye' : 'bi-eye-slash'"></i>
+            </button>
+          </div>
+        </div>
+        <button type="submit" class="btn-redefinir" [disabled]="carregando">
+          {{ carregando ? 'Alterando...' : 'Alterar senha' }}
+        </button>
+      </form>
+    </div>
+  </div>
+</main>

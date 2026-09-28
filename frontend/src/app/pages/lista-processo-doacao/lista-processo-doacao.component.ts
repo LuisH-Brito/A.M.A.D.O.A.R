@@ -1,7 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ApiService } from '../../services/api.service';
 import { Router } from '@angular/router';
+import { EMPTY, timer } from 'rxjs';
+import { catchError, switchMap } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 
 type EtapaProcesso = 'pre-triagem' | 'triagem' | 'coleta';
 
@@ -13,6 +17,8 @@ type EtapaProcesso = 'pre-triagem' | 'triagem' | 'coleta';
   styleUrls: ['./lista-processo-doacao.component.scss']
 })
 export class ListaProcessoDoacaoComponent implements OnInit {
+  private readonly destroyRef = inject(DestroyRef);
+  private readonly intervaloAtualizacaoMs = 5000;
   abaAtiva: EtapaProcesso = 'pre-triagem';
   processos: any[] = [];
   preTriagem: any[] = [];
@@ -22,7 +28,7 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   cargoUsuario = localStorage.getItem('cargo') || '';
   processoIdProcessando: number | null = null;
 
-  constructor(private api: ApiService, private router: Router) {}
+  constructor(private api: ApiService, private router: Router, private atendimento: AtendimentoProcessoService) {}
 
   ngOnInit(): void {
     this.isRecepcionista = this.cargoUsuario === 'recepcionista';
@@ -33,15 +39,34 @@ export class ListaProcessoDoacaoComponent implements OnInit {
       this.abaAtiva = abaSalva;
     }
 
-    this.api.getProcessos().subscribe(
-      (res: any) => {
-        this.processos = Array.isArray(res) ? res : (res?.results ?? []);
-        this.updateGroups();
-      },
-      (err) => {
+    this.atualizarProcessos();
+
+    timer(this.intervaloAtualizacaoMs, this.intervaloAtualizacaoMs)
+      .pipe(
+        switchMap(() => this.buscarProcessos()),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((res) => this.aplicarProcessos(res));
+  }
+
+  private buscarProcessos() {
+    return this.api.getProcessos().pipe(
+      catchError((err) => {
         console.error('Erro ao buscar processos', err);
-      }
+        return EMPTY;
+      }),
     );
+  }
+
+  private atualizarProcessos(): void {
+    this.buscarProcessos()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((res) => this.aplicarProcessos(res));
+  }
+
+  private aplicarProcessos(res: any): void {
+    this.processos = Array.isArray(res) ? res : (res?.results ?? []);
+    this.updateGroups();
   }
 
   updateGroups(): void {
@@ -60,22 +85,28 @@ export class ListaProcessoDoacaoComponent implements OnInit {
   abrirPreTriagem(processoId: number): void {
     if (this.isRecepcionista || this.processoIdProcessando !== null) return;
     this.processoIdProcessando = processoId;
-    localStorage.setItem('abaAtivaProcessos', 'pre-triagem');
-    this.router.navigate(['/form-pre-triagem', processoId]);
+    this.atendimento.iniciar(processoId).subscribe({ next: () => {
+      localStorage.setItem('abaAtivaProcessos', 'pre-triagem');
+      this.router.navigate(['/form-pre-triagem', processoId]);
+    }, error: () => this.processoIdProcessando = null });
   }
 
   abrirTriagem(processoId: number): void {
     if (!this.podeTriagem || this.processoIdProcessando !== null) return;
     this.processoIdProcessando = processoId;
-    localStorage.setItem('abaAtivaProcessos', 'triagem');
-    this.router.navigate(['/form-triagem', processoId]);
+    this.atendimento.iniciar(processoId).subscribe({ next: () => {
+      localStorage.setItem('abaAtivaProcessos', 'triagem');
+      this.router.navigate(['/form-triagem', processoId]);
+    }, error: () => this.processoIdProcessando = null });
   }
 
   abrirColeta(processoId: number): void {
     if (!this.podeColeta || this.processoIdProcessando !== null) return;
     this.processoIdProcessando = processoId;
-    localStorage.setItem('abaAtivaProcessos', 'coleta');
-    this.router.navigate(['/form-coleta', processoId]);
+    this.atendimento.iniciar(processoId).subscribe({ next: () => {
+      localStorage.setItem('abaAtivaProcessos', 'coleta');
+      this.router.navigate(['/form-coleta', processoId]);
+    }, error: () => this.processoIdProcessando = null });
   }
 
   get podeTriagem(): boolean {

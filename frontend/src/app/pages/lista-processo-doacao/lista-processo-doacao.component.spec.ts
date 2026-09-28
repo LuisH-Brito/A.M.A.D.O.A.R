@@ -1,3 +1,4 @@
+import { discardPeriodicTasks, fakeAsync, tick } from '@angular/core/testing';
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { Router } from '@angular/router';
 import { of } from 'rxjs';
@@ -61,4 +62,19 @@ describe('ListaProcessoDoacaoComponent', () => {
     expect(abas[0].textContent).toContain('2');
     expect(abas[1].textContent).toContain('1');
   });
+
+  it('atualiza automaticamente a lista após uma nova consulta', fakeAsync(() => {
+    api.getProcessos.and.returnValues(
+      of([{ id: 1, status: 2 }]),
+      of([{ id: 1, status: 3 }]),
+    );
+
+    component.ngOnInit();
+    tick(5000);
+    fixture.detectChanges();
+
+    expect(component.preTriagem.length).toBe(0);
+    expect(component.triagem.length).toBe(1);
+    discardPeriodicTasks();
+  }));
 });

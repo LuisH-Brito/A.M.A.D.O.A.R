@@ -5,6 +5,7 @@ import { of, Subject } from 'rxjs';
 import { ApiService } from '../../services/api.service';
 import { QuestionarioService } from '../../services/questionario.service';
 import { TriagemRascunhoService } from '../../services/triagem-rascunho.service';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 import { FormTriagemComponent } from './form-triagem.component';
 
 describe('FormTriagemComponent', () => {
@@ -15,6 +16,7 @@ describe('FormTriagemComponent', () => {
   let router: jasmine.SpyObj<Router>;
   let rascunho: TriagemRascunhoService;
   let questionarioService: jasmine.SpyObj<QuestionarioService>;
+  let atendimento: jasmine.SpyObj<AtendimentoProcessoService>;
 
   beforeEach(async () => {
     localStorage.setItem('usuario_id', '7');
@@ -44,7 +46,15 @@ describe('FormTriagemComponent', () => {
     questionarioService.getQuestionarioPorProcesso.and.returnValue(
       of({ validade: true }),
     );
-    router = jasmine.createSpyObj<Router>('Router', ['navigate']);
+    router = jasmine.createSpyObj<Router>('Router', [
+      'navigate',
+      'getCurrentNavigation',
+    ]);
+    router.getCurrentNavigation.and.returnValue(null);
+    atendimento = jasmine.createSpyObj<AtendimentoProcessoService>(
+      'AtendimentoProcessoService', ['iniciar', 'parar'],
+    );
+    atendimento.iniciar.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
       imports: [FormTriagemComponent],
@@ -52,6 +62,7 @@ describe('FormTriagemComponent', () => {
         { provide: ApiService, useValue: api },
         { provide: QuestionarioService, useValue: questionarioService },
         { provide: Router, useValue: router },
+        { provide: AtendimentoProcessoService, useValue: atendimento },
         {
           provide: ActivatedRoute,
           useValue: {
@@ -78,6 +89,19 @@ describe('FormTriagemComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('abre a revisão identificando a Triagem como origem', () => {
+    component.abrirQuestionarios();
+
+    expect(router.navigate).toHaveBeenCalledWith(
+      [
+        '/questionario-processo/proc',
+        processoId,
+        '92000000004',
+      ],
+      { state: { retornarParaTriagem: true } },
+    );
   });
 
   it('explica que pressão e questionário estão pendentes para habilitar Apto', () => {
@@ -186,6 +210,15 @@ describe('FormTriagemComponent', () => {
     component.abrirQuestionarios();
     fixture.destroy();
 
+    let leiturasDeNavegacao = 0;
+    router.getCurrentNavigation.and.callFake(() =>
+      leiturasDeNavegacao++ === 0
+        ? ({
+            extras: { state: { retornoRevisaoQuestionario: true } },
+          } as any)
+        : null,
+    );
+
     fixture = TestBed.createComponent(FormTriagemComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
@@ -200,6 +233,7 @@ describe('FormTriagemComponent', () => {
     expect(component.pressaoArterial).toBe('120x80');
     expect(inputRestaurado.value).toBe('120x80');
     expect(component.questionarioRevisado).toBeTrue();
+    expect(leiturasDeNavegacao).toBe(1);
     expect(botaoApto.disabled).toBeFalse();
     expect(
       fixture.nativeElement.querySelector('.orientacao-apto'),
@@ -219,6 +253,10 @@ describe('FormTriagemComponent', () => {
       of({ validade: false }),
     );
     fixture.destroy();
+
+    router.getCurrentNavigation.and.returnValue({
+      extras: { state: { retornoRevisaoQuestionario: true } },
+    } as any);
 
     fixture = TestBed.createComponent(FormTriagemComponent);
     component = fixture.componentInstance;
@@ -241,6 +279,35 @@ describe('FormTriagemComponent', () => {
       fixture.nativeElement.querySelector('.orientacao-apto--impeditiva'),
     ).not.toBeNull();
   }));
+
+  it('reinicia a revisao sem retorno direto do questionario', () => {
+    sessionStorage.setItem(`q_visto_${processoId}`, 'true');
+    fixture.destroy();
+    router.getCurrentNavigation.and.returnValue(null);
+
+    fixture = TestBed.createComponent(FormTriagemComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.questionarioRevisado).toBeFalse();
+  });
+
+  it('ignora o estado do historico apos recarregar a pagina', () => {
+    const estadoAnterior = history.state;
+    history.replaceState(
+      { retornoRevisaoQuestionario: true },
+      '',
+    );
+    fixture.destroy();
+    router.getCurrentNavigation.and.returnValue(null);
+
+    fixture = TestBed.createComponent(FormTriagemComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
+
+    expect(component.questionarioRevisado).toBeFalse();
+    history.replaceState(estadoAnterior, '');
+  });
 
   it('bloqueia os controles e impede envio duplicado enquanto processa', fakeAsync(() => {
     const decisaoPendente = new Subject<Object>();

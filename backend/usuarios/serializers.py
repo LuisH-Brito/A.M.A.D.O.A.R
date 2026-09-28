@@ -1,6 +1,11 @@
 import re
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
+from rest_framework_simplejwt.serializers import TokenRefreshSerializer
+from rest_framework_simplejwt.settings import api_settings
+from rest_framework_simplejwt.utils import get_md5_hash_password
+from rest_framework_simplejwt.exceptions import AuthenticationFailed
+from django.contrib.auth import get_user_model
 
 class UsuarioNormalizacaoMixin:
     def to_internal_value(self, data):
@@ -88,5 +93,17 @@ class MyTokenObtainPairSerializer(TokenObtainPairSerializer):
             data['tipo'] = 'comum'
             
         data['nome'] = user.nome_completo
+        data['deve_alterar_senha'] = user.deve_alterar_senha
         
         return data
+
+
+class RevocableTokenRefreshSerializer(TokenRefreshSerializer):
+    def validate(self, attrs):
+        refresh = self.token_class(attrs['refresh'])
+        user = get_user_model().objects.filter(
+            pk=refresh.get(api_settings.USER_ID_CLAIM)
+        ).first()
+        if not user or refresh.get(api_settings.REVOKE_TOKEN_CLAIM) != get_md5_hash_password(user.password):
+            raise AuthenticationFailed('Sessão expirada após alteração de senha.')
+        return super().validate(attrs)
