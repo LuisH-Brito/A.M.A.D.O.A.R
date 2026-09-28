@@ -73,7 +73,9 @@ export class LoginComponent implements OnInit {
     this.loginData.cpf = cpfFormatado;
   }
 
-  fazerLogin() {
+  fazerLogin(event?: Event) {
+    event?.preventDefault();
+
     const identifier = /[a-zA-Z]/.test(this.loginData.cpf)
       ? this.loginData.cpf
       : this.loginData.cpf.replace(/\D/g, '');
@@ -96,7 +98,7 @@ export class LoginComponent implements OnInit {
           res.deve_alterar_senha ? '/troca-senha-obrigatoria' : '/',
         ]);
       },
-      error: (err) => {
+      error: () => {
         this.toastComponente?.exibir('CPF ou senha incorretos.', false);
       },
     });
