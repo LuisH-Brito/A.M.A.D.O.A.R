@@ -4,12 +4,20 @@
     <div class="topo">
       <div class="campo-busca">
         <label>Buscar</label>
-        <input type="text" placeholder="Nome/cpf" [(ngModel)]="busca" />
+        <input
+          type="text"
+          placeholder="Nome/cpf"
+          [ngModel]="busca"
+          (ngModelChange)="alterarBusca($event)"
+        />
       </div>
 
       <div class="campo-filtro">
         <label>Tipo Sanguíneo</label>
-        <select [(ngModel)]="filtroSelecionado">
+        <select
+          [ngModel]="filtroSelecionado"
+          (ngModelChange)="alterarFiltro($event)"
+        >
           <option value="Todos">Todos</option>
           <option value="A+">A+</option>
           <option value="A-">A-</option>

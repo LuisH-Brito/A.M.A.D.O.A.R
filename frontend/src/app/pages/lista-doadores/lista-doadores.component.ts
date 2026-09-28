@@ -45,7 +45,19 @@ export class ListaDoadoresComponent {
   carregarDados() {
     this.doadorService.listarTodos().subscribe({
       next: (dados) => {
-        this.usuarios = dados;
+        this.usuarios = [...dados].sort((primeiro, segundo) => {
+          const comparacaoNome = (primeiro.nome_completo || '').localeCompare(
+            segundo.nome_completo || '',
+            'pt-BR',
+            { sensitivity: 'base' },
+          );
+
+          return (
+            comparacaoNome ||
+            (primeiro.cpf || '').localeCompare(segundo.cpf || '')
+          );
+        });
+        this.ajustarPaginaAtual();
         console.log('Dados dos doadores:', this.usuarios);
       },
       error: (err) => console.error('Erro ao buscar dados:', err),
@@ -75,13 +87,32 @@ export class ListaDoadoresComponent {
   }
 
   get usuariosPaginados() {
+    this.ajustarPaginaAtual();
     const inicio = (this.paginaAtual - 1) * this.itensPorPagina;
     const fim = inicio + this.itensPorPagina;
     return this.usuariosFiltrados.slice(inicio, fim);
   }
 
   mudarPagina(novaPagina: number) {
-    this.paginaAtual = novaPagina;
+    if (novaPagina >= 1 && novaPagina <= this.totalPaginas) {
+      this.paginaAtual = novaPagina;
+    }
+  }
+
+  alterarBusca(busca: string) {
+    this.busca = busca;
+    this.paginaAtual = 1;
+  }
+
+  alterarFiltro(filtro: string) {
+    this.filtroSelecionado = filtro;
+    this.paginaAtual = 1;
+  }
+
+  private ajustarPaginaAtual() {
+    if (this.paginaAtual < 1 || this.paginaAtual > this.totalPaginas) {
+      this.paginaAtual = 1;
+    }
   }
 
   formatarCPF(cpf: string): string {

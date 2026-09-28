@@ -20,7 +20,17 @@ export class PaginacaoComponent {
   }
 
   get paginas(): number[] {
-    return Array.from({ length: this.totalPaginas }, (_, i) => i + 1);
+    const quantidadeVisivel = Math.min(5, this.totalPaginas);
+    const inicioMaximo = Math.max(1, this.totalPaginas - quantidadeVisivel + 1);
+    const inicio = Math.min(
+      Math.max(1, this.paginaAtual - Math.floor(quantidadeVisivel / 2)),
+      inicioMaximo,
+    );
+
+    return Array.from(
+      { length: quantidadeVisivel },
+      (_, indice) => inicio + indice,
+    );
   }
 
   mudarPagina(numero: number) {
