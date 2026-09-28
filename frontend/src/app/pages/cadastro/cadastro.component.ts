@@ -174,7 +174,7 @@ export class CadastroComponent implements OnInit {
       nome_completo: this.dados.nome_completo,
       cpf: this.dados.cpf,
       endereco: this.dados.endereco,
-      telefone: this.dados.telefone,
+      telefone: this.dados.telefone.replace(/\D/g, ''),
       sexo: this.dados.sexo === 'Masculino' ? 'M' : 'F',
       data_nascimento: this.dados.data_nascimento,
 

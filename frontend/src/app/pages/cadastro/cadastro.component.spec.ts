@@ -71,7 +71,10 @@ describe('CadastroComponent', () => {
     component.concluirCadastro();
 
     expect(doadorService.atualizarDoador).toHaveBeenCalledWith(
-      jasmine.objectContaining({ data_nascimento: '1991-02-03' }),
+      jasmine.objectContaining({
+        data_nascimento: '1991-02-03',
+        telefone: '68999999999',
+      }),
     );
   });
 
