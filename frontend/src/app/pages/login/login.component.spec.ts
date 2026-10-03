@@ -57,7 +57,10 @@ describe('LoginComponent', () => {
     component.fazerLogin(evento);
 
     expect(evento.preventDefault).toHaveBeenCalled();
-    expect(http.post).toHaveBeenCalled();
+    expect(http.post).toHaveBeenCalledWith(
+      '/api/token/',
+      { cpf: '52998224725', password: 'SenhaIncorreta' },
+    );
     expect(component.erroLogin).toBeTrue();
   });
 });
