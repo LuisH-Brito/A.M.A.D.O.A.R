@@ -57,7 +57,7 @@ export class LoginComponent implements OnInit {
 
     // Caso contrário, aplica a máscara normal de CPF baseada apenas em números
     const apenasNumeros = valorAtual.replace(/\D/g, '').slice(0, 11);
-    
+
     let cpfFormatado = '';
     if (apenasNumeros.length <= 3) {
       cpfFormatado = apenasNumeros;
