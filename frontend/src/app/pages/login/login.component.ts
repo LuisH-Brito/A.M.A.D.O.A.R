@@ -94,9 +94,13 @@ export class LoginComponent implements OnInit {
         localStorage.setItem('cargo', res.tipo);
         localStorage.setItem('nomeUsuario', res.nome);
         localStorage.setItem('usuario_id', res.usuario_id.toString());
-        this.router.navigate([
-          res.deve_alterar_senha ? '/troca-senha-obrigatoria' : '/',
-        ]);
+        if (res.deve_alterar_senha) {
+          this.router.navigate(['/troca-senha-obrigatoria']);
+        } else {
+          this.router.navigate(['/'], {
+            queryParams: { login: 'sucesso' },
+          });
+        }
       },
       error: (error: HttpErrorResponse) => {
         if (error.status === 400 || error.status === 401) {

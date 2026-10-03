@@ -3,9 +3,10 @@ import { CommonModule } from '@angular/common';
 import { HomeCarroselComponent } from '../../componentes/home-carrosel/home-carrosel.component';
 import { HemometroComponent } from '../../componentes/hemometro/hemometro.component';
 import { EstoqueBolsaService } from '../../services/estoque-bolsa.service';
-import {  Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { RouterLink } from '@angular/router';
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
+import { AlertaSucessoComponent } from '../../componentes/alerta-sucesso/alerta-sucesso.component';
 
 @Component({
   selector: 'app-home',
@@ -15,12 +16,15 @@ import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/t
     HomeCarroselComponent,
     HemometroComponent,
     ToastNotificacaoComponent,
+    AlertaSucessoComponent,
   ],
   templateUrl: './home.component.html',
   styleUrl: './home.component.scss',
 })
 export class HomeComponent implements OnInit {
   @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
+  mostrarLoginSucesso = false;
+  nomeUsuario = '';
   activeIndexes: number[] = [];
 
   niveisSanguineos: { [key: string]: number } = {
@@ -40,9 +44,21 @@ export class HomeComponent implements OnInit {
   constructor(
     private estoqueBolsaService: EstoqueBolsaService,
     private router: Router,
+    private route: ActivatedRoute,
   ) { }
 
   ngOnInit() {
+    this.route.queryParams.subscribe((params) => {
+      if (params['login'] === 'sucesso') {
+        this.nomeUsuario = localStorage.getItem('nomeUsuario') || '';
+        this.mostrarLoginSucesso = true;
+        this.router.navigate([], {
+          queryParams: { login: null },
+          queryParamsHandling: 'merge',
+          replaceUrl: true,
+        });
+      }
+    });
     this.carregarEstoque();
   }
 
