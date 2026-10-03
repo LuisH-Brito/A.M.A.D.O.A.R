@@ -1,4 +1,9 @@
 <main>
+  <app-alerta-erro
+    [visivel]="erroLogin"
+    (fechar)="erroLogin = false"
+  ></app-alerta-erro>
+
   <div *ngIf="mensagemSucesso" class="alert-success">
     {{ mensagemSucesso }}
   </div>
@@ -62,6 +67,5 @@
         </button>
       </form>
     </div>
-    <app-toast-notificacao #toast></app-toast-notificacao>
   </div>
 </main>

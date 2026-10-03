@@ -1,0 +1,96 @@
+:host {
+  display: contents;
+}
+
+.alerta-erro {
+  position: fixed;
+  top: 80px;
+  left: 50%;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  width: 560px;
+  max-width: 90vw;
+  padding: 16px 20px;
+  gap: 14px;
+  border: 1px solid #e53935;
+  border-radius: 8px;
+  background: #fde8e8;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  opacity: 0;
+  visibility: hidden;
+  transform: translate(-50%, -16px);
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease,
+    visibility 0s linear 0.2s;
+}
+
+.alerta-erro.visivel {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0);
+  transition:
+    opacity 0.3s ease,
+    transform 0.3s ease,
+    visibility 0s linear 0s;
+}
+
+.alerta-erro__icone {
+  display: flex;
+  flex: 0 0 36px;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #c62828;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.alerta-erro__conteudo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.alerta-erro__conteudo strong {
+  color: #b71c1c;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.alerta-erro__conteudo span {
+  color: #c62828;
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.alerta-erro__fechar {
+  flex: 0 0 auto;
+  align-self: flex-start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #c62828;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.alerta-erro__fechar:hover,
+.alerta-erro__fechar:focus-visible {
+  color: #b71c1c;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .alerta-erro,
+  .alerta-erro.visivel {
+    transition: none;
+  }
+}
