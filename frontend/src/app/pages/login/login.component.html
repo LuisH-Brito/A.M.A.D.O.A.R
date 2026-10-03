@@ -53,11 +53,13 @@
           </div>
         </div>
 
-        <a routerLink="/redefinir-senha" href="#" class="forgot-link"
+        <a routerLink="/redefinir-senha" class="forgot-link"
           >Esqueceu sua senha?</a
         >
 
-        <button type="submit" class="btn-login">Entrar</button>
+        <button type="button" class="btn-login" (click)="fazerLogin($event)">
+          Entrar
+        </button>
       </form>
     </div>
     <app-toast-notificacao #toast></app-toast-notificacao>
