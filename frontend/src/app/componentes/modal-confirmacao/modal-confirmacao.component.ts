@@ -14,14 +14,21 @@ export class ModalConfirmacaoComponent {
   @Input() mensagem: string = 'Tem certeza que deseja continuar?';
   @Input() tipo: 'descartar' | 'usar' | 'notificar' | 'padrao' = 'padrao';
   @Input() textoConfirmar: string = 'Confirmar';
+  @Input() processando: boolean = false;
   @Output() confirmado = new EventEmitter<void>();
   @Output() cancelado = new EventEmitter<void>();
 
-  aoConfirmar() {
+  get bloqueado(): boolean {
+    return this.processando;
+  }
+
+  aoConfirmar(): void {
+    if (this.bloqueado) return;
     this.confirmado.emit();
   }
 
-  aoCancelar() {
+  aoCancelar(): void {
+    if (this.bloqueado) return;
     this.cancelado.emit();
   }
 }

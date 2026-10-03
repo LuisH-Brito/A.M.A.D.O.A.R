@@ -6,6 +6,7 @@ import { ApiService } from '../../services/api.service';
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/modal-confirmacao.component';
 import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
+import { DadosDoadorCardComponent } from '../../componentes/dados-doador-card/dados-doador-card.component';
 
 @Component({
   selector: 'app-form-coleta',
@@ -15,6 +16,7 @@ import { AtendimentoProcessoService } from '../../services/atendimento-processo.
     FormsModule,
     ToastNotificacaoComponent,
     ModalConfirmacaoComponent,
+    DadosDoadorCardComponent,
   ],
   templateUrl: './form-coleta.component.html',
   styleUrl: './form-coleta.component.scss',
@@ -25,6 +27,7 @@ export class FormColetaComponent implements OnInit, OnDestroy {
     nome: '',
     sexo: '',
     cpf: '',
+    dataNascimento: '',
   };
 
   responsaveis: Array<{ id: number; nome_completo: string }> = [];
@@ -72,6 +75,7 @@ export class FormColetaComponent implements OnInit, OnDestroy {
           nome: processo?.doador?.nome_completo || '',
           sexo: processo?.doador?.sexo || '',
           cpf: processo?.doador?.cpf || '',
+          dataNascimento: processo?.doador?.data_nascimento || '',
         };
       },
       error: () => {
@@ -90,13 +94,12 @@ export class FormColetaComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatarCPF(cpf: string): string {
-    if (!cpf) return '';
-    const numeros = cpf.replace(/\D/g, '');
-    return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+  get puncaoFalhou(): boolean {
+    return this.puncaoSucesso === 'false';
   }
 
   abrirModalConfirmacao(): void {
+    if (this.enviando) return;
     if (!this.responsavelSelecionado) {
       this.toast.exibir(
         'Selecione o enfermeiro responsável pela coleta.',
@@ -129,6 +132,7 @@ export class FormColetaComponent implements OnInit, OnDestroy {
   }
 
   finalizarColeta(): void {
+    if (this.enviando) return;
     this.modalVisivel = false;
     this.enviando = true;
 
@@ -139,7 +143,6 @@ export class FormColetaComponent implements OnInit, OnDestroy {
       })
       .subscribe({
         next: (res: any) => {
-          this.enviando = false;
           if (res?.bolsa_criada) {
             this.toast.exibir(
               'Coleta finalizada. Bolsa enviada para validação laboratorial.',
@@ -170,6 +173,7 @@ export class FormColetaComponent implements OnInit, OnDestroy {
       });
   }
   voltar() {
+    if (this.enviando) return;
     localStorage.setItem('abaAtivaProcessos', 'coleta');
     this.router.navigate(['/processo-doacao-andamento']);
   }

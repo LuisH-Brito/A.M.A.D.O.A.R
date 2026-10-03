@@ -1,14 +1,16 @@
 import { ComponentFixture, fakeAsync, TestBed, tick } from '@angular/core/testing';
 import { ActivatedRoute, Router } from '@angular/router';
-import { of } from 'rxjs';
+import { of, Subject } from 'rxjs';
 
 import { ApiService } from '../../services/api.service';
+import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
 import { FormPreTriagemComponent } from './form-pre-triagem.component';
 
 describe('FormPreTriagemComponent', () => {
   let component: FormPreTriagemComponent;
   let fixture: ComponentFixture<FormPreTriagemComponent>;
   let api: jasmine.SpyObj<ApiService>;
+  let atendimento: jasmine.SpyObj<AtendimentoProcessoService>;
 
   function preencher(altura: string, peso: string, hemoglobina: string): void {
     for (const [nome, valor] of [
@@ -38,16 +40,21 @@ describe('FormPreTriagemComponent', () => {
       'atualizarStatusProcesso',
     ]);
     api.getProcessoById.and.returnValue(
-      of({ doador: { nome_completo: 'Teste', sexo: 'M', cpf: '90000000003' } }),
+      of({ doador: { nome_completo: 'Teste', sexo: 'M', cpf: '90000000003', data_nascimento: '1994-07-09' } }),
     );
     api.salvarDadosClinicos.and.returnValue(of({}));
     api.atualizarDadosClinicos.and.returnValue(of({}));
     api.atualizarStatusProcesso.and.returnValue(of({}));
+    atendimento = jasmine.createSpyObj<AtendimentoProcessoService>(
+      'AtendimentoProcessoService', ['iniciar', 'parar'],
+    );
+    atendimento.iniciar.and.returnValue(of(undefined));
 
     await TestBed.configureTestingModule({
       imports: [FormPreTriagemComponent],
       providers: [
         { provide: ApiService, useValue: api },
+        { provide: AtendimentoProcessoService, useValue: atendimento },
         { provide: Router, useValue: jasmine.createSpyObj('Router', ['navigate']) },
         { provide: ActivatedRoute, useValue: {
           snapshot: { paramMap: { get: () => '42' } },
@@ -67,6 +74,18 @@ describe('FormPreTriagemComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('exibe a identificação do doador no cartão compartilhado', () => {
+    fixture.detectChanges();
+
+    const card: HTMLElement = fixture.nativeElement.querySelector(
+      'app-dados-doador-card',
+    );
+    expect(card.textContent).toContain('Teste');
+    expect(card.textContent).toContain('900.000.000-03');
+    expect(card.textContent).toContain('Masculino');
+    expect(card.textContent).toContain('09/07/1994');
   });
 
   for (const [altura, apto] of [
@@ -205,4 +224,55 @@ describe('FormPreTriagemComponent', () => {
     expect(component.modalVisivel).toBeFalse();
     expect(api.salvarDadosClinicos).not.toHaveBeenCalled();
   });
+
+  it('mantém as ações disponíveis ao cancelar o modal', async () => {
+    preencher('1,75', '70,0', '13,5');
+    await fixture.whenStable();
+    component.abrirModal('apto');
+    component.fecharModal();
+    fixture.detectChanges();
+
+    expect(component.processando).toBeFalse();
+    expect(botoes().apto.disabled).toBeFalse();
+    expect(botoes().inapto.disabled).toBeFalse();
+  });
+
+  it('bloqueia a confirmação duplicada e libera nova tentativa após erro', fakeAsync(() => {
+    const requisicaoPendente = new Subject<object>();
+    api.salvarDadosClinicos.and.returnValue(requisicaoPendente.asObservable());
+    preencher('1,75', '70,0', '13,5');
+    tick();
+    component.abrirModal('apto');
+    component.confirmarAcaoModal();
+    component.confirmarAcaoModal();
+    fixture.detectChanges();
+
+    expect(api.salvarDadosClinicos).toHaveBeenCalledTimes(1);
+    expect(component.processando).toBeTrue();
+    expect(botoes().apto.disabled).toBeTrue();
+    expect(botoes().inapto.disabled).toBeTrue();
+
+    requisicaoPendente.error({ error: { detalhe: 'falha' } });
+    tick();
+    fixture.detectChanges();
+
+    expect(component.processando).toBeFalse();
+    expect(botoes().apto.disabled).toBeFalse();
+    expect(botoes().inapto.disabled).toBeFalse();
+    tick(5000);
+  }));
+
+  it('mantém o bloqueio após sucesso até o redirecionamento', fakeAsync(() => {
+    preencher('1,75', '70,0', '13,5');
+    tick();
+    component.abrirModal('apto');
+    component.confirmarAcaoModal();
+    tick();
+
+    expect(component.processando).toBeTrue();
+    component.confirmarAcaoModal();
+    expect(api.salvarDadosClinicos).toHaveBeenCalledTimes(1);
+    tick(1500);
+    tick(5000);
+  }));
 });

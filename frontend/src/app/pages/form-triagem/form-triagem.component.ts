@@ -8,8 +8,9 @@ import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/m
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 import { TriagemRascunhoService } from '../../services/triagem-rascunho.service';
 import { EMPTY } from 'rxjs';
-import { catchError, finalize, switchMap } from 'rxjs/operators';
+import { catchError, switchMap } from 'rxjs/operators';
 import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
+import { DadosDoadorCardComponent } from '../../componentes/dados-doador-card/dados-doador-card.component';
 
 @Component({
   selector: 'app-form-triagem',
@@ -19,13 +20,14 @@ import { AtendimentoProcessoService } from '../../services/atendimento-processo.
     FormsModule,
     ModalConfirmacaoComponent,
     ToastNotificacaoComponent,
+    DadosDoadorCardComponent,
   ],
   templateUrl: './form-triagem.component.html',
   styleUrl: './form-triagem.component.scss',
 })
 export class FormTriagemComponent implements OnInit, OnDestroy {
   processoId!: number;
-  doador = { nome: '', dataNascimento: '', cpf: '' };
+  doador = { nome: '', dataNascimento: '', cpf: '', sexo: '' };
   pressaoArterial = '';
   questionarioVinculado = false;
   questionarioPermiteAptidao: boolean | null = null;
@@ -87,6 +89,7 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
           nome: processo?.doador?.nome_completo || '',
           dataNascimento: processo?.doador?.data_nascimento || '',
           cpf: processo?.doador?.cpf || '',
+          sexo: processo?.doador?.sexo || '',
         };
 
         this.carregarResultadoQuestionario();
@@ -139,12 +142,6 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
     ], {
       state: { retornarParaTriagem: true },
     });
-  }
-
-  formatarCPF(cpf: string): string {
-    if (!cpf) return '';
-    const numeros = cpf.replace(/\D/g, '');
-    return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
   aplicarMascaraPressao(valorDigitado: string): void {
@@ -308,6 +305,7 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
             .atualizarStatusProcesso(this.processoId, novoStatus)
             .pipe(
               catchError(() => {
+                this.processando = false;
                 this.toast.exibir(
                   'Os dados foram salvos, mas houve um erro ao mudar a etapa do processo.',
                   false,
@@ -315,9 +313,6 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
                 return EMPTY;
               }),
             );
-        }),
-        finalize(() => {
-          this.processando = false;
         }),
       )
       .subscribe({
@@ -336,6 +331,7 @@ export class FormTriagemComponent implements OnInit, OnDestroy {
           );
         },
         error: (err) => {
+          this.processando = false;
           this.toast.exibir(
             err?.error?.erro || 'Erro ao registrar os dados da triagem.',
             false,

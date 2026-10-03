@@ -1,0 +1,30 @@
+<section class="dados-doador-card" aria-label="Dados do doador">
+  <header class="dados-doador-card__cabecalho">
+    <span class="dados-doador-card__icone" aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="currentColor">
+        <path
+          d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
+        />
+      </svg>
+    </span>
+    <div>
+      <p class="dados-doador-card__titulo">Dados do doador</p>
+      <h3>{{ nome || 'Doador' }}</h3>
+    </div>
+  </header>
+
+  <dl class="dados-doador-card__informacoes" *ngIf="cpfFormatado || sexoFormatado || dataNascimentoFormatada">
+    <div *ngIf="cpfFormatado">
+      <dt>CPF</dt>
+      <dd>{{ cpfFormatado }}</dd>
+    </div>
+    <div *ngIf="sexoFormatado">
+      <dt>Sexo</dt>
+      <dd>{{ sexoFormatado }}</dd>
+    </div>
+    <div *ngIf="dataNascimentoFormatada">
+      <dt>Nascimento</dt>
+      <dd>{{ dataNascimentoFormatada }}</dd>
+    </div>
+  </dl>
+</section>

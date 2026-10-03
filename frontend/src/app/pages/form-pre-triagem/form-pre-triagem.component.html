@@ -1,6 +1,6 @@
 <div class="form-pre-triagem">
   <div class="container">
-    <button class="btn-icone" (click)="voltar()">
+    <button class="btn-icone" (click)="voltar()" [disabled]="processando">
       <svg
         width="24"
         height="24"
@@ -32,6 +32,7 @@
               [attr.aria-invalid]="!!alturaErro && (alt.touched || !!form.altura)"
               [attr.aria-describedby]="alturaErro && (alt.touched || form.altura) ? 'altura-erro' : null"
               required
+              [disabled]="processando"
             />
             <small id="altura-erro" class="msg-erro" *ngIf="alturaErro && (alt.touched || form.altura)">{{ alturaErro }}</small>
           </div>
@@ -50,6 +51,7 @@
               [attr.aria-invalid]="!!pesoErro && (ps.touched || !!form.peso)"
               [attr.aria-describedby]="pesoErro && (ps.touched || form.peso) ? 'peso-erro' : null"
               required
+              [disabled]="processando"
             />
             <small id="peso-erro" class="msg-erro" *ngIf="pesoErro && (ps.touched || form.peso)">{{ pesoErro }}</small>
             <small
@@ -75,25 +77,20 @@
               [attr.aria-invalid]="!!hemoglobinaErro && (hemo.touched || !!form.hemoglobina)"
               [attr.aria-describedby]="hemoglobinaErro && (hemo.touched || form.hemoglobina) ? 'hemoglobina-erro' : null"
               required
+              [disabled]="processando"
             />
             <small id="hemoglobina-erro" class="msg-erro" *ngIf="hemoglobinaErro && (hemo.touched || form.hemoglobina)">{{ hemoglobinaErro }}</small>
           </div>
         </div>
 
-        <div class="coluna-info">
-          <div class="card-doador">
-            <div class="avatar-wrapper">
-              <div class="avatar">
-                <i class="bi bi-person-fill"></i>
-              </div>
-            </div>
-            <div class="info-texto">
-              <p>Nome: {{ doador.nome }}</p>
-              <p>Sexo: {{ doador.sexo }}</p>
-              <p>CPF: {{ formatarCPF(doador.cpf) }}</p>
-            </div>
-          </div>
-        </div>
+        <aside class="coluna-info">
+          <app-dados-doador-card
+            [nome]="doador.nome"
+            [cpf]="doador.cpf"
+            [sexo]="doador.sexo"
+            [dataNascimento]="doador.dataNascimento"
+          />
+        </aside>
       </div>
 
       <p *ngIf="orientacaoApto as orientacao" class="orientacao-apto" role="status" aria-live="polite">{{ orientacao }}</p>
@@ -102,14 +99,14 @@
           type="button"
           class="btn-cancelar"
           (click)="abrirModal('inapto')"
-          [disabled]="!medicoesValidas"
+          [disabled]="processando || !medicoesValidas"
         >
           Inapto
         </button>
         <button
           type="submit"
           class="btn-concluir"
-          [disabled]="formPre.invalid || !podeMarcarApto"
+          [disabled]="processando || formPre.invalid || !podeMarcarApto"
         >
           Apto
         </button>
@@ -124,6 +121,7 @@
   [mensagem]="modalConfig.mensagem"
   [tipo]="modalConfig.tipo"
   [textoConfirmar]="modalConfig.textoConfirmar"
+  [processando]="processando"
   (confirmado)="confirmarAcaoModal()"
   (cancelado)="fecharModal()"
 >

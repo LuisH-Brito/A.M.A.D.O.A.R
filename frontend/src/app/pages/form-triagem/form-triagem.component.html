@@ -1,6 +1,6 @@
 <div class="form-triagem">
   <div class="container">
-    <button class="btn-icone" (click)="voltar()">
+    <button class="btn-icone" (click)="voltar()" [disabled]="processando">
       <svg
         width="24"
         height="24"
@@ -21,32 +21,18 @@
       (ngSubmit)="abrirModal(true)"
       [attr.aria-busy]="processando"
     >
-      <div class="linha">
-        <div class="campo grande">
-          <label>Nome Completo:</label>
-          <input type="text" [value]="doador.nome" disabled />
-        </div>
-      </div>
-
-      <div class="linha">
-        <div class="campo pequeno">
-          <label>Data de nascimento:</label>
-          <input type="date" [value]="doador.dataNascimento" disabled />
-        </div>
-
-        <div class="campo grande">
-          <label>CPF:</label>
-          <input
-            type="text"
-            [ngModel]="formatarCPF(doador.cpf)"
-            name="cpf_visualizacao"
-            disabled
+      <div class="triagem-layout">
+        <aside class="coluna-info">
+          <app-dados-doador-card
+            [nome]="doador.nome"
+            [cpf]="doador.cpf"
+            [sexo]="doador.sexo"
+            [dataNascimento]="doador.dataNascimento"
           />
-        </div>
-      </div>
+        </aside>
 
-      <div class="linha">
-        <div class="campo pequeno">
+        <section class="campos-triagem" aria-label="Dados da triagem médica">
+          <div class="campo">
           <label>Pressão arterial:</label>
           <input
             type="text"
@@ -57,13 +43,14 @@
             maxlength="7"
             #pressao="ngModel"
             required
+            [disabled]="processando"
           />
           <small class="msg-erro" *ngIf="pressao.invalid && pressao.touched">
             Pressão é obrigatória.
           </small>
-        </div>
+          </div>
 
-        <div class="campo">
+          <div class="campo campo-questionario">
           <button
             type="button"
             class="btn-questionario"
@@ -78,7 +65,8 @@
           <small class="msg-revisado-ok" *ngIf="questionarioRevisado">
             <i class="bi bi-check-circle-fill"></i> Questionário verificado.
           </small>
-        </div>
+          </div>
+        </section>
       </div>
 
       <div
@@ -142,6 +130,7 @@
   [mensagem]="modalConfig.mensagem"
   [tipo]="modalConfig.tipo"
   [textoConfirmar]="modalConfig.textoConfirmar"
+  [processando]="processando"
   (confirmado)="confirmarAcaoModal()"
   (cancelado)="fecharModal()"
 >
