@@ -79,7 +79,7 @@ export class LoginComponent implements OnInit {
       ? this.loginData.cpf
       : this.loginData.cpf.replace(/\D/g, '');
 
-    const url = 'http://localhost:8000/api/token/';
+    const url = '/api/token/';
     const loginPayload = {
       cpf: identifier,
       password: this.loginData.password,
