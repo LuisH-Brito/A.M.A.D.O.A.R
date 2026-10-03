@@ -285,6 +285,12 @@ class ProcessoDoacaoViewSet(viewsets.ReadOnlyModelViewSet):
                 status=status.HTTP_404_NOT_FOUND
             )
 
+        if not enfermeiro.is_active:
+            return Response(
+                {'erro': 'O enfermeiro selecionado nao esta ativo.'},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
         with transaction.atomic():
             dados_clinicos = processo.dados_clinicos
             

@@ -9,9 +9,13 @@ from rest_framework.test import APITestCase
 from choices import StatusClinico, StatusProcesso
 from dados_clinicos.models import Dados_Clinicos
 from doadores.models import Doador
+from enfermeiros.models import Enfermeiro
 from medicos.models import Medico
 from recepcionistas.models import Recepcionista
 from triagem.models import Pergunta, Questionario, Resposta
+from dados_clinicos.models import EnfermeiroDados
+from bolsas.models import Bolsa
+from choices import Papel
 
 from .models import Processo_Doacao
 
@@ -367,4 +371,101 @@ class DecidirTriagemQuestionarioTests(APITestCase):
         self.assertEqual(
             resposta_decisao.status_code,
             status.HTTP_400_BAD_REQUEST,
+        )
+
+
+class ColetaEnfermeiroAtivoTests(APITestCase):
+    def setUp(self):
+        self.enfermeiro_ativo = self.criar_enfermeiro(1, 'Enfermeiro Ativo', True)
+        self.enfermeiro_inativo = self.criar_enfermeiro(2, 'Enfermeiro Inativo', False)
+        self.enfermeiro_reativavel = self.criar_enfermeiro(
+            3, 'Enfermeiro Reativável', True
+        )
+        self.recepcionista = Recepcionista.objects.create_user(
+            cpf='94000000001', password='teste', email='recepcao-coleta@teste.local',
+            endereco='Endereço de teste', nome_completo='Recepcionista da Coleta',
+        )
+        self.doador = Doador.objects.create_user(
+            cpf='94000000002', password='teste', email='doador-coleta@teste.local',
+            endereco='Endereço de teste', nome_completo='Doador da Coleta', sexo='M',
+            telefone='68999999999',
+        )
+        self.client.force_authenticate(self.enfermeiro_ativo)
+
+    def criar_enfermeiro(self, numero, nome, ativo):
+        return Enfermeiro.objects.create_user(
+            cpf=f'930000000{numero:02d}', password='teste',
+            email=f'enfermeiro-coleta-{numero}@teste.local',
+            endereco='Endereço de teste', nome_completo=nome,
+            coren=f'COREN-COLETA-{numero}', is_active=ativo,
+        )
+
+    def criar_processo_em_coleta(self):
+        processo = Processo_Doacao.objects.create(
+            doador=self.doador, recepcionista=self.recepcionista,
+            status=StatusProcesso.COLETA,
+        )
+        Dados_Clinicos.objects.create(
+            processo=processo, peso=70, altura=1.70, hemoglobina=14,
+            status_clinico=StatusClinico.APTO,
+        )
+        return processo
+
+    def test_listagem_de_disponiveis_exclui_enfermeiro_inativo_e_retorna_reativado(self):
+        resposta = self.client.get('/api/enfermeiros/disponiveis/')
+
+        self.assertEqual(resposta.status_code, status.HTTP_200_OK)
+        self.assertEqual(
+            {item['id'] for item in resposta.data},
+            {self.enfermeiro_ativo.id, self.enfermeiro_reativavel.id},
+        )
+
+        self.enfermeiro_inativo.is_active = True
+        self.enfermeiro_inativo.save(update_fields=['is_active'])
+
+        resposta_apos_reativacao = self.client.get('/api/enfermeiros/disponiveis/')
+
+        self.assertIn(
+            self.enfermeiro_inativo.id,
+            {item['id'] for item in resposta_apos_reativacao.data},
+        )
+
+    def test_finalizar_coleta_rejeita_enfermeiro_inativo_sem_criar_historico(self):
+        processo = self.criar_processo_em_coleta()
+
+        resposta = self.client.post(
+            f'/api/processos/{processo.id}/finalizar-coleta/',
+            {'enfermeiro_id': self.enfermeiro_inativo.id, 'puncao_sucesso': True},
+            format='json',
+        )
+
+        self.assertEqual(resposta.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            resposta.data['erro'], 'O enfermeiro selecionado nao esta ativo.'
+        )
+        self.assertFalse(
+            EnfermeiroDados.objects.filter(
+                dados=processo.dados_clinicos,
+                enfermeiro=self.enfermeiro_inativo,
+            ).exists()
+        )
+
+    def test_historico_permanece_vinculado_apos_desativacao(self):
+        processo = self.criar_processo_em_coleta()
+        EnfermeiroDados.objects.create(
+            enfermeiro=self.enfermeiro_reativavel, dados=processo.dados_clinicos,
+            papel=Papel.RESPONSAVEL_COLETA,
+        )
+        bolsa = Bolsa.objects.create(
+            processo=processo, doador=self.doador,
+            enfermeiro_coleta=self.enfermeiro_reativavel,
+        )
+
+        self.enfermeiro_reativavel.is_active = False
+        self.enfermeiro_reativavel.save(update_fields=['is_active'])
+        bolsa.refresh_from_db()
+
+        self.assertEqual(bolsa.enfermeiro_coleta_id, self.enfermeiro_reativavel.id)
+        self.assertEqual(
+            bolsa.enfermeiro_coleta.nome_completo, 'Enfermeiro Reativável'
         )

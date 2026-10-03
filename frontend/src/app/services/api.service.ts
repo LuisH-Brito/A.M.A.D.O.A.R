@@ -58,8 +58,8 @@ export class ApiService {
       payload,
     );
   }
-  listarEnfermeiros() {
-    return this.http.get<any[]>(`${this.baseUrl}enfermeiros/`);
+  listarEnfermeirosDisponiveis() {
+    return this.http.get<any[]>(`${this.baseUrl}enfermeiros/disponiveis/`);
   }
 
   finalizarColeta(

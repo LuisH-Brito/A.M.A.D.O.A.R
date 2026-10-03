@@ -18,12 +18,12 @@ describe('FormColetaComponent', () => {
 
   beforeEach(async () => {
     api = jasmine.createSpyObj<ApiService>('ApiService', [
-      'getProcessoById', 'listarEnfermeiros', 'finalizarColeta',
+      'getProcessoById', 'listarEnfermeirosDisponiveis', 'finalizarColeta',
     ]);
     api.getProcessoById.and.returnValue(of({
       doador: { nome_completo: 'Doador Teste', sexo: 'F', cpf: '90000000003', data_nascimento: '1994-07-09' },
     }));
-    api.listarEnfermeiros.and.returnValue(of([
+    api.listarEnfermeirosDisponiveis.and.returnValue(of([
       { id: 9, nome_completo: 'Enfermeira Teste' },
     ]));
     api.finalizarColeta.and.returnValue(of({ bolsa_criada: true }));
@@ -53,6 +53,13 @@ describe('FormColetaComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('carrega somente a lista de enfermeiros disponíveis para a coleta', () => {
+    expect(api.listarEnfermeirosDisponiveis).toHaveBeenCalledTimes(1);
+    expect(component.responsaveis).toEqual([
+      { id: 9, nome_completo: 'Enfermeira Teste' },
+    ]);
   });
 
   it('exibe a identificação do doador no cartão compartilhado', () => {
