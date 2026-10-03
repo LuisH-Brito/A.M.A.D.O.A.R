@@ -1,4 +1,10 @@
 <main>
+  <app-alerta-sucesso
+    [visivel]="mostrarLoginSucesso"
+    [nome]="nomeUsuario"
+    (fechar)="mostrarLoginSucesso = false"
+  ></app-alerta-sucesso>
+
   <app-home-carrosel></app-home-carrosel>
   <app-toast-notificacao #toast></app-toast-notificacao>
 

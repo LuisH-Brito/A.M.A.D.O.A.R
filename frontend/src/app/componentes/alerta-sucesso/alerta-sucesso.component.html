@@ -1,0 +1,24 @@
+<div
+  class="alerta-sucesso"
+  [class.visivel]="visivel"
+  role="status"
+  aria-live="polite"
+  aria-atomic="true"
+  [attr.aria-hidden]="!visivel"
+>
+  <span class="alerta-sucesso__icone" aria-hidden="true">&#10003;</span>
+
+  <div class="alerta-sucesso__conteudo">
+    <strong>Login realizado com sucesso!</strong>
+    <span>Seja bem-vindo, <strong>{{ nome || 'usuário' }}</strong>!</span>
+  </div>
+
+  <button
+    type="button"
+    class="alerta-sucesso__fechar"
+    aria-label="Fechar alerta"
+    (click)="aoFechar()"
+  >
+    X
+  </button>
+</div>
