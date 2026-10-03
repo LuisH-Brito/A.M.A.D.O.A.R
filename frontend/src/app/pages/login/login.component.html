@@ -11,7 +11,7 @@
 
     <div class="login-right">
       <h2>Login</h2>
-      <form (ngSubmit)="fazerLogin($event)">
+      <form (submit)="fazerLogin($event)" novalidate>
         <div class="form-group">
           <label for="cpf">CPF</label>
           <input

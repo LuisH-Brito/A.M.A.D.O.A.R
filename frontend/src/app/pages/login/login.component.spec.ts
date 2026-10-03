@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, provideRouter } from '@angular/router';
-import { of } from 'rxjs';
+import { of, throwError } from 'rxjs';
 
 import { LoginComponent } from './login.component';
 
@@ -47,5 +47,17 @@ describe('LoginComponent', () => {
     localStorage.removeItem('cargo');
     localStorage.removeItem('nomeUsuario');
     localStorage.removeItem('usuario_id');
+  });
+
+  it('previne o submit nativo e exibe toast para credenciais inválidas', () => {
+    http.post.and.returnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
+    const evento = { preventDefault: jasmine.createSpy('preventDefault') } as unknown as Event;
+
+    component.loginData = { cpf: '52998224725', password: 'SenhaIncorreta' };
+    component.fazerLogin(evento);
+
+    expect(evento.preventDefault).toHaveBeenCalled();
+    expect(component.toastComponente.visivel).toBeTrue();
+    expect(component.toastComponente.mensagem).toBe('CPF ou senha incorretos.');
   });
 });
