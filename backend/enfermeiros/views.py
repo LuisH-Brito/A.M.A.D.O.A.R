@@ -27,6 +27,13 @@ class EnfermeiroViewSet(viewsets.ModelViewSet):
 
         return super().get_permissions()
 
+    @action(detail=False, methods=['get'], url_path='disponiveis')
+    def disponiveis(self, request):
+        """Lista enfermeiros que podem ser atribuídos a novas coletas."""
+        enfermeiros = Enfermeiro.objects.filter(is_active=True)
+        serializer = self.get_serializer(enfermeiros, many=True)
+        return Response(serializer.data)
+
     @action(detail=False, methods=['get', 'patch'], url_path='me')
     def me(self, request):
         enfermeiro = getattr(request.user, 'enfermeiro', None)

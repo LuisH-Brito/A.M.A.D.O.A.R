@@ -84,7 +84,7 @@ export class FormColetaComponent implements OnInit, OnDestroy {
       },
     });
 
-    this.api.listarEnfermeiros().subscribe({
+    this.api.listarEnfermeirosDisponiveis().subscribe({
       next: (lista) => {
         this.responsaveis = Array.isArray(lista) ? lista : [];
       },
