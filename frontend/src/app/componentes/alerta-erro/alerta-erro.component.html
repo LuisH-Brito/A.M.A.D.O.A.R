@@ -1,0 +1,24 @@
+<div
+  class="alerta-erro"
+  [class.visivel]="visivel"
+  role="alert"
+  aria-live="assertive"
+  aria-atomic="true"
+  [attr.aria-hidden]="!visivel"
+>
+  <span class="alerta-erro__icone" aria-hidden="true">!</span>
+
+  <div class="alerta-erro__conteudo">
+    <strong>Dados incorretos!</strong>
+    <span>Verifique o CPF e a senha informados e tente novamente.</span>
+  </div>
+
+  <button
+    type="button"
+    class="alerta-erro__fechar"
+    aria-label="Fechar alerta"
+    (click)="aoFechar()"
+  >
+    X
+  </button>
+</div>

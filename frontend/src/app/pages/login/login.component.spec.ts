@@ -49,7 +49,7 @@ describe('LoginComponent', () => {
     localStorage.removeItem('usuario_id');
   });
 
-  it('previne o submit nativo e exibe toast para credenciais inválidas', () => {
+  it('previne o submit nativo e exibe alerta para credenciais inválidas', () => {
     http.post.and.returnValue(throwError(() => new HttpErrorResponse({ status: 401 })));
     const evento = { preventDefault: jasmine.createSpy('preventDefault') } as unknown as Event;
 
@@ -57,7 +57,7 @@ describe('LoginComponent', () => {
     component.fazerLogin(evento);
 
     expect(evento.preventDefault).toHaveBeenCalled();
-    expect(component.toastComponente.visivel).toBeTrue();
-    expect(component.toastComponente.mensagem).toBe('CPF ou senha incorretos.');
+    expect(http.post).toHaveBeenCalled();
+    expect(component.erroLogin).toBeTrue();
   });
 });

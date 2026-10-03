@@ -1,20 +1,20 @@
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
-import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
+import { AlertaErroComponent } from '../../componentes/alerta-erro/alerta-erro.component';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, ToastNotificacaoComponent],
+  imports: [AlertaErroComponent, CommonModule, FormsModule, RouterLink],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
 export class LoginComponent implements OnInit {
-  @ViewChild('toast') toastComponente!: ToastNotificacaoComponent;
   showPassword = false;
+  erroLogin = false;
   mensagemSucesso: string | null = null;
   loginData = {
     cpf: '',
@@ -34,10 +34,8 @@ export class LoginComponent implements OnInit {
       if (params['cadastrado'] === 'true') {
         this.mensagemSucesso =
           'Cadastro realizado com sucesso! Faça seu login.';
-        this.toastComponente.exibir(this.mensagemSucesso, true);
       } else if (params['senhaAlterada'] === 'true') {
         this.mensagemSucesso = 'Senha alterada com sucesso. Entre novamente com sua nova senha.';
-        this.toastComponente.exibir(this.mensagemSucesso, true);
       }
     });
   }
@@ -75,6 +73,7 @@ export class LoginComponent implements OnInit {
 
   fazerLogin(event?: Event) {
     event?.preventDefault();
+    this.erroLogin = false;
 
     const identifier = /[a-zA-Z]/.test(this.loginData.cpf)
       ? this.loginData.cpf
@@ -88,6 +87,7 @@ export class LoginComponent implements OnInit {
 
     this.http.post<any>(url, loginPayload).subscribe({
       next: (res) => {
+        this.erroLogin = false;
         console.log('Dados vindos do Django:', res);
         localStorage.setItem('access', res.access);
         localStorage.setItem('refresh', res.refresh);
@@ -98,8 +98,10 @@ export class LoginComponent implements OnInit {
           res.deve_alterar_senha ? '/troca-senha-obrigatoria' : '/',
         ]);
       },
-      error: () => {
-        this.toastComponente?.exibir('CPF ou senha incorretos.', false);
+      error: (error: HttpErrorResponse) => {
+        if (error.status === 400 || error.status === 401) {
+          this.erroLogin = true;
+        }
       },
     });
   }
