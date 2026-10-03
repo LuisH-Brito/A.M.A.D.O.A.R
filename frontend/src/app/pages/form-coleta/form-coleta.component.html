@@ -1,6 +1,12 @@
 <div class="form-coleta">
   <div class="container">
-    <button class="btn-icone" (click)="voltar()">
+    <button
+      type="button"
+      class="btn-icone"
+      (click)="voltar()"
+      [disabled]="enviando"
+      aria-label="Voltar para processos em andamento"
+    >
       <svg
         width="24"
         height="24"
@@ -13,22 +19,37 @@
         <polyline points="12 19 5 12 12 5"></polyline>
       </svg>
     </button>
-    <h2 class="titulo">Coleta</h2>
+    <header class="cabecalho-coleta">
+      <h2 class="titulo">Coleta</h2>
+    </header>
 
     <form
       class="formulario"
       #formColeta="ngForm"
       (ngSubmit)="abrirModalConfirmacao()"
+      [attr.aria-busy]="enviando"
     >
       <div class="layout-duplo">
-        <div class="grupo-inputs">
+        <aside class="coluna-info">
+          <app-dados-doador-card
+            [nome]="doador.nome"
+            [cpf]="doador.cpf"
+            [sexo]="doador.sexo"
+            [dataNascimento]="doador.dataNascimento"
+          />
+        </aside>
+
+        <section class="grupo-inputs" aria-label="Dados da coleta">
           <div class="campo">
+            <label for="responsavel">Responsável pela coleta</label>
             <select
+              id="responsavel"
               name="responsavel"
               class="select-borda"
               #responsavel="ngModel"
               [(ngModel)]="responsavelSelecionado"
               required
+              [disabled]="enviando"
             >
               <option [ngValue]="null">
                 Selecionar Responsavel pela coleta
@@ -43,54 +64,50 @@
             <small
               class="msg-erro"
               *ngIf="responsavel.invalid && responsavel.touched"
-              >Responsavel é obrigatório</small
+              >Selecione o responsável pela coleta.</small
             >
           </div>
-          <div class="campo-puncao">
-            <label class="titulo-puncao"
-              >Puncao venosa realizada com sucesso:</label
-            >
-            <div class="radios-container">
-              <label class="radio-label">
+          <fieldset class="campo-puncao" [attr.aria-describedby]="puncaoFalhou ? 'aviso-puncao-falhou' : null">
+            <legend class="titulo-puncao">Punção venosa realizada com sucesso?</legend>
+            <p class="descricao-puncao">Selecione o resultado registrado durante a coleta.</p>
+            <div class="radios-container" role="radiogroup" aria-label="Resultado da punção venosa">
+              <label class="opcao-puncao opcao-puncao--sucesso" [class.opcao-puncao--selecionada]="puncaoSucesso === 'true'">
                 <input
                   type="radio"
                   name="puncao"
                   value="true"
                   [(ngModel)]="puncaoSucesso"
+                  [disabled]="enviando"
                 />
-                Sim
+                <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                <span>
+                  <strong>Sim</strong>
+                  <small>Coleta realizada</small>
+                </span>
               </label>
-              <label class="radio-label">
+              <label class="opcao-puncao opcao-puncao--falha" [class.opcao-puncao--selecionada]="puncaoFalhou">
                 <input
                   type="radio"
                   name="puncao"
                   value="false"
                   [(ngModel)]="puncaoSucesso"
+                  [disabled]="enviando"
                 />
-                Não
+                <i class="bi bi-x-circle-fill" aria-hidden="true"></i>
+                <span>
+                  <strong>Não</strong>
+                  <small>Coleta não realizada</small>
+                </span>
               </label>
             </div>
-          </div>
-        </div>
+            <p *ngIf="puncaoFalhou" id="aviso-puncao-falhou" class="aviso-puncao" role="status">
+              <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+              A coleta não será realizada. Ao finalizar, o processo será cancelado e nenhuma bolsa será gerada.
+            </p>
+          </fieldset>
+        </section>
 
-        <div class="coluna-info">
-          <div class="card-doador">
-            <div class="icone-perfil">
-              <svg viewBox="0 0 24 24" fill="#6B213A">
-                <path
-                  d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"
-                />
-              </svg>
-            </div>
-            <div class="info-texto">
-              <p>Nome: {{ doador.nome }}</p>
-              <p>Sexo: {{ doador.sexo }}</p>
-              <p>CPF: {{ formatarCPF(doador.cpf) }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="acoes">
+        <div class="acoes">
         <button
           type="submit"
           class="btn-concluir btn-coleta"
@@ -98,6 +115,7 @@
         >
           {{ enviando ? "Processando..." : "Finalizar Coleta" }}
         </button>
+        </div>
       </div>
     </form>
   </div>
@@ -108,6 +126,7 @@
   [mensagem]="modalConfig.mensagem"
   [tipo]="modalConfig.tipo"
   [textoConfirmar]="modalConfig.textoConfirmar"
+  [processando]="enviando"
   (confirmado)="finalizarColeta()"
   (cancelado)="fecharModal()"
 >

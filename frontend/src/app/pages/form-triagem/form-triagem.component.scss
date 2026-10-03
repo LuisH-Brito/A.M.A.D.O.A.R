@@ -1,130 +1,124 @@
+$verde: #16824b;
+$vinho: #6b213a;
+$texto: #27332d;
+$borda: #c8d2cb;
+
 .form-triagem {
-  background: #f4f4f4;
+  min-height: 100%;
   padding: 40px;
+  background: #f4f4f4;
 }
 
 .container {
-  max-width: 1000px;
+  position: relative;
+  max-width: 980px;
   margin: 0 auto;
-  background: #ffffff;
-  padding: 35px 40px;
-  border-radius: 14px;
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.18);
+  padding: 32px 36px 36px;
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 8px 24px rgba(34, 50, 40, 0.14);
 }
 
 .btn-icone {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #000;
+  position: absolute;
+  top: 32px;
+  left: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
-  &:hover {
-    opacity: 0.7;
-  }
+  padding: 0;
+  border: none;
+  background: none;
+  color: #000;
+  cursor: pointer;
 }
 
-.msg-erro {
-  color: #c40000;
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 4px;
-  animation: fadeIn 0.3s ease;
-}
-
-.msg-revisado-ok {
-  color: #12a150;
-  font-weight: 700;
-  margin-top: 4px;
-  display: block;
-}
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-5px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-input.ng-invalid.ng-touched {
-  border: 1px solid #c40000;
+.btn-icone:hover:not(:disabled) { opacity: 0.7; }
+.btn-icone:disabled { cursor: not-allowed; opacity: 0.6; }
+.btn-icone:focus-visible,
+.btn-questionario:focus-visible,
+.btn-cancelar:focus-visible,
+.btn-concluir:focus-visible {
+  outline: 3px solid rgba($vinho, 0.3);
+  outline-offset: 3px;
 }
 
 .titulo {
+  margin: 0 0 30px;
+  color: $texto;
+  font-size: clamp(1.65rem, 3vw, 2rem);
+  font-weight: 750;
   text-align: center;
-  font-weight: 600;
-  margin-bottom: 30px;
 }
 
-.formulario {
-  width: 100%;
+.triagem-layout {
+  display: grid;
+  grid-template-areas: 'campos card';
+  grid-template-columns: minmax(0, 1fr) minmax(270px, 310px);
+  gap: 34px;
+  align-items: start;
 }
 
-.linha {
-  display: flex;
-  gap: 25px;
-  margin-bottom: 22px;
+.campos-triagem {
+  display: grid;
+  grid-area: campos;
+  gap: 26px;
 }
+
+.coluna-info { grid-area: card; }
 
 .campo {
   display: flex;
   flex-direction: column;
-  flex: 1;
-}
-
-.campo.grande {
-  flex: 2;
-}
-
-.campo.pequeno {
-  flex: 0.9;
-}
-
-.btn-questionario {
-  background-color: #7de3a1;
-  color: #222;
-  font-weight: 700;
-  font-size: 15px;
-  border: none;
-  border-radius: 12px;
-  height: 44px;
-  cursor: pointer;
-  transition: all 0.25s ease;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.08);
-  margin-top: auto;
-}
-
-.btn-questionario:hover {
-  background-color: #6bc98e;
-  transform: translateY(-2px);
+  gap: 8px;
 }
 
 label {
-  font-weight: 600;
-  margin-bottom: 6px;
-  color: #333;
+  color: $texto;
+  font-size: 0.95rem;
+  font-weight: 700;
 }
 
-input,
-select {
-  height: 44px;
-  border-radius: 12px;
-  border: none;
+input {
+  width: 100%;
+  height: 48px;
+  box-sizing: border-box;
   padding: 0 14px;
-  background-color: #e6f1e9;
-
-  font-size: 15px;
+  border: 1px solid $borda;
+  border-radius: 10px;
+  background: #fff;
+  color: $texto;
+  font: inherit;
 }
 
-.acoes {
-  display: flex;
-  justify-content: center;
-  gap: 80px;
-  margin-top: 18px;
+input:focus-visible {
+  border-color: $verde;
+  outline: none;
+  box-shadow: 0 0 0 3px rgba($verde, 0.18);
+}
+
+input.ng-invalid.ng-touched { border-color: #c40000; }
+.msg-erro { color: #b42318; font-size: 0.82rem; font-weight: 600; }
+
+.btn-questionario {
+  min-height: 48px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: #dff4e6;
+  color: #245f3b;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.btn-questionario:hover:not(:disabled) { background: #ccebd6; }
+.btn-questionario:disabled { cursor: not-allowed; opacity: 0.6; }
+
+.msg-revisado-ok {
+  display: block;
+  color: $verde;
+  font-weight: 700;
 }
 
 .orientacao-apto {
@@ -138,84 +132,42 @@ select {
   border-radius: 12px;
   background: #f1f8f3;
   color: #245f3b;
-  font-size: 14px;
+  font-size: 0.875rem;
   line-height: 1.45;
-
-  i {
-    flex: 0 0 auto;
-    margin-top: 2px;
-    font-size: 16px;
-  }
 }
 
-.orientacao-apto--impeditiva {
-  border-color: #dfca93;
-  background: #fff8e8;
-  color: #6b5214;
+.orientacao-apto i { flex: 0 0 auto; margin-top: 2px; font-size: 1rem; }
+.orientacao-apto--impeditiva { border-color: #dfca93; background: #fff8e8; color: #6b5214; }
+
+.acoes {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-top: 32px;
 }
 
 .btn-cancelar,
 .btn-concluir {
   min-width: 180px;
-  height: 44px;
-  border-radius: 25px;
-  border: none;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.25s ease;
+  min-height: 48px;
+  border: 0;
+  border-radius: 10px;
   color: #fff;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
 }
 
-.btn-cancelar {
-  background: #c40000;
-  box-shadow: 0 4px 10px rgba(196, 0, 0, 0.4);
-}
-
-.btn-concluir {
-  background: #12a150;
-  box-shadow: 0 4px 10px rgba(18, 161, 80, 0.4);
-}
-
-.btn-cancelar:hover:not(:disabled),
-.btn-concluir:hover:not(:disabled) {
-  transform: translateY(-2px);
-}
-
-.btn-concluir:disabled,
-.btn-cancelar:disabled,
-.btn-questionario:disabled {
-  background: #ccc;
-  box-shadow: none;
-  cursor: not-allowed;
-  transform: none;
-}
+.btn-cancelar { background: #b64242; box-shadow: 0 4px 10px rgba(182, 66, 66, 0.24); }
+.btn-concluir { background: $verde; box-shadow: 0 4px 10px rgba($verde, 0.24); }
+.btn-cancelar:hover:not(:disabled), .btn-concluir:hover:not(:disabled) { transform: translateY(-1px); }
+.btn-cancelar:disabled, .btn-concluir:disabled { cursor: not-allowed; background: #aeb8b1; box-shadow: none; }
 
 @media (max-width: 768px) {
-  .form-triagem {
-    padding: 20px 16px;
-  }
-
-  .container {
-    padding: 24px 20px;
-  }
-
-  .linha {
-    flex-direction: column;
-  }
-
-  .campo,
-  .campo input {
-    min-width: 0;
-    width: 100%;
-  }
-
-  .acoes {
-    flex-direction: column;
-    gap: 20px;
-    align-items: center;
-  }
-
-  .orientacao-apto {
-    margin-top: 28px;
-  }
+  .form-triagem { padding: 20px 16px; }
+  .container { padding: 24px 20px 28px; }
+  .btn-icone { top: 24px; left: 20px; }
+  .triagem-layout { grid-template-areas: 'card' 'campos'; grid-template-columns: minmax(0, 1fr); gap: 24px; }
+  .acoes { flex-direction: column-reverse; align-items: stretch; }
+  .btn-cancelar, .btn-concluir { width: 100%; }
 }

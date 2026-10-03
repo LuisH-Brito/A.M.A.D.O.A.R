@@ -21,9 +21,9 @@
     </div>
 
     <div class="modal-footer">
-      <button class="btn-cancelar" (click)="aoCancelar()">Cancelar</button>
-      <button class="btn-confirmar" [ngClass]="tipo" (click)="aoConfirmar()">
-        {{ textoConfirmar }}
+      <button class="btn-cancelar" [disabled]="bloqueado" (click)="aoCancelar()">Cancelar</button>
+      <button class="btn-confirmar" [ngClass]="tipo" [disabled]="bloqueado" (click)="aoConfirmar()">
+        {{ bloqueado ? 'Processando...' : textoConfirmar }}
       </button>
     </div>
   </div>

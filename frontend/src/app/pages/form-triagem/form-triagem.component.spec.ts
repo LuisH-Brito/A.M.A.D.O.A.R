@@ -33,6 +33,7 @@ describe('FormTriagemComponent', () => {
           nome_completo: 'Doador Teste',
           data_nascimento: '1990-01-01',
           cpf: '92000000004',
+          sexo: 'F',
         },
       }),
     );
@@ -89,6 +90,18 @@ describe('FormTriagemComponent', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('move os dados de identificação para o cartão compartilhado', () => {
+    const card: HTMLElement = fixture.nativeElement.querySelector(
+      'app-dados-doador-card',
+    );
+
+    expect(card.textContent).toContain('Doador Teste');
+    expect(card.textContent).toContain('920.000.000-04');
+    expect(card.textContent).toContain('Feminino');
+    expect(card.textContent).toContain('01/01/1990');
+    expect(fixture.nativeElement.querySelector('input[name="cpf_visualizacao"]')).toBeNull();
   });
 
   it('abre a revisão identificando a Triagem como origem', () => {
@@ -347,6 +360,39 @@ describe('FormTriagemComponent', () => {
     expect(botaoApto.disabled).toBeFalse();
     tick(5000);
   }));
+
+  it('mantém as ações disponíveis quando o modal é cancelado', () => {
+    const input: HTMLInputElement = fixture.nativeElement.querySelector(
+      'input[name="pressao_arterial"]',
+    );
+    input.value = '12x8';
+    input.dispatchEvent(new Event('input'));
+    component.questionarioRevisado = true;
+    component.questionarioPermiteAptidao = true;
+    component.abrirModal(true);
+    component.fecharModal();
+    fixture.detectChanges();
+
+    const botaoInapto: HTMLButtonElement =
+      fixture.nativeElement.querySelector('.btn-cancelar');
+    const botaoApto: HTMLButtonElement =
+      fixture.nativeElement.querySelector('.btn-concluir');
+    expect(component.processando).toBeFalse();
+    expect(botaoInapto.disabled).toBeFalse();
+    expect(botaoApto.disabled).toBeFalse();
+  });
+
+  it('mantém o bloqueio após sucesso e não envia uma segunda decisão', () => {
+    component.pressaoArterial = '12x8';
+    component.questionarioRevisado = true;
+    component.questionarioPermiteAptidao = true;
+    component.abrirModal(true);
+    component.confirmarAcaoModal();
+    component.confirmarAcaoModal();
+
+    expect(component.processando).toBeTrue();
+    expect(api.decidirTriagem).toHaveBeenCalledTimes(1);
+  });
 
   it('mantém o fluxo de sucesso para Apto', fakeAsync(() => {
     component.pressaoArterial = '12x8';

@@ -7,6 +7,7 @@ import { ModalConfirmacaoComponent } from '../../componentes/modal-confirmacao/m
 import { ToastNotificacaoComponent } from '../../componentes/toast-notificacao/toast-notificacao.component';
 import { PRE_TRIAGEM_LIMITES } from './pre-triagem-limites';
 import { AtendimentoProcessoService } from '../../services/atendimento-processo.service';
+import { DadosDoadorCardComponent } from '../../componentes/dados-doador-card/dados-doador-card.component';
 
 @Component({
   selector: 'app-form-pre-triagem',
@@ -16,6 +17,7 @@ import { AtendimentoProcessoService } from '../../services/atendimento-processo.
     FormsModule,
     ModalConfirmacaoComponent,
     ToastNotificacaoComponent,
+    DadosDoadorCardComponent,
   ],
   templateUrl: './form-pre-triagem.component.html',
   styleUrl: './form-pre-triagem.component.scss',
@@ -24,7 +26,7 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
   processoId!: number;
   dadosClinicosId: number | null = null;
 
-  doador = { nome: '', sexo: '', cpf: '' };
+  doador = { nome: '', sexo: '', cpf: '', dataNascimento: '' };
   readonly limites = PRE_TRIAGEM_LIMITES;
 
   form = {
@@ -32,6 +34,7 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
     peso: '',
     hemoglobina: '',
   };
+  processando = false;
 
   @ViewChild('toast') toast!: ToastNotificacaoComponent;
   modalVisivel = false;
@@ -74,6 +77,7 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
           nome: processo?.doador?.nome_completo || '',
           sexo: processo?.doador?.sexo || '',
           cpf: processo?.doador?.cpf || '',
+          dataNascimento: processo?.doador?.data_nascimento || '',
         };
         const dados = processo?.dados_clinicos;
         if (dados) {
@@ -91,6 +95,7 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
   }
 
   abrirModal(acao: 'apto' | 'inapto'): void {
+    if (this.processando) return;
     if (acao === 'apto' && !this.podeMarcarApto) {
       this.toast.exibir(this.orientacaoApto || 'Corrija as medições.', false);
       return;
@@ -127,18 +132,13 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
   }
 
   confirmarAcaoModal(): void {
+    if (this.processando) return;
     this.modalVisivel = false;
     if (this.acaoPendente === 'apto') {
       this.salvarEAvancarTriagem();
     } else if (this.acaoPendente === 'inapto') {
       this.marcarInapto();
     }
-  }
-
-  formatarCPF(cpf: string): string {
-    if (!cpf) return '';
-    const numeros = cpf.replace(/\D/g, '');
-    return numeros.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
   }
 
   private numero(valor: string, casas: number): number | null {
@@ -269,6 +269,8 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
       return;
     }
 
+    if (this.processando) return;
+
     const usuarioId = localStorage.getItem('usuario_id');
     const tipoUsuario = localStorage.getItem('tipo_usuario');
 
@@ -279,6 +281,8 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
       );
       return;
     }
+
+    this.processando = true;
 
     const payload: any = {
       processo_id: this.processoId,
@@ -305,14 +309,17 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
               1500,
             );
           },
-          error: () =>
+          error: () => {
+            this.processando = false;
             this.toast.exibir(
               'Dados salvos, mas falhou ao atualizar status para Triagem.',
               false,
-            ),
+            );
+          },
         });
       },
       error: (err) => {
+        this.processando = false;
         if (err?.error?.processo_id) {
           this.toast.exibir(err.error.processo_id, false);
           return;
@@ -327,6 +334,7 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
       this.toast.exibir('Corrija as medições inválidas antes de registrar Inapto.', false);
       return;
     }
+    if (this.processando) return;
     const usuarioId = localStorage.getItem('usuario_id');
     const tipoUsuario = localStorage.getItem('tipo_usuario');
     if (!usuarioId) {
@@ -336,6 +344,8 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
       );
       return;
     }
+
+    this.processando = true;
 
     const payload: any = {
       processo_id: this.processoId,
@@ -365,21 +375,26 @@ export class FormPreTriagemComponent implements OnInit, OnDestroy {
               1500,
             );
           },
-          error: () =>
+          error: () => {
+            this.processando = false;
             this.toast.exibir(
               'Dados salvos, mas houve erro ao cancelar o processo.',
               false,
-            ),
+            );
+          },
         });
       },
-      error: () =>
+      error: () => {
+        this.processando = false;
         this.toast.exibir(
           'Erro ao registrar inaptidão nos dados clínicos.',
           false,
-        ),
+        );
+      },
     });
   }
   voltar() {
+    if (this.processando) return;
     this.router.navigate(['/processo-doacao-andamento']);
   }
 }
